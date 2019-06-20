@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/framework666" />
+            <option value="$PROJECT_DIR$/staticviewmodelstore" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
