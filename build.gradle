@@ -13,6 +13,13 @@ buildscript {
     ext.kotlin_stdlib_jdk8_version = '1.3.31'
     ext.runner_version = '1.2.0'
 
+    //androidx.lifecycle
+    ext.lifecycle_extensions_version = "2.0.0"
+    ext.lifecycle_liveData_version = "2.0.0"
+    ext.lifecycle_runtime_version = "2.0.0"
+    ext.lifecycle_common_java8_version = "2.0.0"
+    ext.lifecycle_viewModel_version = "2.0.0"
+
     repositories {
         google()
         jcenter()
