@@ -92,3 +92,8 @@ object Logcat {
     fun e(message: String) = i(TAG, message)
 
 }
+
+fun debug(message: String) = Logcat.d(message)
+fun info(message: String) = Logcat.i(message)
+fun waring(message: String) = Logcat.w(message)
+fun error(message: String) = Logcat.e(message)
