@@ -1,6 +1,8 @@
 package studio.attect.framework666
 
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.annotation.StringRes
@@ -38,7 +40,7 @@ class FragmentX : PerceptionFragment() {
         get() {
             if (field == null) {
                 activity?.let { ac ->
-                    if (ac is ActivityX) return ac as ActivityX
+                    if (ac is ActivityX) return ac
                 }
             }
             return field
@@ -70,6 +72,12 @@ class FragmentX : PerceptionFragment() {
      * AppbarLayout的父层布局
      */
     var appbarLayoutParent: ViewGroup? = null
+
+    /**
+     * Appbar布局
+     * 可给它设定背景来改变标题栏背景
+     */
+    var appbarLayout: AppBarLayout? = null
 
     /**
      * 可伸展的Appbar布局
@@ -106,10 +114,10 @@ class FragmentX : PerceptionFragment() {
      */
     private fun initAppbar() {
         appbarLayoutParent = findViewById(R.id.appbarLayoutParent)
+        appbarLayout = appbarLayoutParent?.findViewById(R.id.appbarLayout)
         appbarLayoutParent?.let { parent ->
-            toolbar = findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
-            collapsingToolbarLayout =
-                findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
+            toolbar = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            collapsingToolbarLayout = appbarLayoutParent?.findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
             windowInsets?.observe(this, Observer { windowInsetsCompat ->
                 parent.layoutParams?.let { lp ->
                     if (lp is ViewGroup.MarginLayoutParams) {
@@ -122,14 +130,20 @@ class FragmentX : PerceptionFragment() {
             })
 
             if (toolbar != null && toolbar?.parent is AppBarLayout) { //只对appbar中的toolbar操作
+                toolbar?.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
+
                 toolbarTitle = toolbar?.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
+                toolbarTitle?.apply {
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.toolbar_title_text_size).toFloat())
+                    setTextColor(ResourcesCompat.getColor(resources, R.color.appbarTitleColor, activityX?.theme))
+                }
 
                 activityX?.setSupportActionBar(toolbar) //需要这一步，否则菜单可能设置不上
                 //清空Android原有的标题
                 toolbar?.title = ""
                 activityX?.title = ""
 
-                val appbarTitleColor = ResourcesCompat.getColor(resources, R.color.appbar_title_color, activityX?.theme)
+                val appbarTitleColor = ResourcesCompat.getColor(resources, R.color.appbarTitleColor, activityX?.theme)
                 toolbar?.apply {
                     setTitleTextColor(appbarTitleColor)
                     setSubtitleTextColor(appbarTitleColor)

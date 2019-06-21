@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme666" parent="Theme666Base23" />
+
+    <style name="Theme666Base23" parent="Theme666Base21">
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+    <style name="Theme666.AppBarOverlay" parent="Theme666Base23.AppBarOverlay" />
+
+    <style name="Theme666Base23.AppBarOverlay" parent="Theme666Base21.AppBarOverlay" />
+
+    <style name="Theme666Base.ActionMode" parent="Theme666Base23.ActionMode" />
+
+    <style name="Theme666Base23.ActionMode" parent="Theme666Base21.ActionMode" />
+
+    <style name="Theme666Base.ActionMode.CloseStyle" parent="Theme666Base23.ActionMode.CloseStyle" />
+
+    <style name="Theme666Base23.ActionMode.CloseStyle" parent="Theme666Base21.ActionMode.CloseStyle" />
+
+    <style name="Theme666Base.ToolbarPopupTheme" parent="@style/Theme666Base23.ToolbarPopupTheme" />
+
+    <style name="Theme666Base23.ToolbarPopupTheme" parent="@style/Theme666Base21.ToolbarPopupTheme" />
+</resources>

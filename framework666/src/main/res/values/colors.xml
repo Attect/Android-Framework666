@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--region Theme色彩-->
+    <color name="colorPrimary">@color/blue_600</color>
+    <color name="colorPrimaryDark">@color/blue_800</color>
+    <color name="colorAccent">@color/red_700</color>
+    <color name="actionMenuTextColor">@color/red_700</color>
+    <!--Appbar上文字和组件的颜色-->
+    <color name="appbarTitleColor">@color/white</color>
+    <!--endregion-->
+
+
+    <!--下方为颜色具体定义-->
     <!--基本白色-->
     <color name="white">#FFFFFF</color>
     <!--基本黑色-->
@@ -26,8 +38,6 @@
     <!--由白色产生的透明-->
     <color name="transparent_white">#00FFFFFF</color>
 
-    <!--Appbar上文字和组件的颜色-->
-    <color name="appbar_title_color">@color/white</color>
 
     <!--用于覆盖在深色上的浅色-->
     <color name="cover_white">@color/white</color>

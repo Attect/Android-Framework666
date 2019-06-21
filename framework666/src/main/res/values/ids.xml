@@ -3,6 +3,9 @@
     <!--如果布局拥有Appbar，那么AppbarLayout的复层一定要使用此id-->
     <item name="appbarLayoutParent" type="id"/>
 
+    <!--布局的Appbar-->
+    <item name="appbarLayout" type="id" />
+
     <!--如果布局拥有Appbar，且内部使用滑动变动高度效果，那么CollapsingToolbarLayout一定要使用此id-->
     <item name="collapsingToolbarLayout" type="id"/>
 

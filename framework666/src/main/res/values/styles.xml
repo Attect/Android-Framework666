@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--框架默认以明亮色彩主题来配置-->
+    <!--提供一些默认可用的，可用可不用-->
+    <style name="Theme666" parent="Theme666Base" />
+
+    <style name="Theme666Base" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+
+        <item name="actionModeStyle">@style/Theme666.ActionMode</item>
+        <item name="actionModeCloseButtonStyle">@style/Theme666.ActionMode.CloseStyle</item>
+        <item name="actionModeBackground">@color/colorPrimary</item>
+    </style>
+
+
+    <style name="Theme666.AppBarOverlay" parent="Theme666Base.AppBarOverlay" />
+
+    <style name="Theme666Base.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <!--底部无阴影-->
+        <item name="elevation">0dp</item>
+    </style>
+
+
+    <!--ActionMode的高度与自定义Appbar高度保持一致-->
+    <style name="Theme666.ActionMode" parent="Theme666Base.ActionMode" />
+
+    <style name="Theme666Base.ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="height">@dimen/toolbar_height</item>
+    </style>
+
+
+    <!--调整ActionMode左侧返回箭头样式-->
+    <style name="Theme666.ActionMode.CloseStyle" parent="Theme666Base.ActionMode.CloseStyle" />
+
+    <style name="Theme666Base.ActionMode.CloseStyle" parent="Widget.AppCompat.ActionButton.CloseMode">
+        <!--黑白图标在此调整-->
+        <item name="android:tint">@color/white</item>
+        <item name="android:layout_marginStart">2dp</item>
+    </style>
+
+
+    <!-- toolbar弹出菜单样式:切换黑底白字还是白底黑字由parent决定 -->
+    <style name="Theme666.ToolbarPopupTheme" parent="@style/Theme666Base.ToolbarPopupTheme" />
+
+    <style name="Theme666Base.ToolbarPopupTheme" parent="@style/ThemeOverlay.AppCompat.Light">
+
+    </style>
+
+
+</resources>

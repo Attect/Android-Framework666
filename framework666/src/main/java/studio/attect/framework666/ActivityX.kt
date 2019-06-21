@@ -5,10 +5,8 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.util.TypedValue
+import android.view.*
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
@@ -68,6 +66,12 @@ abstract class ActivityX : PerceptionActivity() {
     var appbarLayoutParent: ViewGroup? = null
 
     /**
+     * Appbar布局
+     * 可给它设定背景来改变标题栏背景
+     */
+    var appbarLayout: AppBarLayout? = null
+
+    /**
      * 可伸展的Appbar布局
      */
     var collapsingToolbarLayout: CollapsingToolbarLayout? = null
@@ -85,12 +89,15 @@ abstract class ActivityX : PerceptionActivity() {
      */
     private var windowInsetsWatchingView: View? = null
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         SignalViewModel.newInstance(this)?.let { signalViewModel = it }
         commonEventViewModel = getViewModel(CommonEventViewModel::class.java)
         WindowInsetsViewModel.newInstance(this)?.let { windowInsetsViewModel = it }
+
+        transparentStatusBar(true) //如果想改变默认颜色，无需删掉这个，可以直接再调用一次传入不同的参数
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -177,10 +184,10 @@ abstract class ActivityX : PerceptionActivity() {
      */
     private fun initAppbar() {
         appbarLayoutParent = findViewById(R.id.appbarLayoutParent)
+        appbarLayout = appbarLayoutParent?.findViewById(R.id.appbarLayout)
         appbarLayoutParent?.let { parent ->
-            toolbar = findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
-            collapsingToolbarLayout =
-                findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
+            toolbar = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            collapsingToolbarLayout = appbarLayoutParent?.findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
             windowInsets.observe(this, Observer { windowInsetsCompat ->
                 parent.layoutParams?.let { lp ->
                     if (lp is ViewGroup.MarginLayoutParams) {
@@ -193,14 +200,21 @@ abstract class ActivityX : PerceptionActivity() {
             })
 
             if (toolbar != null && toolbar?.parent is AppBarLayout) { //只对appbar中的toolbar操作
+                toolbar?.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
+
                 toolbarTitle = toolbar?.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
+                toolbarTitle?.apply {
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.toolbar_title_text_size).toFloat())
+                    setTextColor(ResourcesCompat.getColor(resources, R.color.appbarTitleColor, theme))
+                }
+
 
                 setSupportActionBar(toolbar)
                 //清空Android原有的标题
                 toolbar?.title = ""
                 super.setTitle("")
 
-                val appbarTitleColor = ResourcesCompat.getColor(resources, R.color.appbar_title_color, theme)
+                val appbarTitleColor = ResourcesCompat.getColor(resources, R.color.appbarTitleColor, theme)
                 toolbar?.apply {
                     setTitleTextColor(appbarTitleColor)
                     setSubtitleTextColor(appbarTitleColor)

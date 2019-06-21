@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme666" parent="Theme666Base21" />
+
+    <style name="Theme666Base21" parent="Theme666Base">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme666.AppBarOverlay" parent="Theme666Base21.AppBarOverlay" />
+
+    <style name="Theme666Base21.AppBarOverlay" parent="Theme666Base.AppBarOverlay" />
+
+    <style name="Theme666Base.ActionMode" parent="Theme666Base21.ActionMode" />
+
+    <style name="Theme666Base21.ActionMode" parent="Theme666Base.ActionMode" />
+
+    <style name="Theme666Base.ActionMode.CloseStyle" parent="Theme666Base21.ActionMode.CloseStyle" />
+
+    <style name="Theme666Base21.ActionMode.CloseStyle" parent="Theme666Base.ActionMode.CloseStyle" />
+
+    <style name="Theme666Base.ToolbarPopupTheme" parent="@style/Theme666Base21.ToolbarPopupTheme" />
+
+    <style name="Theme666Base21.ToolbarPopupTheme" parent="@style/Theme666Base.ToolbarPopupTheme" />
+</resources>
