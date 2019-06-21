@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 28
@@ -22,6 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 
 }
 
@@ -34,6 +38,7 @@ dependencies {
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.core:core-ktx:$core_ktx_version"
+    implementation "com.google.android.material:material:${material_version}"
     implementation project(path: ':staticviewmodelstore')
     implementation project(path: ':sneaker')
     implementation project(path: ':websocketservice')
@@ -51,9 +56,14 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime:$lifecycle_runtime_version"
 
     // alternately - if using Java8, use the following instead of compiler
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_common_java8_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${lifecycle_common_java8_version}"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_viewModel_version"
+
+    /**
+     *  为权限动态申请提供方便
+     */
+    implementation "pub.devrel:easypermissions:${easy_permissions_version}"
 
 }
 repositories {

@@ -1,10 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--基本白色-->
     <color name="white">#FFFFFF</color>
+    <!--基本黑色-->
     <color name="black">#000000</color>
 
+    <!--半透明白色-->
+    <color name="white_half_trans">#88ffffff</color>
+
+    <!--半透明黑色-深色-->
+    <color name="black_half_trans_dark">#AA000000</color>
+
+    <!--半透明黑色-->
+    <color name="black_half_trans">#88000000</color>
+
+    <!--半透明黑色-浅色-->
+    <color name="black_half_trans_light">#66000000</color>
+
+    <!--半透明黑色-更浅色-->
+    <color name="black_half_trans_light_light">#33000000</color>
+
+    <!--由黑色产生的透明-->
+    <color name="transparent_black">#00000000</color>
+
+    <!--由白色产生的透明-->
+    <color name="transparent_white">#00FFFFFF</color>
+
+    <!--Appbar上文字和组件的颜色-->
+    <color name="appbar_title_color">@color/white</color>
+
+    <!--用于覆盖在深色上的浅色-->
     <color name="cover_white">@color/white</color>
+
+    <!--用于覆盖在浅色上的深色-->
     <color name="cover_black">@color/black</color>
+
+    <color name="collapsing_toolbar_layout_content_scrim">@color/white</color>
+
+    <color name="collapsing_toolbar_layout_expanded_title">@color/white_half_trans</color>
 
     <!--region 红色-->
     <!--https://www.materialpalette.com/colors-->

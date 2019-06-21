@@ -1,14 +1,30 @@
 package studio.attect.framework666
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.Toolbar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import pub.devrel.easypermissions.EasyPermissions
 import studio.attect.framework666.activity.PerceptionActivity
-import studio.attect.framework666.extensions.getViewModel
-import studio.attect.framework666.extensions.rootView
+import studio.attect.framework666.extensions.*
+import studio.attect.framework666.magicChange.flymeSetStatusBarLightMode
+import studio.attect.framework666.magicChange.miUISetStatusBarLightMode
 import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.framework666.viewModel.WindowInsetsViewModel
@@ -25,15 +41,40 @@ abstract class ActivityX : PerceptionActivity() {
     val applicationX = application as ApplicationX
 
     //region ViewModel
-    lateinit var signalViewModel: SignalViewModel
-        private set
+    private lateinit var signalViewModel: SignalViewModel
 
-    lateinit var commonEventViewModel: CommonEventViewModel
-        private set
+    val signal: MutableLiveData<Int>
+        get() = signalViewModel.signal
 
-    lateinit var windowInsetsViewModel: WindowInsetsViewModel
-        private set
+    private lateinit var commonEventViewModel: CommonEventViewModel
 
+    val commonEvent: MutableLiveData<Int>
+        get() = commonEventViewModel.event
+
+    private lateinit var windowInsetsViewModel: WindowInsetsViewModel
+
+    val windowInsets: MutableLiveData<WindowInsetsCompat>
+        get() = windowInsetsViewModel.windowInsetsCompatMutableLiveData
+
+    //endregion
+
+    //region 约定布局
+    /**
+     * AppbarLayout的父层布局
+     */
+    var appbarLayoutParent: ViewGroup? = null
+
+    /**
+     * 可伸展的Appbar布局
+     */
+    var collapsingToolbarLayout: CollapsingToolbarLayout? = null
+
+    /**
+     * 标题、导航控制、菜单等组件的容器
+     */
+    var toolbar: Toolbar? = null
+
+    var toolbarTitle: AppCompatTextView? = null
     //endregion
 
     /**
@@ -53,6 +94,59 @@ abstract class ActivityX : PerceptionActivity() {
         watchWindowInsetsChange(rootView)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            // 默认响应Appbar左侧返回箭头
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        initAppbar()
+    }
+
+    override fun setContentView(view: View?) {
+        super.setContentView(view)
+        initAppbar()
+    }
+
+    override fun setContentView(view: View?, params: ViewGroup.LayoutParams?) {
+        super.setContentView(view, params)
+        initAppbar()
+    }
+
+    override fun setTitle(title: CharSequence?) {
+        super.setTitle(title)
+        collapsingToolbarLayout?.title = title
+        if (toolbarTitle != null) {
+            toolbarTitle?.text = title
+        } else {
+            super.setTitle(title)
+        }
+    }
+
+    override fun setTitle(@StringRes resId: Int) {
+        super.setTitle(resId)
+        collapsingToolbarLayout?.title = getString(resId)
+        if (toolbarTitle != null) {
+            toolbarTitle?.setText(resId)
+        } else {
+            super.setTitle(resId)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        //使用EasyPermission进行权限处理
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
     /**
      * 通过一个View来监听屏幕安全区域的变化
      * 可以判断到状态栏/屏幕缺口/虚拟键盘等区域
@@ -69,21 +163,137 @@ abstract class ActivityX : PerceptionActivity() {
             }
             windowInsetsWatchingView = view
             ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-                windowInsetsViewModel.windowInsetsCompatMutableLiveData?.value = insets
+                windowInsets.value = insets
                 insets //不消费
             }
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            // 默认响应Appbar左侧返回箭头
-            android.R.id.home -> {
-                onBackPressed()
-                return true
+    /**
+     * 初始化约定结构的Appbar
+     * 固定Toolbar和伸缩两种
+     * 在setContentView后自动调用
+     */
+    private fun initAppbar() {
+        appbarLayoutParent = findViewById(R.id.appbarLayoutParent)
+        appbarLayoutParent?.let { parent ->
+            toolbar = findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            collapsingToolbarLayout =
+                findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
+            windowInsets.observe(this, Observer { windowInsetsCompat ->
+                parent.layoutParams?.let { lp ->
+                    if (lp is ViewGroup.MarginLayoutParams) {
+                        lp.leftMargin = windowInsetsCompat.currentSafeLeft
+                        if (toolbar == null) lp.topMargin = windowInsetsCompat.currentSafeTop
+                        lp.rightMargin = windowInsetsCompat.currentSafeRight
+                        lp.bottomMargin = windowInsetsCompat.currentSafeBottom
+                    }
+                }
+            })
+
+            if (toolbar != null && toolbar?.parent is AppBarLayout) { //只对appbar中的toolbar操作
+                toolbarTitle = toolbar?.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
+
+                setSupportActionBar(toolbar)
+                //清空Android原有的标题
+                toolbar?.title = ""
+                super.setTitle("")
+
+                val appbarTitleColor = ResourcesCompat.getColor(resources, R.color.appbar_title_color, theme)
+                toolbar?.apply {
+                    setTitleTextColor(appbarTitleColor)
+                    setSubtitleTextColor(appbarTitleColor)
+                }
+
+                windowInsets.observe(this, Observer { windowInsetsCompat ->
+                    toolbar?.layoutParams?.let { lp ->
+                        if (lp is ViewGroup.MarginLayoutParams) {
+                            lp.topMargin = windowInsetsCompat.currentSafeTop
+                        }
+                    }
+                })
             }
+
+            if (collapsingToolbarLayout != null && collapsingToolbarLayout?.parent is CoordinatorLayout) {
+                collapsingToolbarLayout?.apply {
+                    setContentScrimColor(
+                        ResourcesCompat.getColor(
+                            resources,
+                            R.color.collapsing_toolbar_layout_content_scrim,
+                            theme
+                        )
+                    )
+                    setExpandedTitleColor(
+                        ResourcesCompat.getColor(
+                            resources,
+                            R.color.collapsing_toolbar_layout_expanded_title,
+                            theme
+                        )
+                    )
+                    title = ""
+                }
+                windowInsets.observe(this, Observer { windowInsetsCompat ->
+                    collapsingToolbarLayout?.layoutParams?.let { lp ->
+                        if (lp is ViewGroup.MarginLayoutParams) {
+                            lp.topMargin = windowInsetsCompat.currentSafeTop
+                        }
+                    }
+                })
+
+            }
+
         }
-        return super.onOptionsItemSelected(item)
+    }
+
+    /**
+     * 在Appbar上显示返回箭头
+     * 事件已经默认设定好
+     * 需要在 setContentView 后调用
+     */
+    fun showBackArrow() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    /**
+     * 设置状态栏的颜色
+     * 如果是Android LOLLIPOP以下，则没有效果
+     *
+     * @param color 色彩int值，非资源id
+     */
+    fun setStatusBarColor(@ColorInt color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val window = window
+            //这一步最好要做，因为如果这两个flag没有清除的话下面没有生效
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+
+            getWindow().statusBarColor = color
+        }
+    }
+
+    /**
+     * 设置状态栏为透明
+     * 一些版本的操作系统不支持图标明暗风格变更
+     * 使用此框架默认全局都为透明状态栏，不透明效果自己进行伪实现(滑稽)
+     *
+     * @param lightIconStyle 图标明暗风格,true图标为白色
+     */
+    @JvmOverloads
+    fun transparentStatusBar(lightIconStyle: Boolean = true) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                window.statusBarColor = Color.TRANSPARENT
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !lightIconStyle) {
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+
+        }
+        miUISetStatusBarLightMode(this.window, !lightIconStyle)
+        flymeSetStatusBarLightMode(this.window, !lightIconStyle)
     }
 
 }
