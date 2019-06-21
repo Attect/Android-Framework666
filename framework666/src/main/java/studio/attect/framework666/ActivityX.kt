@@ -39,7 +39,9 @@ import studio.attect.framework666.viewModel.WindowInsetsViewModel
  */
 abstract class ActivityX : PerceptionActivity() {
 
-    val applicationX = application as ApplicationX
+    val applicationX by lazy {
+        application as ApplicationX
+    }
 
     //region ViewModel
     private lateinit var signalViewModel: SignalViewModel
