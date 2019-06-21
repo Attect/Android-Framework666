@@ -15,11 +15,14 @@ import kotlin.collections.HashMap
 
 /**
  * 提供用户感知的Fragment
- * 提示音、振动、TTS语音
+ * 提示音、振动、TTS语音（仅处理中文）
  *
  * @author Attect
  */
 abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), PerceptionComponent {
+    /**
+     * 给用户一个振动反馈
+     */
     override fun vibrator(level: PerceptionComponent.VibratorLevel) {
         when (level) {
             PerceptionComponent.VibratorLevel.LIGHT -> Rumble.makePattern().beat(10).playPattern()
@@ -30,6 +33,11 @@ abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), Percepti
         }
     }
 
+    /**
+     * 通过tts引擎生成语音播放给用户
+     * 以铃声通道
+     * 此段代码仅处理中文
+     */
     override fun speakText(text: String) {
         context?.let { mContext ->
             var textToSpeech: TextToSpeech? = null
@@ -62,6 +70,9 @@ abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), Percepti
 
     }
 
+    /**
+     * 响一声系统通知音
+     */
     override fun makeNotificationSound() {
         context?.let { mContext ->
             val notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -71,6 +82,9 @@ abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), Percepti
 
     }
 
+    /**
+     * 顶部覆盖Appbar给用户一个醒目的提示
+     */
     override fun showTopNotify(
         felling: PerceptionComponent.NotifyFelling,
         title: String,
