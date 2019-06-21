@@ -18,7 +18,7 @@ import studio.attect.staticviewmodelstore.StaticViewModelStore
  * @author attect
  */
 class WindowInsetsViewModel : ViewModel() {
-    var windowInsetsCompatMutableLiveData: MutableLiveData<WindowInsetsCompat>? = MutableLiveData()
+    var windowInsetsCompatMutableLiveData: MutableLiveData<WindowInsetsCompat> = MutableLiveData()
 
     companion object {
         private const val STORE_KEY = "windowInsets"

@@ -13,11 +13,10 @@ import kotlin.math.sign
  */
 class SignalViewModel : ViewModel() {
 
-    private val signal = MutableLiveData<Int>()
-
-    public fun getSignal(): MutableLiveData<Int> {
-        if (signal.value == null) signal.value = NOTING
-        return signal
+    val signal = MutableLiveData<Int>()
+        get() {
+            if (field.value == null) field.value = NOTING
+            return field
     }
 
     companion object {

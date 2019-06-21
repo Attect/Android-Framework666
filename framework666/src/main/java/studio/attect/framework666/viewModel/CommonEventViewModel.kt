@@ -12,13 +12,12 @@ import androidx.lifecycle.ViewModel
  */
 class CommonEventViewModel : ViewModel() {
 
-    private val event = MutableLiveData<Int>()
-
-
-    fun getEvent(): MutableLiveData<Int> {
-        if (event.value == null) event.value = NONE
-        return event
+    val event = MutableLiveData<Int>()
+        get() {
+            if (field.value == null) field.value = NONE
+            return field
     }
+
 
     companion object {
 
