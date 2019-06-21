@@ -67,7 +67,6 @@ abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), Percepti
                 }
             })
         }
-
     }
 
     /**
@@ -79,7 +78,6 @@ abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), Percepti
             val ringtone = RingtoneManager.getRingtone(mContext, notificationSound)
             ringtone.play()
         }
-
     }
 
     /**

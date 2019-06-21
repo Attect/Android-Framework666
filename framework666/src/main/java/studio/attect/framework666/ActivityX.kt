@@ -1,5 +1,6 @@
 package studio.attect.framework666
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -121,7 +122,6 @@ abstract class ActivityX : PerceptionActivity() {
     }
 
     override fun setTitle(title: CharSequence?) {
-        super.setTitle(title)
         collapsingToolbarLayout?.title = title
         if (toolbarTitle != null) {
             toolbarTitle?.text = title
@@ -131,7 +131,6 @@ abstract class ActivityX : PerceptionActivity() {
     }
 
     override fun setTitle(@StringRes resId: Int) {
-        super.setTitle(resId)
         collapsingToolbarLayout?.title = getString(resId)
         if (toolbarTitle != null) {
             toolbarTitle?.setText(resId)
@@ -239,61 +238,8 @@ abstract class ActivityX : PerceptionActivity() {
                         }
                     }
                 })
-
             }
-
         }
-    }
-
-    /**
-     * 在Appbar上显示返回箭头
-     * 事件已经默认设定好
-     * 需要在 setContentView 后调用
-     */
-    fun showBackArrow() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
-
-    /**
-     * 设置状态栏的颜色
-     * 如果是Android LOLLIPOP以下，则没有效果
-     *
-     * @param color 色彩int值，非资源id
-     */
-    fun setStatusBarColor(@ColorInt color: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window = window
-            //这一步最好要做，因为如果这两个flag没有清除的话下面没有生效
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-
-            getWindow().statusBarColor = color
-        }
-    }
-
-    /**
-     * 设置状态栏为透明
-     * 一些版本的操作系统不支持图标明暗风格变更
-     * 使用此框架默认全局都为透明状态栏，不透明效果自己进行伪实现(滑稽)
-     *
-     * @param lightIconStyle 图标明暗风格,true图标为白色
-     */
-    @JvmOverloads
-    fun transparentStatusBar(lightIconStyle: Boolean = true) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                window.statusBarColor = Color.TRANSPARENT
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !lightIconStyle) {
-            window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-
-        }
-        miUISetStatusBarLightMode(this.window, !lightIconStyle)
-        flymeSetStatusBarLightMode(this.window, !lightIconStyle)
     }
 
 }

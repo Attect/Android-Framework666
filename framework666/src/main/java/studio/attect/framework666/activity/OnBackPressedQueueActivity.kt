@@ -11,6 +11,9 @@ import studio.attect.staticviewmodelstore.StaticViewModelLifecycleActivity
 abstract class OnBackPressedQueueActivity : StaticViewModelLifecycleActivity() {
     private val onBackPressQueue = arrayListOf<OnBackPressedCallback>()
 
+    /**
+     * 插入Activity原有返回处理逻辑
+     */
     override fun onBackPressed() {
         onBackPressQueue.reversed().forEach {
             if (it.handleOnBackPressed()) return
@@ -18,6 +21,10 @@ abstract class OnBackPressedQueueActivity : StaticViewModelLifecycleActivity() {
         super.onBackPressed()
     }
 
+    /**
+     * 如果需要自己调用返回事件，调用此方法
+     * @return true:返回事件被处理，不再继续
+     */
     fun runOnBackPressedQueue(): Boolean {
         onBackPressQueue.reversed().forEach {
             if (it.handleOnBackPressed()) return true
