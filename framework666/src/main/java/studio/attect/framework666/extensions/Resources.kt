@@ -2,6 +2,11 @@ package studio.attect.framework666.extensions
 
 import android.content.res.Resources
 import android.util.TypedValue
+import androidx.annotation.RawRes
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.lang.StringBuilder
 import kotlin.math.roundToInt
 
 /**
@@ -100,4 +105,30 @@ fun Resources.mm2px(mm: Float): Int {
  */
 fun Resources.px2mm(px: Int): Float {
     return px / (displayMetrics.xdpi * (1.0f / 25.4f))
+}
+
+/**
+ * 从raw资源中读取一个字符串数据文件
+ *
+ * @param id 资源id
+ * @return
+ */
+fun Resources.getRawText(@RawRes id: Int): String {
+    val inputStream = openRawResource(id)
+    val reader = BufferedReader(InputStreamReader(inputStream))
+    val stringBuilder = StringBuilder()
+    try {
+        reader.readLines().forEach {
+            stringBuilder.append(it)
+        }
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } finally {
+        try {
+            reader.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+    return stringBuilder.toString()
 }
