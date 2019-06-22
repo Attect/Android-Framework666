@@ -1,8 +1,6 @@
 package studio.attect.framework666
 
-import android.os.Bundle
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.MenuItem
 import android.view.ViewGroup
 import androidx.annotation.StringRes
