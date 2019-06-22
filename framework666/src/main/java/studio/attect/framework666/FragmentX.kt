@@ -1,7 +1,10 @@
 package studio.attect.framework666
 
+import android.content.Context
+import android.os.Bundle
 import android.util.TypedValue
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
@@ -9,10 +12,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import studio.attect.framework666.compomentX.ComponentX
+import studio.attect.framework666.compomentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.PerceptionFragment
 
@@ -23,7 +29,8 @@ import studio.attect.framework666.fragment.PerceptionFragment
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-class FragmentX : PerceptionFragment() {
+class FragmentX : PerceptionFragment(), ComponentX {
+
     val applicationX: ApplicationX? = null
         get() {
             if (field == null) {
@@ -90,6 +97,17 @@ class FragmentX : PerceptionFragment() {
     var toolbarTitle: AppCompatTextView? = null
     //endregion
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initAppbar()
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        getContainerX()?.let {
+            if (it.shouldShowBackAllow()) showBackArrow()
+        }
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -102,6 +120,22 @@ class FragmentX : PerceptionFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun getComponentXFragmentInstance(navArguments: Bundle?): Fragment = this
+
+    override fun getIconResource(): Int = android.R.drawable.btn_star //默认给个星星吧
+
+    override fun getName(context: Context?): String = ""
+
+    override fun getContainerX(): ContainerX? {
+        var pf = parentFragment
+        do {
+            if (pf != null && pf is ContainerX) return pf
+            pf = pf?.parentFragment
+        } while (pf != null)
+        if (activity != null && activity is ContainerX) return activity as ContainerX
+        return null
     }
 
     /**

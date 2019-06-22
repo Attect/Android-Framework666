@@ -41,4 +41,7 @@ dependencies {
      */
     implementation "pub.devrel:easypermissions:${easy_permissions_version}"
 
+
+    implementation "androidx.navigation:navigation-fragment:${navigation_fragment_version}"
+
 }

@@ -14,6 +14,7 @@ buildscript {
     ext.runner_version = '1.2.0'
     ext.material_version = '1.0.0'
     ext.easy_permissions_version = "3.0.0"
+    ext.navigation_fragment_version = "2.0.0"
 
     //androidx.lifecycle
     ext.lifecycle_extensions_version = "2.0.0"

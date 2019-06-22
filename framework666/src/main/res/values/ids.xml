@@ -14,4 +14,7 @@
 
     <!--在Toolbar中负责显示title的TextView的id-->
     <item name="toolbarTitle" type="id"/>
+
+    <!--ComponentX容器View的id-->
+    <item name="componentXContainer" type="id" />
 </resources>
