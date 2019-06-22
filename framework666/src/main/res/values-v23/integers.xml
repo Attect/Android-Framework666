@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Activity水平左右进入移出动画时长-->
+    <integer name="ui_anim_horizon_duration">250</integer>
+    <!--Activity渐变进入出现动画时长-->
+    <integer name="ui_anim_fade_duration">200</integer>
+</resources>

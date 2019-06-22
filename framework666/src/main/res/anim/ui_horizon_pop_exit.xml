@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?><!--Activity 水平从左向右移除动画-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="false"
+    android:duration="@integer/ui_anim_horizon_duration">
+    <translate
+        android:fromXDelta="0%"
+        android:fromYDelta="0%"
+        android:toXDelta="100%"
+        android:toYDelta="0%" />
+</set>
