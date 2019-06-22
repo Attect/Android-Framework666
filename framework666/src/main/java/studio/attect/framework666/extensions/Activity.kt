@@ -1,14 +1,19 @@
 package studio.attect.framework666.extensions
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.annotation.ColorInt
+import androidx.core.content.FileProvider
+import studio.attect.framework666.BuildConfig
 import studio.attect.framework666.magicChange.flymeSetStatusBarLightMode
 import studio.attect.framework666.magicChange.miUISetStatusBarLightMode
+import java.io.File
 
 val Activity.rootView: View
     get() {
@@ -57,4 +62,28 @@ fun Activity.transparentStatusBar(lightIconStyle: Boolean = true) {
     }
     miUISetStatusBarLightMode(this.window, !lightIconStyle)
     flymeSetStatusBarLightMode(this.window, !lightIconStyle)
+}
+
+/**
+ * 安装指定路径的APK
+ * 会弹出系统安装App界面
+ * 一般情况下还会被安全设置所提醒和拦截
+ * 还要确保对应路径有读取权限
+ *
+ * @param path APK的绝对路径
+ */
+fun Activity.installAPK(path: String) {
+    val file = File(path)
+    if (!file.exists() || !file.isFile) return
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val uri: Uri
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        uri = FileProvider.getUriForFile(this, application.packageName + ".file.provider", file)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    } else {
+        uri = Uri.fromFile(file)
+    }
+    intent.setDataAndType(uri, "application/vnd.android.package-archive")
+    startActivity(intent)
 }
