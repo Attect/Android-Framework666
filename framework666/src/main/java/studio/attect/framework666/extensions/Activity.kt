@@ -1,13 +1,16 @@
 package studio.attect.framework666.extensions
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
+import android.os.ResultReceiver
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorInt
 import androidx.core.content.FileProvider
 import studio.attect.framework666.BuildConfig
@@ -86,4 +89,19 @@ fun Activity.installAPK(path: String) {
     }
     intent.setDataAndType(uri, "application/vnd.android.package-archive")
     startActivity(intent)
+}
+
+/**
+ * 隐藏软键盘
+ *
+ * 显示 @see View.showSoftKeyboard
+ * @param flag 0/InputMethodManager.HIDE_IMPLICIT_ONLY/InputMethodManager.HIDE_NOT_ALWAYS
+ * @param receiver android.os.ResultReceiver
+ */
+@JvmOverloads
+fun Activity.hideSoftKeyboard(flag: Int = 0, receiver: ResultReceiver? = null) {
+    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    currentFocus?.let {
+        inputMethodManager.hideSoftInputFromWindow(it.windowToken, flag, receiver)
+    }
 }
