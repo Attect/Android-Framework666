@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Framework666 Demo</string>
+    <string name="normal_activity_description">这就是一个普通的Activity</string>
+    <string name="normal_activity_title">普通的Activity</string>
 </resources>
