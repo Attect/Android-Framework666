@@ -29,7 +29,7 @@ import studio.attect.framework666.fragment.PerceptionFragment
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-class FragmentX : PerceptionFragment(), ComponentX {
+open class FragmentX : PerceptionFragment(), ComponentX {
 
     val applicationX: ApplicationX? = null
         get() {

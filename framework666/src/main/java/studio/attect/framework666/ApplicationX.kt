@@ -12,7 +12,7 @@ import studio.attect.framework666.helper.Rumble
  * @author Attect
  */
 
-class ApplicationX : Application() {
+open class ApplicationX : Application() {
 
     override fun onCreate() {
         super.onCreate()

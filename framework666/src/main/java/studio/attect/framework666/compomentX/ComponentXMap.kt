@@ -1,5 +1,7 @@
 package studio.attect.framework666.compomentX
 
+import studio.attect.framework666.simple.NotFoundComponentX
+
 /**
  * ComponentX的地图
  * 根据String类型的Tag返回对应的ComponentXMaker
@@ -13,7 +15,18 @@ package studio.attect.framework666.compomentX
  * @author Attect
  */
 object ComponentXMap : HashMap<String, ComponentXMaker>() {
-    fun register(componentXMaker: ComponentXMaker) {
+
+    fun mark(componentXMaker: ComponentXMaker) {
         put(componentXMaker.getTag(), componentXMaker)
+    }
+
+    fun go(tag: String?): ComponentXMaker {
+        tag?.let { t ->
+            get(t)?.let {
+                return it
+            }
+        }
+        return NotFoundComponentX.Companion
+
     }
 }
