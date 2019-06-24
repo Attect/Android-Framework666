@@ -5,7 +5,7 @@
     <string name="bug_report_contact">开发者粗心到忘了设置Bug反馈联系方式</string>
 
     <string name="componentx_not_found">功能缺失</string>
-    <string name="componentx_not_found_description">您的设备和操作并没有问题\n\n但此屏幕不应该出现</string>
+    <string name="componentx_not_found_description">您的操作和设备并没有问题\n\n但此屏幕不应该出现在您面前</string>
     <string name="componentx_not_found_suggestion">请联系开发者修复此程序</string>
     <string name="componentx_not_found_information">缺失[%s]组件</string>
 </resources>

@@ -74,5 +74,11 @@ class NotFoundComponentX : FragmentX(), ComponentX {
 
         override fun newInstance(): ComponentX = NotFoundComponentX()
 
+//        fun instanceWithTag(tag:String?):ComponentX{
+//            val componentX = newInstance()
+//            val fragment = componentX.getComponentXFragmentInstance()
+//            fragment.arguments =
+//        }
+
     }
 }

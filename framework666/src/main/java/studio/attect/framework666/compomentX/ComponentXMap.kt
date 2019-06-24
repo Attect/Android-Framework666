@@ -1,5 +1,6 @@
 package studio.attect.framework666.compomentX
 
+import androidx.fragment.app.Fragment
 import studio.attect.framework666.simple.NotFoundComponentX
 import studio.attect.framework666.simple.NotFoundComponentX.Arguments
 
@@ -21,15 +22,27 @@ object ComponentXMap : HashMap<String, ComponentXCompanion>() {
         put(componentXCompanion.getTag(), componentXCompanion)
     }
 
-    fun go(tag: String?): ComponentX {
+    fun detail(tag: String?): ComponentXCompanion {
         tag?.let { t ->
             get(t)?.let {
-                return it.newInstance()
+                return it
             }
         }
-        val componentX = NotFoundComponentX.Companion.newInstance()
+
+        return NotFoundComponentX.Companion
+    }
+
+    fun go(tag: String?): Fragment {
+        tag?.let { t ->
+            get(t)?.let {
+                return it.newInstance().getComponentXFragmentInstance()
+            }
+        }
+        val componentX = NotFoundComponentX.newInstance()
         val arguments = Arguments()
         arguments.tagName = tag ?: "NULL"
-        return componentX
+        val fragment = componentX.getComponentXFragmentInstance()
+        fragment.arguments = arguments.toBundle()
+        return fragment
     }
 }

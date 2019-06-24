@@ -47,4 +47,6 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment:${navigation_fragment_version}"
 
+    implementation "com.google.code.gson:gson:${gson_version}"
+
 }

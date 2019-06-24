@@ -3,6 +3,10 @@ package studio.attect.framework666.demo.fragment
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
@@ -16,6 +20,10 @@ import studio.attect.framework666.demo.R
  * @author Attect
  */
 class NormalComponent : FragmentX(), ComponentX {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.component_normal, container, false)
+    }
 
     companion object : ComponentXCompanion {
         override fun getTag(): String = "normal_component"
