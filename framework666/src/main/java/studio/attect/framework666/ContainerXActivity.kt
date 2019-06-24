@@ -48,7 +48,7 @@ class ContainerXActivity : ActivityX(), ContainerX {
             return
         }
 
-        componentX = ComponentXMap.containerX(tag)
+        componentX = ComponentXMap.go(tag)
 
         if (componentX == null) {
             finish()
