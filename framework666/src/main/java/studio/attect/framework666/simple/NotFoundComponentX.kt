@@ -12,7 +12,7 @@ import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
 import studio.attect.framework666.compomentX.ArgumentX
 import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXMaker
+import studio.attect.framework666.compomentX.ComponentXCompanion
 
 /**
  * ComponentXMap不存在对应目标但又意外调用时返回一个错误提示的ComponentX
@@ -53,7 +53,7 @@ class NotFoundComponentX : FragmentX(), ComponentX {
 
     }
 
-    companion object : ComponentXMaker {
+    companion object : ComponentXCompanion {
 
         override fun getTag(): String = "" //就是这么任性，空字符串就是此ComponentX
 

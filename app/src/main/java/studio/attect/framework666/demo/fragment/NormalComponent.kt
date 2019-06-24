@@ -7,7 +7,7 @@ import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXMaker
+import studio.attect.framework666.compomentX.ComponentXCompanion
 import studio.attect.framework666.demo.R
 
 /**
@@ -17,7 +17,7 @@ import studio.attect.framework666.demo.R
  */
 class NormalComponent : FragmentX(), ComponentX {
 
-    companion object : ComponentXMaker {
+    companion object : ComponentXCompanion {
         override fun getTag(): String = "normal_component"
 
         override fun getIcon(context: Context?): Drawable? {

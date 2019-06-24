@@ -13,7 +13,7 @@ import androidx.annotation.DrawableRes
  *
  * @author Attect
  */
-interface ComponentXMaker {
+interface ComponentXCompanion {
 
     /**
      * 对应ComponentX的tag
