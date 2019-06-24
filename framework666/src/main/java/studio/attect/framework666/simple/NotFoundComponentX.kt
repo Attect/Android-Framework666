@@ -1,10 +1,12 @@
 package studio.attect.framework666.simple
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.not_found_componetx.*
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
@@ -52,9 +54,15 @@ class NotFoundComponentX : FragmentX(), ComponentX {
     }
 
     companion object : ComponentXMaker {
+
         override fun getTag(): String = "" //就是这么任性，空字符串就是此ComponentX
 
-        override fun getIconResource(): Int = android.R.drawable.ic_dialog_alert //默认给一个系统的警告图标
+        override fun getIcon(context: Context?): Drawable? {
+            context?.let {
+                ResourcesCompat.getDrawable(context.resources, android.R.drawable.ic_dialog_alert, context.theme)
+            }
+            return null
+        }
 
 
         override fun getName(context: Context?): String {

@@ -1,6 +1,7 @@
 package studio.attect.framework666.compomentX
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import androidx.annotation.DrawableRes
 
 /**
@@ -20,10 +21,9 @@ interface ComponentXMaker {
     fun getTag(): String
 
     /**
-     * 获得图片资源id
+     * 获得图片Drawable
      */
-    @DrawableRes
-    fun getIconResource(): Int
+    fun getIcon(context: Context?): Drawable?
 
     /**
      * 获得功能名称
