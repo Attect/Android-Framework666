@@ -1,6 +1,7 @@
 package studio.attect.framework666.compomentX
 
 import studio.attect.framework666.simple.NotFoundComponentX
+import studio.attect.framework666.simple.NotFoundComponentX.Arguments
 
 /**
  * ComponentX的地图
@@ -20,13 +21,15 @@ object ComponentXMap : HashMap<String, ComponentXMaker>() {
         put(componentXMaker.getTag(), componentXMaker)
     }
 
-    fun go(tag: String?): ComponentXMaker {
+    fun go(tag: String?): ComponentX {
         tag?.let { t ->
             get(t)?.let {
-                return it
+                return it.newInstance()
             }
         }
-        return NotFoundComponentX.Companion
-
+        val componentX = NotFoundComponentX.Companion.newInstance()
+        val arguments = Arguments()
+        arguments.tagName = tag ?: "NULL"
+        return componentX
     }
 }

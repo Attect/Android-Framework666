@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.not_found_componetx.*
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
+import studio.attect.framework666.compomentX.ArgumentX
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ComponentXMaker
 
@@ -19,6 +21,34 @@ class NotFoundComponentX : FragmentX(), ComponentX {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.not_found_componetx, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val argumentX = Arguments()
+        argumentX.fromBundle(arguments)
+
+        information.text = getString(R.string.componentx_not_found_information).format(argumentX.tagName)
+    }
+
+    class Arguments : ArgumentX {
+        private val TAG = "tag"
+        var tagName = ""
+
+        override fun fromBundle(bundle: Bundle?) {
+            bundle?.let {
+                if (it.containsKey(TAG)) {
+                    tagName = it.getString(TAG, "")
+                }
+            }
+        }
+
+        override fun toBundle(): Bundle {
+            val bundle = Bundle()
+            bundle.putString(TAG, tagName)
+            return bundle
+        }
+
     }
 
     companion object : ComponentXMaker {
