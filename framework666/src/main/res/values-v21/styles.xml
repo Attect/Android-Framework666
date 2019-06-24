@@ -9,7 +9,9 @@
 
     <style name="Theme666.AppBarOverlay" parent="Theme666Base21.AppBarOverlay" />
 
-    <style name="Theme666Base21.AppBarOverlay" parent="Theme666Base.AppBarOverlay" />
+    <style name="Theme666Base21.AppBarOverlay" parent="Theme666Base.AppBarOverlay">
+        <item name="android:elevation">0dp</item>
+    </style>
 
     <style name="Theme666Base.ActionMode" parent="Theme666Base21.ActionMode" />
 
