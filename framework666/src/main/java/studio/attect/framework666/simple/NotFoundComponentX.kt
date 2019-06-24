@@ -19,7 +19,7 @@ import studio.attect.framework666.compomentX.ComponentXCompanion
  *
  * @author Attect
  */
-class NotFoundComponentX : FragmentX(), ComponentX {
+class NotFoundComponentX : FragmentX() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.not_found_componetx, container, false)
@@ -59,7 +59,7 @@ class NotFoundComponentX : FragmentX(), ComponentX {
 
         override fun getIcon(context: Context?): Drawable? {
             context?.let {
-                ResourcesCompat.getDrawable(context.resources, android.R.drawable.ic_dialog_alert, context.theme)
+                ResourcesCompat.getDrawable(context.resources, android.R.drawable.btn_star_big_on, context.theme)
             }
             return null
         }
@@ -73,12 +73,6 @@ class NotFoundComponentX : FragmentX(), ComponentX {
         }
 
         override fun newInstance(): ComponentX = NotFoundComponentX()
-
-//        fun instanceWithTag(tag:String?):ComponentX{
-//            val componentX = newInstance()
-//            val fragment = componentX.getComponentXFragmentInstance()
-//            fragment.arguments =
-//        }
 
     }
 }

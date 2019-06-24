@@ -9,19 +9,16 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import studio.attect.framework666.ActivityX
-import studio.attect.framework666.Logcat
-import studio.attect.framework666.compomentX.ComponentXCompanion
 import studio.attect.framework666.compomentX.ComponentXMap
-import studio.attect.framework666.debug
 import studio.attect.framework666.demo.fragment.NormalComponent
 import studio.attect.framework666.extensions.fromJson
 import studio.attect.framework666.extensions.setStatusBarColor
 
 class MainActivity : ActivityX() {
-    var bottomNavigationTags = arrayListOf<String>()
-    val bottomNavigationViewHolders = arrayListOf<BottomNavigationViewHolder>()
+    private var bottomNavigationTags = arrayListOf<String>()
+    private val bottomNavigationViewHolders = arrayListOf<BottomNavigationViewHolder>()
 
-    var currentComponentTag = ""
+    private var currentComponentTag = ""
 
     private val preference: SharedPreferences by lazy {
         getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -41,11 +38,11 @@ class MainActivity : ActivityX() {
             bottomNavigationTags.addAll(it)
         }
 
-
         if (bottomNavigationTags.size != BOTTOM_NAVIGATION_NUM) {
             bottomNavigationTags.clear()
             bottomNavigationTags.add(NormalComponent.getTag())
-            for (i in 1 until BOTTOM_NAVIGATION_NUM) bottomNavigationTags.add("component_selector_$i")
+            for (i in 1 until BOTTOM_NAVIGATION_NUM - 1) bottomNavigationTags.add("component_selector_$i")
+            bottomNavigationTags.add("TEST_NOT_FOUND")
         }
 
         refreshBottomNavigation()

@@ -8,4 +8,7 @@
     <string name="componentx_not_found_description">您的操作和设备并没有问题\n\n但此屏幕不应该出现在您面前</string>
     <string name="componentx_not_found_suggestion">请联系开发者修复此程序</string>
     <string name="componentx_not_found_information">缺失[%s]组件</string>
+
+    <string name="componentx_explorer">组件浏览</string>
+    <string name="simple_recycler_view_adapter_unprocessed_data">未处理的数据类型[%s] %s</string>
 </resources>
