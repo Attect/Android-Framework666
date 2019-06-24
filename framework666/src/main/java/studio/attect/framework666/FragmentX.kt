@@ -124,10 +124,6 @@ class FragmentX : PerceptionFragment(), ComponentX {
 
     override fun getComponentXFragmentInstance(navArguments: Bundle?): Fragment = this
 
-    override fun getIconResource(): Int = android.R.drawable.btn_star //默认给个星星吧
-
-    override fun getName(context: Context?): String = ""
-
     override fun getContainerX(): ContainerX? {
         var pf = parentFragment
         do {

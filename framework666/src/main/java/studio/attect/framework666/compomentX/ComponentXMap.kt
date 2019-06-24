@@ -2,7 +2,7 @@ package studio.attect.framework666.compomentX
 
 /**
  * ComponentX的地图
- * 根据String类型的Tag返回对应的ComponentX
+ * 根据String类型的Tag返回对应的ComponentXMaker
  * 但也可能找不到
  *
  * 推荐在Application中add（可以称之为注册吧）App拥有的所有
@@ -12,11 +12,8 @@ package studio.attect.framework666.compomentX
  *
  * @author Attect
  */
-object ComponentXMap : HashMap<String, Class<ComponentX>>() {
-    fun containerX(tag: String): ComponentX? {
-        get(tag)?.let {
-            return it.newInstance()
-        }
-        return null
+object ComponentXMap : HashMap<String, ComponentXMaker>() {
+    fun register(componentXMaker: ComponentXMaker) {
+        put(componentXMaker.getTag(), componentXMaker)
     }
 }

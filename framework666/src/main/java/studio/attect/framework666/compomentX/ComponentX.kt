@@ -25,17 +25,6 @@ interface ComponentX {
     fun getComponentXFragmentInstance(navArguments: Bundle? = null): Fragment
 
     /**
-     * 获得图片资源id
-     */
-    @DrawableRes
-    fun getIconResource(): Int
-
-    /**
-     * 获得功能名称
-     */
-    fun getName(context: Context?): String
-
-    /**
      * 获得容器
      * 但也可能不在容器中
      */
