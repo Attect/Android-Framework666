@@ -5,7 +5,15 @@
 
     <string name="normal_component_description">这就是一个普通的组件\n和普通的Activity长得一模一样</string>
     <string name="normal_component_title">普通组件</string>
+    <string name="recycler_view_demo_title">回收视图</string>
 
     <string name="bug_report_contact">到此提issues\nhttps://github.com/Attect/Android-Framework666</string>
+    <string name="reset">重置</string>
+    <string name="add_one_item">添加一项</string>
+    <string name="add_more_items">添加多项</string>
+    <string name="update_one_item">更新一项</string>
+    <string name="update_more_items">更新多项</string>
+    <string name="remove_one_item">移除一项</string>
+    <string name="remove_more_items">移除多项</string>
 
 </resources>

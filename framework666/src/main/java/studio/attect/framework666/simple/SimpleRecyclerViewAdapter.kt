@@ -13,6 +13,7 @@ import androidx.core.util.isNotEmpty
 import androidx.core.util.set
 import androidx.recyclerview.widget.RecyclerView
 import studio.attect.framework666.R
+import studio.attect.framework666.interfaces.UniqueData
 
 /**
  * 让RecyclerView用起来更简单的Adapter
@@ -22,53 +23,32 @@ import studio.attect.framework666.R
  *
  * @author Attect
  */
-class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter.ViewHolder<SimpleRecyclerViewAdapter.SimpleListData<Any>>>() {
+class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter.BasicViewHolder>() {
 
-    /**
-     * 根据不同的类型持有不同ViewHolder的class
-     */
-    private val viewHolderMap = SparseArray<Class<ViewHolder<SimpleListData<Any>>>>()
-
-    /**
-     * 根据不同的类型持有不同的布局资源id
-     */
-    private val layoutMap = SparseIntArray()
+    var viewHolderFactory: ViewHolderFactory? = null
 
     /**
      * 列表所有的数据都在这里
      */
-    private val dataList = ArrayList<SimpleListData<Any>>()
+    private val dataList = ArrayList<SimpleListData>()
 
-    /**
-     * 注册一个类型的ViewHolder（Class）
-     * 与之对应类型的数据将交给其使用
-     */
-    fun registerViewHolder(type: Int = 0, viewHolderClass: Class<ViewHolder<SimpleListData<Any>>>) {
-        viewHolderMap[type] = viewHolderClass
-    }
-
-    /**
-     * 注册一个类型的布局资源
-     */
-    fun registerItemLayout(type: Int = 0, @LayoutRes layoutRes: Int) {
-        layoutMap[type] = layoutRes
-    }
 
     /**
      * 添加一个数据
      *
      * @param data 要加入列表的数据
+     * @param position 要插入的位置，默认为列表末尾
      * @param fake 是否做假操作，可以获取到新数据的位置
      * @return 添加的新数据的位置
      */
     @JvmOverloads
-    fun addData(data: SimpleListData<Any>, fake: Boolean = false): Int {
+    fun addData(data: SimpleListData, position: Int = dataList.size, fake: Boolean = false): Int {
         if (fake) {
-            return dataList.size
+            return position
         }
-        dataList.add(data)
-        notifyItemInserted(dataList.size - 1)
-        return dataList.size - 1
+        dataList.add(position, data)
+        notifyItemInserted(position)
+        return position
     }
 
     /**
@@ -79,14 +59,13 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
      * @return 第一条的位置,null时表示没有任何数据被添加
      */
     @JvmOverloads
-    fun addMoreData(moreData: List<SimpleListData<Any>>, fake: Boolean = false): Int? {
+    fun addMoreData(moreData: List<SimpleListData>, position: Int = dataList.size, fake: Boolean = false): Int? {
         if (moreData.isNotEmpty()) {
-            val newStartPosition = dataList.size
             if (!fake) {
-                dataList.addAll(moreData)
-                notifyItemRangeInserted(newStartPosition, moreData.size)
+                dataList.addAll(position, moreData)
+                notifyItemRangeInserted(position, moreData.size)
             }
-            return newStartPosition
+            return position
         }
         return null
     }
@@ -100,7 +79,7 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
      * @param fake 是否做假操作，可以获得被更新的数据的位置或判断是否有数据被更新
      * @return 更新的数据的位置，如果没有数据被更新则为null
      */
-    fun updateData(data: SimpleListData<Any>, fake: Boolean = false): Int? {
+    fun updateData(data: SimpleListData, fake: Boolean = false): Int? {
         var position = -1;
         dataList.forEachIndexed { index, simpleListData ->
             if (simpleListData.uniqueTag() == data.uniqueTag()) {
@@ -126,8 +105,8 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
      * @param fake 是否做假操作，可以获得最靠前的被更新的数据的位置或判断是否有数据被更新
      * @return 第一条被变更的数据的位置，若没有数据发生变化则返回null
      */
-    fun updateMoreData(moreData: List<SimpleListData<Any>>, fake: Boolean = false): Int? {
-        val replaceData = SparseArray<SimpleListData<Any>>()
+    fun updateMoreData(moreData: List<SimpleListData>, fake: Boolean = false): Int? {
+        val replaceData = SparseArray<SimpleListData>()
         moreData.forEach { newData ->
             dataList.forEachIndexed { index, simpleListData ->
                 if (newData.uniqueTag() == simpleListData.uniqueTag()) {
@@ -157,7 +136,7 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
      * @param fake 是否做假操作，可以获得被删除的数据的位置或判断有没有数据被删除
      * @return 删除的数据的位置，如果没有数据被删除则为null
      */
-    fun removeData(data: SimpleListData<Any>, fake: Boolean = false): Int? {
+    fun removeData(data: SimpleListData, fake: Boolean = false): Int? {
         var position = -1;
         dataList.forEachIndexed { index, simpleListData ->
             if (simpleListData.uniqueTag() == data.uniqueTag()) {
@@ -185,8 +164,8 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
      * @param fake 是否做假操作，可以获得最靠前的被删除的数据的位置或判断是否有数据被删除
      * @return 首条被删除的数据的位置，如果没有数据被删除则为null
      */
-    fun removeMoreData(moreData: List<SimpleListData<Any>>, fake: Boolean = false): Int? {
-        val removeData = SparseArray<SimpleListData<Any>>()
+    fun removeMoreData(moreData: List<SimpleListData>, fake: Boolean = false): Int? {
+        val removeData = SparseArray<SimpleListData>()
         moreData.forEach { removeTarget ->
             dataList.forEachIndexed { index, simpleListData ->
                 if (removeTarget.uniqueTag() == simpleListData.uniqueTag()) {
@@ -213,64 +192,89 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<SimpleListData<Any>> {
-        if (viewHolderMap.containsKey(viewType) && layoutMap.containsKey(viewType)) {
-            return buildViewHolder(LayoutInflater.from(parent.context).inflate(layoutMap[viewType], parent, false), viewHolderMap[viewType])
+    /**
+     * 清空表内容
+     * @return 移除了多少条数据
+     */
+    fun clearData(): Int {
+        val size = dataList.size
+        dataList.clear()
+        notifyItemRangeRemoved(0, size)
+        return size
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicViewHolder {
+        viewHolderFactory?.let { factory ->
+            factory.getViewHolderLayoutResource(viewType)?.let { layout ->
+                factory.createViewHolder(viewType, LayoutInflater.from(parent.context).inflate(layout, parent, false))?.let {
+                    return it
+                }
+            }
         }
         return DefaultViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.recycler_view_unprocessed_data, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder<SimpleListData<Any>>, position: Int) {
-        holder.applyData(dataList[position], position)
+    override fun onBindViewHolder(holderBasic: BasicViewHolder, position: Int) {
+        if (holderBasic is DefaultViewHolder) {
+            holderBasic.applyData(dataList[position], position)
+            return
+        }
+        holderBasic.applyData(dataList[position].data, position)
     }
 
     override fun getItemCount(): Int = dataList.size
 
     override fun getItemViewType(position: Int): Int {
-        if (dataList.size < position) {
+        if (position < dataList.size) {
             return dataList[position].type
         }
         return super.getItemViewType(position)
     }
 
-    abstract class ViewHolder<SimpleListData>(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    abstract class BasicViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         /**
          * 应用数据到View上
          */
-        abstract fun applyData(data: SimpleListData, position: Int)
+        abstract fun applyData(data: Any, position: Int)
     }
 
-    class DefaultViewHolder(itemView: View) : ViewHolder<SimpleListData<Any>>(itemView) {
+    interface ViewHolderFactory {
+
+        @LayoutRes
+        fun getViewHolderLayoutResource(type: Int): Int?
+
+        fun createViewHolder(type: Int, itemView: View): BasicViewHolder?
+    }
+
+
+    class DefaultViewHolder(itemView: View) : BasicViewHolder(itemView) {
         private val textView: AppCompatTextView = itemView.findViewById(R.id.text)
 
-        override fun applyData(data: SimpleListData<Any>, position: Int) {
-            textView.text = itemView.context.getString(R.string.simple_recycler_view_adapter_unprocessed_data).format(data.type, data.uniqueTag());
+        override fun applyData(data: Any, position: Int) {
+            if (data is SimpleListData) {
+                textView.text = itemView.context.getString(R.string.simple_recycler_view_adapter_unprocessed_data).format(data.type, data.uniqueTag());
+            }
         }
 
     }
 
-    abstract class SimpleListData<T>(data: T) {
+    class SimpleListData() {
+        var data: UniqueData = object : UniqueData {
+            override fun uniqueTag(): Any {
+                return Any()
+            }
+        }
+
         /**
          * 数据类型
          * 对应不同类型的ViewHolder
          */
         var type = 0
 
-        /**
-         * 获得数据的唯一tag
-         * 用于更新数据时的比对
-         */
-        abstract fun uniqueTag(): Any
-    }
-
-    companion object {
-        private fun buildViewHolder(view: View, cls: Class<ViewHolder<SimpleListData<Any>>>): ViewHolder<SimpleListData<Any>> {
-            val params = arrayOf(view)
-            val constructor = cls.getConstructor(View::class.java)
-            return constructor.newInstance(params)
-        }
+        fun uniqueTag() = data.uniqueTag()
 
     }
+
 }
 

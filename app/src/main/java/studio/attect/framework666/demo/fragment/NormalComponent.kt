@@ -19,7 +19,7 @@ import studio.attect.framework666.demo.R
  *
  * @author Attect
  */
-class NormalComponent : FragmentX(), ComponentX {
+class NormalComponent : FragmentX() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.component_normal, container, false)
@@ -29,13 +29,16 @@ class NormalComponent : FragmentX(), ComponentX {
         override fun getTag(): String = "normal_component"
 
         override fun getIcon(context: Context?): Drawable? {
-            val builder = MaterialDrawableBuilder.with(context).apply {
-                setIcon(IconValue.ANDROID)
-                setColor(Color.WHITE)
-                setSizeDp(24)
-            }
+            context?.let {
+                val builder = MaterialDrawableBuilder.with(it).apply {
+                    setIcon(IconValue.ANDROID)
+                    setColor(Color.WHITE)
+                    setSizeDp(24)
+                }
 
-            return builder.build()
+                return builder.build()
+            }
+            return null
         }
 
         override fun getName(context: Context?): String {
