@@ -166,8 +166,11 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
             }
         }
         if (position > -1) {
-            dataList.removeAt(position)
-            notifyItemRemoved(position)
+            if (!fake) {
+                dataList.removeAt(position)
+                notifyItemRemoved(position)
+            }
+
             return position
         }
         return null
@@ -193,14 +196,16 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
         }
 
         return if (removeData.isNotEmpty()) {
-            val idList = arrayListOf<Int>()
-            for (i in 0 until removeData.size()) {
-                idList.add(i)
-            }
-            idList.reversed().forEach {
-                //颠倒过来，从后往前删，避免key(position)变动
-                dataList.removeAt(it)
-                notifyItemRemoved(it)
+            if (!fake) {
+                val idList = arrayListOf<Int>()
+                for (i in 0 until removeData.size()) {
+                    idList.add(i)
+                }
+                idList.reversed().forEach {
+                    //颠倒过来，从后往前删，避免key(position)变动
+                    dataList.removeAt(it)
+                    notifyItemRemoved(it)
+                }
             }
             removeData.keyAt(0)
         } else {
