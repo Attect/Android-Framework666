@@ -1,7 +1,9 @@
 package studio.attect.framework666
 
 import android.app.Application
+import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
+import studio.attect.framework666.simple.ComponentXExplorer
 
 /**
  * 综合Application
@@ -19,5 +21,7 @@ open class ApplicationX : Application() {
 
         //振动
         Rumble.init(applicationContext)
+
+        ComponentXMap.mark(ComponentXExplorer.Companion)
     }
 }

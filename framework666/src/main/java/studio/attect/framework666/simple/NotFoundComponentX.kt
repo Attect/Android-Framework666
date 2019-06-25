@@ -59,7 +59,7 @@ class NotFoundComponentX : FragmentX() {
 
         override fun getIcon(context: Context?): Drawable? {
             context?.let {
-                ResourcesCompat.getDrawable(context.resources, android.R.drawable.btn_star_big_on, context.theme)
+                return ResourcesCompat.getDrawable(context.resources, android.R.drawable.ic_menu_help, context.theme)
             }
             return null
         }

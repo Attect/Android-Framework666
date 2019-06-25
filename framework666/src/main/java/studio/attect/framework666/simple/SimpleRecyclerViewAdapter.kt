@@ -247,6 +247,15 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
         fun createViewHolder(type: Int, itemView: View): BasicViewHolder?
     }
 
+    abstract class SimpleViewHolderFactory(val layoutRes: Int) : ViewHolderFactory {
+        override fun getViewHolderLayoutResource(type: Int): Int? = layoutRes
+
+        override fun createViewHolder(type: Int, itemView: View): BasicViewHolder? {
+            return createViewHolder(itemView)
+        }
+
+        abstract fun createViewHolder(itemView: View): BasicViewHolder?
+    }
 
     class DefaultViewHolder(itemView: View) : BasicViewHolder(itemView) {
         private val textView: AppCompatTextView = itemView.findViewById(R.id.text)

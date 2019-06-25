@@ -10,10 +10,12 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import studio.attect.framework666.ActivityX
 import studio.attect.framework666.compomentX.ComponentXMap
+import studio.attect.framework666.debug
 import studio.attect.framework666.demo.fragment.NormalComponent
 import studio.attect.framework666.demo.fragment.RecyclerViewComponent
 import studio.attect.framework666.extensions.fromJson
 import studio.attect.framework666.extensions.setStatusBarColor
+import studio.attect.framework666.simple.ComponentXExplorer
 
 class MainActivity : ActivityX() {
     private var bottomNavigationTags = arrayListOf<String>()
@@ -43,7 +45,8 @@ class MainActivity : ActivityX() {
             bottomNavigationTags.clear()
             bottomNavigationTags.add(NormalComponent.getTag())
             bottomNavigationTags.add(RecyclerViewComponent.getTag())
-            for (i in 2 until BOTTOM_NAVIGATION_NUM - 1) bottomNavigationTags.add("component_selector_$i")
+            for (i in 2 until BOTTOM_NAVIGATION_NUM - 2) bottomNavigationTags.add("component_selector_$i")
+            bottomNavigationTags.add(ComponentXExplorer.getTag())
             bottomNavigationTags.add("TEST_NOT_FOUND")
         }
 
@@ -83,8 +86,19 @@ class MainActivity : ActivityX() {
         bottomNavigationViewHolders.forEach {
             it.setActive(it.tag == tag)
         }
+        val currentFragment = supportFragmentManager.findFragmentByTag(currentComponentTag)
+        val backgroundFragment = supportFragmentManager.findFragmentByTag(tag)
 
-        supportFragmentManager.beginTransaction().replace(R.id.fragmentContainer, ComponentXMap.go(tag)).commit()
+        if (currentFragment != null) {
+            if (backgroundFragment != null) {
+                supportFragmentManager.beginTransaction().hide(currentFragment).show(backgroundFragment).commit()
+            } else {
+                supportFragmentManager.beginTransaction().hide(currentFragment).add(R.id.fragmentContainer, ComponentXMap.go(tag), tag).commit()
+            }
+        } else {
+            supportFragmentManager.beginTransaction().add(R.id.fragmentContainer, ComponentXMap.go(tag), tag).commit()
+        }
+
         currentComponentTag = tag
     }
 
