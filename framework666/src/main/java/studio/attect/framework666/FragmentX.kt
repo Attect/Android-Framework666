@@ -109,6 +109,11 @@ open class FragmentX : PerceptionFragment(), ComponentX {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        toolbar?.setBackArrowColor()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             // 默认响应Appbar左侧返回箭头

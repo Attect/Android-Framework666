@@ -102,6 +102,7 @@ abstract class ActivityX : PerceptionActivity() {
     override fun onStart() {
         super.onStart()
         watchWindowInsetsChange(rootView)
+        toolbar?.setBackArrowColor()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -200,6 +201,7 @@ abstract class ActivityX : PerceptionActivity() {
             })
 
             if (toolbar != null && toolbar?.parent is AppBarLayout) { //只对appbar中的toolbar操作
+                toolbar?.setBackArrowColor()
                 toolbar?.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
 
                 toolbarTitle = toolbar?.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作

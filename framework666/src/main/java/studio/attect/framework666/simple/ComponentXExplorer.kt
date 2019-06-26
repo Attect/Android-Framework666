@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.componentx_explorer.*
+import studio.attect.framework666.ContainerXActivity
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
 import studio.attect.framework666.compomentX.ComponentX
@@ -77,6 +78,9 @@ class ComponentXExplorer : FragmentX() {
             iconView.setImageDrawable(data.componentXCompanion.getIcon(itemView.context))
             titleView.text = data.componentXCompanion.getName(itemView.context)
             tagView.text = data.componentXCompanion.getTag()
+            itemView.setOnClickListener {
+                ContainerXActivity.startActivity(it.context, data.componentXCompanion.getTag())
+            }
         }
     }
 
