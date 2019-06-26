@@ -36,8 +36,11 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
 
 }
+
 repositories {
     mavenCentral()
 }
 
-apply from:"../framework666Dependencies.gradle"
+
+
+apply from: "../framework666Dependencies.gradle"
