@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">framework666</string>
 
+    <string name="share_to">分享到</string>
+
     <!--Bug反馈联系方式，邮箱、微信、QQ等，在自己的项目中覆盖此资源-->
     <string name="bug_report_contact">开发者粗心到忘了设置Bug反馈联系方式</string>
 

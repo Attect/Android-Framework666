@@ -12,8 +12,9 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.core.content.FileProvider
-import studio.attect.framework666.BuildConfig
+import studio.attect.framework666.R
 import studio.attect.framework666.magicChange.flymeSetStatusBarLightMode
 import studio.attect.framework666.magicChange.miUISetStatusBarLightMode
 import java.io.File
@@ -103,5 +104,34 @@ fun Activity.hideSoftKeyboard(flag: Int = 0, receiver: ResultReceiver? = null) {
     val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     currentFocus?.let {
         inputMethodManager.hideSoftInputFromWindow(it.windowToken, flag, receiver)
+    }
+}
+
+/**
+ * 向系统表示要分享一段文字
+ *
+ * @param content 要分享的内容
+ * @param titleRes 分享的标题的文字资源
+ */
+fun Activity.shareTextContent(content: String, @StringRes titleRes: Int = R.string.share_to) {
+    val intent = Intent()
+    intent.action = Intent.ACTION_SEND
+    intent.putExtra(Intent.EXTRA_TEXT, content)
+    intent.type = "text/plain"
+    startActivity(Intent.createChooser(intent, getString(titleRes)))
+}
+
+/**
+ * 启用安全显示
+ * 启用后不可截图、不可被录屏、概览窗口也看不到
+ * 当然，对root后的设备不一定有效
+ *
+ * @param enable 是否启用
+ */
+fun Activity.secureDisplay(enable: Boolean = true) {
+    if (enable) {
+        window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+    } else {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 }
