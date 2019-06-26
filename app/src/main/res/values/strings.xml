@@ -15,5 +15,6 @@
     <string name="update_more_items">更新多项</string>
     <string name="remove_one_item">移除一项</string>
     <string name="remove_more_items">移除多项</string>
+    <string name="remove_all_items">移除所有</string>
 
 </resources>

@@ -70,6 +70,7 @@ class RecyclerViewComponent : FragmentX() {
         updateMore.setOnClickListener { updateMoreData() }
         removeOne.setOnClickListener { removeOneData() }
         removeMore.setOnClickListener { removeMoreData() }
+        removeAll.setOnClickListener { recyclerViewAdapter.clearData() }
 
         resetAllData()
     }
@@ -215,6 +216,7 @@ class RecyclerViewComponent : FragmentX() {
             Toast.makeText(requireContext(), "未删除任何数据", Toast.LENGTH_LONG).show()
         }
     }
+
 
     /**
      * 产生一个随机数据类型

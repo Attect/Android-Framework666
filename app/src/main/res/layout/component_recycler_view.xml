@@ -141,6 +141,16 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/removeAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/remove_all_items"
+                    android:padding="12dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" />
             </LinearLayout>
 
         </HorizontalScrollView>
