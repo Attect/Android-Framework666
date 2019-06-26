@@ -45,47 +45,39 @@ class ComponentXExplorer : FragmentX() {
         val divider = DividerItemDecoration(requireContext(), layoutManager.orientation)
         recyclerView.addItemDecoration(divider)
 
-        recyclerViewAdapter.viewHolderFactory = MyHolderFactory()
+        recyclerViewAdapter.registerViewHolder(R.layout.list_item_compoment, MyViewHolder::class.java)
         recyclerView.adapter = recyclerViewAdapter
 
-        val componentXList = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData>()
+        val componentXList = arrayListOf<ItemData>()
         ComponentXMap.keys.forEach { key ->
             ComponentXMap[key]?.let {
-                val sld = SimpleRecyclerViewAdapter.SimpleListData()
                 val itemData = ItemData()
                 itemData.componentXCompanion = it
-                sld.data = itemData
-                componentXList.add(sld)
+                componentXList.add(itemData)
             }
         }
-        recyclerViewAdapter.addMoreData(componentXList)
+        recyclerViewAdapter.addMoreData(componentXList, R.layout.list_item_compoment)
     }
 
     class ItemData : UniqueData {
-        var componentXCompanion: ComponentXCompanion = Companion
+        lateinit var componentXCompanion: ComponentXCompanion
 
         override fun uniqueTag(): Any = componentXCompanion.getTag()
     }
 
-    class MyHolderFactory : SimpleRecyclerViewAdapter.SimpleViewHolderFactory(R.layout.list_item_compoment) {
-        override fun createViewHolder(itemView: View): SimpleRecyclerViewAdapter.BasicViewHolder? {
-            return object : SimpleRecyclerViewAdapter.BasicViewHolder(itemView) {
-                val iconView = itemView.findViewById<AppCompatImageView>(R.id.icon).apply {
-                    setColorFilter(ResourcesCompat.getColor(itemView.context.resources, R.color.colorPrimary, itemView.context.theme))
-                }
-                val titleView = itemView.findViewById<AppCompatTextView>(R.id.title)
-                val tagView = itemView.findViewById<AppCompatTextView>(R.id.tag)
 
-                override fun applyData(data: Any, position: Int) {
-                    if (data is ItemData) {
-                        iconView.setImageDrawable(data.componentXCompanion.getIcon(itemView.context))
-                        titleView.text = data.componentXCompanion.getName(itemView.context)
-                        tagView.text = data.componentXCompanion.getTag()
-                    }
-                }
-            }
+    class MyViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
+        private val iconView = itemView.findViewById<AppCompatImageView>(R.id.icon).apply {
+            setColorFilter(ResourcesCompat.getColor(itemView.context.resources, R.color.colorPrimary, itemView.context.theme))
         }
+        private val titleView = itemView.findViewById<AppCompatTextView>(R.id.title)
+        private val tagView = itemView.findViewById<AppCompatTextView>(R.id.tag)
 
+        override fun applyData(data: ItemData, position: Int) {
+            iconView.setImageDrawable(data.componentXCompanion.getIcon(itemView.context))
+            titleView.text = data.componentXCompanion.getName(itemView.context)
+            tagView.text = data.componentXCompanion.getTag()
+        }
     }
 
     companion object : ComponentXCompanion {

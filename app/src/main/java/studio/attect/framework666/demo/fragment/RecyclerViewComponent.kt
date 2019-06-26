@@ -54,7 +54,9 @@ class RecyclerViewComponent : FragmentX() {
         val divider = DividerItemDecoration(requireContext(), layoutManager.orientation)
         recyclerView.addItemDecoration(divider)
 
-        recyclerViewAdapter.viewHolderFactory = VHFactory()
+        recyclerViewAdapter.registerViewHolder(R.layout.list_item_text, TextViewHolder::class.java)
+        recyclerViewAdapter.registerViewHolder(R.layout.list_item_text_with_color, TextColorViewHolder::class.java)
+
         recyclerView.adapter = recyclerViewAdapter
 
         reset.setOnClickListener {
@@ -77,29 +79,25 @@ class RecyclerViewComponent : FragmentX() {
      */
     private fun resetAllData() {
         recyclerViewAdapter.clearData()
-        val defaultData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData>()
+        val defaultData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData<out UniqueData>>()
         for (i in 0 until 10) {
-            val sld = SimpleRecyclerViewAdapter.SimpleListData()
-            sld.data = ItemData()
-            sld.type = randomType()
-            defaultData.add(sld)
+            defaultData.add(SimpleRecyclerViewAdapter.SimpleListData(ItemData(), randomLayoutRes()))
         }
-        recyclerViewAdapter.addMoreData(defaultData)
+        recyclerViewAdapter.addMoreData(defaultData, 0) //layoutRes已由SimpleListData确定
     }
 
     /**
      * 添加一个随机数据
      */
     private fun addOneData() {
-        val data = SimpleRecyclerViewAdapter.SimpleListData()
-        data.data = ItemData()
-        data.type = randomType()
         val position = (0..recyclerViewAdapter.itemCount).shuffled().last()
+        val layoutRes = randomLayoutRes()
         recyclerView.smoothScrollToPosition(position)
         recyclerView.postDelayed(
             {
-                recyclerViewAdapter.addData(data, position)
-                Toast.makeText(requireContext(), "添加一个列表项：类型[${data.type}] 数据:${(data.data as ItemData).text}", Toast.LENGTH_LONG).show()
+                val data = ItemData()
+                recyclerViewAdapter.addData(data, layoutRes, position)
+                Toast.makeText(requireContext(), "添加一个列表项：位置[$position] 布局:$layoutRes 数据:${data.text}", Toast.LENGTH_LONG).show()
             },
             resources.systemLongAnimTime
         )
@@ -107,16 +105,14 @@ class RecyclerViewComponent : FragmentX() {
 
     /**
      * 添加多个随机数据
+     * 随机的布局
      */
     private fun addMoreData() {
-        val moreData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData>()
+        val moreData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData<ItemData>>()
         val position = (0..recyclerViewAdapter.itemCount).shuffled().last()
-        val number = (1..5).shuffled().last()
+        val number = (2..5).shuffled().last()
         for (i in 0 until number) {
-            val sld = SimpleRecyclerViewAdapter.SimpleListData()
-            sld.data = ItemData()
-            sld.type = randomType()
-            moreData.add(sld)
+            moreData.add(SimpleRecyclerViewAdapter.SimpleListData(ItemData(), randomLayoutRes()))
         }
         recyclerView.smoothScrollToPosition(position)
 
@@ -134,16 +130,15 @@ class RecyclerViewComponent : FragmentX() {
      * 可能没有数据被更新
      */
     private fun updateOneData() {
-        val data = SimpleRecyclerViewAdapter.SimpleListData()
-        data.data = ItemData()
-        data.type = randomType()
-        val position = recyclerViewAdapter.updateData(data, true)
+        val data = ItemData()
+        val position = recyclerViewAdapter.updateData(data, 0, true)
+        val layoutRes = randomLayoutRes()
         if (position != null) {
             recyclerView.smoothScrollToPosition(position)
             recyclerView.postDelayed(
                 {
-                    recyclerViewAdapter.updateData(data)
-                    Toast.makeText(requireContext(), "更新一个列表项：类型[${data.type}] 数据:${(data.data as ItemData).text}", Toast.LENGTH_LONG).show()
+                    recyclerViewAdapter.updateData(data, layoutRes)
+                    Toast.makeText(requireContext(), "更新一个列表项：位置[$position] 布局:$layoutRes 数据:${data.text}", Toast.LENGTH_LONG).show()
                 },
                 resources.systemLongAnimTime
             )
@@ -157,20 +152,17 @@ class RecyclerViewComponent : FragmentX() {
      * 可能只有部分甚至没有数据被更新
      */
     private fun updateMoreData() {
-        val moreData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData>()
-        val number = (1..10).shuffled().last()
+        val moreData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData<ItemData>>()
+        val number = (2..10).shuffled().last()
+        val position = recyclerViewAdapter.updateMoreData(moreData, 0, true)
         for (i in 0 until number) {
-            val sld = SimpleRecyclerViewAdapter.SimpleListData()
-            sld.data = ItemData()
-            sld.type = randomType()
-            moreData.add(sld)
+            moreData.add(SimpleRecyclerViewAdapter.SimpleListData(ItemData(), randomLayoutRes()))
         }
-        val position = recyclerViewAdapter.updateMoreData(moreData, true)
-        if (position != null) {
-            recyclerView.smoothScrollToPosition(position)
+        if (position.isNotEmpty()) {
+            recyclerView.smoothScrollToPosition(position[0])
             recyclerView.postDelayed(
                 {
-                    recyclerViewAdapter.updateMoreData(moreData)
+                    recyclerViewAdapter.updateMoreData(moreData, 0) //layoutRes已经由SimpleListData确定
                 },
                 resources.systemLongAnimTime
             )
@@ -184,16 +176,14 @@ class RecyclerViewComponent : FragmentX() {
      * 可能没有数据被删除
      */
     private fun removeOneData() {
-        val data = SimpleRecyclerViewAdapter.SimpleListData()
-        data.data = ItemData()
-        data.type = randomType()
+        val data = ItemData()
         val position = recyclerViewAdapter.removeData(data, true)
         if (position != null) {
             recyclerView.smoothScrollToPosition(position)
             recyclerView.postDelayed(
                 {
                     recyclerViewAdapter.removeData(data)
-                    Toast.makeText(requireContext(), "删除一个列表项：类型[${data.type}] 数据:${(data.data as ItemData).text}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "删除一个列表项：位置[$position]", Toast.LENGTH_LONG).show()
                 },
                 resources.systemLongAnimTime
             )
@@ -207,17 +197,14 @@ class RecyclerViewComponent : FragmentX() {
      * 可能只有部分甚至没有数据被删除
      */
     private fun removeMoreData() {
-        val moreData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData>()
-        val number = (1..10).shuffled().last()
+        val moreData = arrayListOf<SimpleRecyclerViewAdapter.SimpleListData<ItemData>>()
+        val number = (2..10).shuffled().last()
         for (i in 0 until number) {
-            val sld = SimpleRecyclerViewAdapter.SimpleListData()
-            sld.data = ItemData()
-            sld.type = randomType()
-            moreData.add(sld)
+            moreData.add(SimpleRecyclerViewAdapter.SimpleListData(ItemData(), randomLayoutRes()))
         }
         val position = recyclerViewAdapter.removeMoreData(moreData, true)
-        if (position != null) {
-            recyclerView.smoothScrollToPosition(position)
+        if (position.isNotEmpty()) {
+            recyclerView.smoothScrollToPosition(position[0])
             recyclerView.postDelayed(
                 {
                     recyclerViewAdapter.removeMoreData(moreData)
@@ -233,7 +220,7 @@ class RecyclerViewComponent : FragmentX() {
      * 产生一个随机数据类型
      * 三分之一的几率是未处理的数据类型
      */
-    private fun randomType() = (0..2).shuffled().last()
+    private fun randomLayoutRes() = arrayListOf(0, R.layout.list_item_text, R.layout.list_item_text_with_color).shuffled().last()
 
     /**
      * 列表中的数据的结构
@@ -244,61 +231,25 @@ class RecyclerViewComponent : FragmentX() {
         override fun uniqueTag(): Any = text
     }
 
-    /**
-     * ViewHolder工厂
-     * 给适配器提供对应类型的ViewHolder
-     */
-    open class VHFactory : SimpleRecyclerViewAdapter.ViewHolderFactory {
-        override fun getViewHolderLayoutResource(type: Int): Int? {
-            when (type) {
-                TYPE_TEXT -> return R.layout.list_item_text
-                TYPE_TEXT_WITH_COLOR -> return R.layout.list_item_text_with_color
-            }
+    class TextViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
+        private val textView = itemView.findViewById<AppCompatTextView>(R.id.text)
 
-            return null
+        override fun applyData(data: ItemData, position: Int) {
+            textView.text = data.text
         }
+    }
 
-        override fun createViewHolder(type: Int, itemView: View): SimpleRecyclerViewAdapter.BasicViewHolder? {
-            when (type) {
-                TYPE_TEXT -> {
-                    return object : SimpleRecyclerViewAdapter.BasicViewHolder(itemView) {
-                        val textView = itemView.findViewById<AppCompatTextView>(R.id.text)
-                        override fun applyData(data: Any, position: Int) {
-                            if (data is ItemData) {
-                                textView.text = data.text
-                            }
-                        }
-                    }
-                }
-                TYPE_TEXT_WITH_COLOR -> {
-                    return object : SimpleRecyclerViewAdapter.BasicViewHolder(itemView) {
-                        val textView = itemView.findViewById<AppCompatTextView>(R.id.text)
-                        val colorView = itemView.findViewById<View>(R.id.colorBlock)
-                        override fun applyData(data: Any, position: Int) {
-                            if (data is ItemData) {
-                                textView.text = data.text
-                                colorView.background = ColorDrawable(data.color)
-                            }
-                        }
+    class TextColorViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
+        private val textView = itemView.findViewById<AppCompatTextView>(R.id.text)
+        private val colorView = itemView.findViewById<View>(R.id.colorBlock)
 
-                    }
-                }
-            }
-            return null
+        override fun applyData(data: ItemData, position: Int) {
+            textView.text = data.text
+            colorView.background = ColorDrawable(data.color)
         }
-
     }
 
     companion object : ComponentXCompanion {
-        /**
-         * 数据类型：仅文字
-         */
-        const val TYPE_TEXT = 1
-
-        /**
-         * 数据类型：文字+颜色块
-         */
-        const val TYPE_TEXT_WITH_COLOR = 2
 
         override fun getTag(): String = "recycler_view_demo"
 
