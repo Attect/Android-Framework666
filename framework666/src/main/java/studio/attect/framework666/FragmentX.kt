@@ -21,6 +21,7 @@ import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.PerceptionFragment
+import studio.attect.framework666.interfaces.UnExpectedExitHandler
 
 /**
  * 使用本框架
@@ -29,7 +30,7 @@ import studio.attect.framework666.fragment.PerceptionFragment
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-open class FragmentX : PerceptionFragment(), ComponentX {
+abstract class FragmentX : PerceptionFragment(), ComponentX, UnExpectedExitHandler {
 
     val applicationX: ApplicationX? = null
         get() {
@@ -138,6 +139,10 @@ open class FragmentX : PerceptionFragment(), ComponentX {
         if (activity != null && activity is ContainerX) return activity as ContainerX
         return null
     }
+
+    override fun OnUnExpectedExit() {
+    }
+
 
     /**
      * 初始化约定结构的Appbar

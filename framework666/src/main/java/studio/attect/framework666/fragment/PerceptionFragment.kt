@@ -58,6 +58,7 @@ abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), Percepti
                                     AudioManager.STREAM_NOTIFICATION.toString()
                                 )
                                 params.put(TextToSpeech.Engine.KEY_PARAM_VOLUME, "1.0")
+                                @Suppress("DEPRECATION")
                                 speech.speak(text, TextToSpeech.QUEUE_ADD, params)
                             }
                         } else {

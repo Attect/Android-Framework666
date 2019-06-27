@@ -30,6 +30,7 @@ class MainActivity : ActivityX() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         setStatusBarColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, theme))
 
         initBottomNavigation()

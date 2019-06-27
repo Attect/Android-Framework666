@@ -1,13 +1,11 @@
 package studio.attect.framework666
 
-import android.app.Activity
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.TypedValue
-import android.view.*
-import androidx.annotation.ColorInt
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
@@ -22,8 +20,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import pub.devrel.easypermissions.EasyPermissions
 import studio.attect.framework666.activity.PerceptionActivity
 import studio.attect.framework666.extensions.*
-import studio.attect.framework666.magicChange.flymeSetStatusBarLightMode
-import studio.attect.framework666.magicChange.miUISetStatusBarLightMode
+import studio.attect.framework666.interfaces.UnExpectedExitHandler
 import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.framework666.viewModel.WindowInsetsViewModel
@@ -35,7 +32,7 @@ import studio.attect.framework666.viewModel.WindowInsetsViewModel
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-abstract class ActivityX : PerceptionActivity() {
+abstract class ActivityX : PerceptionActivity(), UnExpectedExitHandler {
 
     val applicationX by lazy {
         application as ApplicationX
@@ -171,7 +168,7 @@ abstract class ActivityX : PerceptionActivity() {
                 ViewCompat.setOnApplyWindowInsetsListener(it, null)
             }
             windowInsetsWatchingView = view
-            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
                 windowInsets.value = insets
                 insets //不消费
             }
@@ -260,4 +257,7 @@ abstract class ActivityX : PerceptionActivity() {
         }
     }
 
+    override fun OnUnExpectedExit() {
+
+    }
 }
