@@ -19,12 +19,13 @@ class DataXOffice {
 
     fun offWork(): ByteArray = packer.toByteArray()
 
-    fun putBoolean(boolean: Boolean?) {
+    fun putBoolean(boolean: Boolean?): DataXOffice {
         if (boolean == null) {
             packer.packNil()
         } else {
             packer.packBoolean(boolean)
         }
+        return this
     }
 
     fun getBoolean(): Boolean? {
@@ -32,13 +33,14 @@ class DataXOffice {
         return unpacker.unpackBoolean()
     }
 
-    fun putBooleanArray(booleanArray: BooleanArray?) {
+    fun putBooleanArray(booleanArray: BooleanArray?): DataXOffice {
         if (booleanArray == null || booleanArray.isEmpty()) { //MessagePack数组长度不能为0
             packer.packNil()
         } else {
             packer.packArrayHeader(booleanArray.size)
             booleanArray.forEach { packer.packBoolean(it) }
         }
+        return this
     }
 
     fun getBooleanArray(): BooleanArray? {
@@ -50,12 +52,13 @@ class DataXOffice {
         return booleanArray
     }
 
-    fun putByte(byte: Byte?) {
+    fun putByte(byte: Byte?): DataXOffice {
         if (byte == null) {
             packer.packNil()
         } else {
             packer.packByte(byte)
         }
+        return this
     }
 
     fun getByte(): Byte? {
@@ -63,13 +66,14 @@ class DataXOffice {
         return unpacker.unpackByte()
     }
 
-    fun putByteArray(byteArray: ByteArray?) {
+    fun putByteArray(byteArray: ByteArray?): DataXOffice {
         if (byteArray == null || byteArray.isEmpty()) {
             packer.packNil()
         } else {
             packer.packArrayHeader(byteArray.size)
             byteArray.forEach { packer.packByte(it) }
         }
+        return this
     }
 
     fun getByteArray(): ByteArray? {
@@ -81,12 +85,13 @@ class DataXOffice {
         return byteArray
     }
 
-    fun putShort(short: Short?) {
+    fun putShort(short: Short?): DataXOffice {
         if (short == null) {
             packer.packNil()
         } else {
             packer.packShort(short)
         }
+        return this
     }
 
     fun getShort(): Short? {
@@ -94,13 +99,14 @@ class DataXOffice {
         return unpacker.unpackShort()
     }
 
-    fun putShortArray(shortArray: ShortArray?) {
+    fun putShortArray(shortArray: ShortArray?): DataXOffice {
         if (shortArray == null || shortArray.isEmpty()) {
             packer.packNil()
         } else {
             packer.packArrayHeader(shortArray.size)
             shortArray.forEach { packer.packShort(it) }
         }
+        return this
     }
 
     fun getShortArray(): ShortArray? {
@@ -112,12 +118,13 @@ class DataXOffice {
         return shortArray
     }
 
-    fun putInt(int: Int?) {
+    fun putInt(int: Int?): DataXOffice {
         if (int == null) {
             packer.packNil()
         } else {
             packer.packInt(int)
         }
+        return this
     }
 
     fun getInt(): Int? {
@@ -125,13 +132,14 @@ class DataXOffice {
         return unpacker.unpackInt()
     }
 
-    fun putIntArray(intArray: IntArray?) {
+    fun putIntArray(intArray: IntArray?): DataXOffice {
         if (intArray == null || intArray.isEmpty()) {
             packer.packNil()
         } else {
             packer.packArrayHeader(intArray.size)
             intArray.forEach { packer.packInt(it) }
         }
+        return this
     }
 
     fun getIntArray(): IntArray? {
@@ -143,12 +151,13 @@ class DataXOffice {
         return intArray
     }
 
-    fun putLong(long: Long?) {
+    fun putLong(long: Long?): DataXOffice {
         if (long == null) {
             packer.packNil()
         } else {
             packer.packLong(long)
         }
+        return this
     }
 
     fun getLong(): Long? {
@@ -156,13 +165,14 @@ class DataXOffice {
         return unpacker.unpackLong()
     }
 
-    fun putLongArray(longArray: LongArray?) {
+    fun putLongArray(longArray: LongArray?): DataXOffice {
         if (longArray == null || longArray.isEmpty()) {
             packer.packNil()
         } else {
             packer.packArrayHeader(longArray.size)
             longArray.forEach { packer.packLong(it) }
         }
+        return this
     }
 
     fun getLongArray(): LongArray? {
@@ -174,12 +184,13 @@ class DataXOffice {
         return longArray
     }
 
-    fun putBigInteger(bigInteger: BigInteger?) {
+    fun putBigInteger(bigInteger: BigInteger?): DataXOffice {
         if (bigInteger == null) {
             packer.packNil()
         } else {
             packer.packBigInteger(bigInteger)
         }
+        return this
     }
 
     fun getBigInteger(): BigInteger? {
@@ -188,7 +199,7 @@ class DataXOffice {
     }
 
 
-    fun putBigIntegerArray(array: Array<BigInteger?>?) {
+    fun putBigIntegerArray(array: Array<BigInteger?>?): DataXOffice {
         if (array == null || array.isEmpty()) {
             packer.packNil()
         } else {
@@ -201,6 +212,7 @@ class DataXOffice {
                 }
             }
         }
+        return this
     }
 
 
@@ -212,12 +224,13 @@ class DataXOffice {
         }
     }
 
-    fun putFloat(float: Float?) {
+    fun putFloat(float: Float?): DataXOffice {
         if (float == null) {
             packer.packNil()
         } else {
             packer.packFloat(float)
         }
+        return this
     }
 
     fun getFloat(): Float? {
@@ -225,13 +238,14 @@ class DataXOffice {
         return unpacker.unpackFloat()
     }
 
-    fun putFloatArray(floatArray: FloatArray?) {
+    fun putFloatArray(floatArray: FloatArray?): DataXOffice {
         if (floatArray == null || floatArray.isEmpty()) {
             packer.packNil()
         } else {
             packer.packArrayHeader(floatArray.size)
             floatArray.forEach { packer.packFloat(it) }
         }
+        return this
     }
 
     fun getFloatArray(): FloatArray? {
@@ -243,12 +257,13 @@ class DataXOffice {
         return floatArray
     }
 
-    fun putDouble(double: Double?) {
+    fun putDouble(double: Double?): DataXOffice {
         if (double == null) {
             packer.packNil()
         } else {
             packer.packDouble(double)
         }
+        return this
     }
 
     fun getDouble(): Double? {
@@ -256,21 +271,23 @@ class DataXOffice {
         return unpacker.unpackDouble()
     }
 
-    fun putDoubleArray(doubleArray: DoubleArray?) {
+    fun putDoubleArray(doubleArray: DoubleArray?): DataXOffice {
         if (doubleArray == null || doubleArray.isEmpty()) {
             packer.packNil()
         } else {
             packer.packArrayHeader(doubleArray.size)
             doubleArray.forEach { packer.packDouble(it) }
         }
+        return this
     }
 
-    fun putString(string: String?) {
+    fun putString(string: String?): DataXOffice {
         if (string == null) {
             packer.packNil()
         } else {
             packer.packString(string)
         }
+        return this
     }
 
     fun getString(): String? {
@@ -278,7 +295,7 @@ class DataXOffice {
         return unpacker.unpackString()
     }
 
-    fun putStringArray(array: Array<String?>?) {
+    fun putStringArray(array: Array<String?>?): DataXOffice {
         if (array == null || array.isEmpty()) {
             packer.packNil()
         } else {
@@ -291,6 +308,7 @@ class DataXOffice {
                 }
             }
         }
+        return this
     }
 
     fun getStringArray(): Array<String?>? {
@@ -301,7 +319,7 @@ class DataXOffice {
         }
     }
 
-    fun putArray(array: Array<out DataX?>?) {
+    fun putArray(array: Array<out DataX?>?): DataXOffice {
         if (array == null || array.isEmpty()) {
             packer.packNil()
         } else {
@@ -318,6 +336,7 @@ class DataXOffice {
                 }
             }
         }
+        return this
     }
 
     inline fun <reified T : DataX> getArray(cls: Class<T>): Array<T?>? {
@@ -330,14 +349,16 @@ class DataXOffice {
         }
     }
 
-    fun putDataX(dataX: DataX) {
+    fun putDataX(dataX: DataX): DataXOffice {
         val oldSize = packer.totalWrittenBytes
         dataX.putToOffice(this)
         if (oldSize == packer.totalWrittenBytes) throw IllegalStateException("DataX没有提交任何资料给DataX办公室，违反了规定")
+        return this
     }
 
-    fun putMap(mapSize: Int) {
+    fun putMap(mapSize: Int): DataXOffice {
         packer.packMapHeader(mapSize)
+        return this
     }
 
     fun getMap(): Int? {
