@@ -10,8 +10,14 @@ import java.math.BigInteger
  * @author Attect
  */
 class DataXOffice {
-    val packer = MessagePack.newDefaultBufferPacker()
+    private val packer = MessagePack.newDefaultBufferPacker()
     lateinit var unpacker: MessageUnpacker
+
+    fun unpack(byteArray: ByteArray) {
+        unpacker = MessagePack.newDefaultUnpacker(byteArray)
+    }
+
+    fun offWork(): ByteArray = packer.toByteArray()
 
     fun putBoolean(boolean: Boolean?) {
         if (boolean == null) {
@@ -181,6 +187,23 @@ class DataXOffice {
         return unpacker.unpackBigInteger()
     }
 
+
+    fun putBigIntegerArray(array: Array<BigInteger?>?) {
+        if (array == null || array.isEmpty()) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(array.size)
+            array.forEach {
+                if (it == null) {
+                    packer.packNil()
+                } else {
+                    packer.packBigInteger(it)
+                }
+            }
+        }
+    }
+
+
     fun getBigIntegerArray(): Array<BigInteger?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
@@ -255,6 +278,21 @@ class DataXOffice {
         return unpacker.unpackString()
     }
 
+    fun putStringArray(array: Array<String?>?) {
+        if (array == null || array.isEmpty()) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(array.size)
+            array.forEach {
+                if (it == null) {
+                    packer.packNil()
+                } else {
+                    packer.packString(it)
+                }
+            }
+        }
+    }
+
     fun getStringArray(): Array<String?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
@@ -263,7 +301,7 @@ class DataXOffice {
         }
     }
 
-    fun <T> putArray(array: Array<T?>?) {
+    fun putArray(array: Array<out DataX?>?) {
         if (array == null || array.isEmpty()) {
             packer.packNil()
         } else {
@@ -271,18 +309,12 @@ class DataXOffice {
             array.forEach {
                 if (it == null) {
                     packer.packNil()
-                } else if (it is BigInteger) {
-                    packer.packBigInteger(it)
-                } else if (it is String) {
-                    packer.packString(it)
-                } else if (it is DataX) {
+                } else {
                     val oldSize = packer.totalWrittenBytes
                     it.putToOffice(this)
                     if (oldSize == packer.totalWrittenBytes) {
                         throw IllegalStateException("数组中的对象没有给DataX办公室提交任何东西，请确保至少送达一个数据")
                     }
-                } else {
-                    throw IllegalStateException("数组中的类型无法被DataX办公室受理，请确保数据是DataX类型的")
                 }
             }
         }
@@ -298,5 +330,19 @@ class DataXOffice {
         }
     }
 
+    fun putDataX(dataX: DataX) {
+        val oldSize = packer.totalWrittenBytes
+        dataX.putToOffice(this)
+        if (oldSize == packer.totalWrittenBytes) throw IllegalStateException("DataX没有提交任何资料给DataX办公室，违反了规定")
+    }
+
+    fun putMap(mapSize: Int) {
+        packer.packMapHeader(mapSize)
+    }
+
+    fun getMap(): Int? {
+        if (unpacker.tryUnpackNil()) return null
+        return unpacker.unpackMapHeader()
+    }
 
 }

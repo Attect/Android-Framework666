@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import kotlinx.android.synthetic.main.not_found_componetx.*
+import kotlinx.android.synthetic.main.componentx_not_found.*
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
 import studio.attect.framework666.compomentX.ArgumentX
@@ -22,7 +22,7 @@ import studio.attect.framework666.compomentX.ComponentXCompanion
 class NotFoundComponentX : FragmentX() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.not_found_componetx, container, false)
+        return inflater.inflate(R.layout.componentx_not_found, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
