@@ -13,4 +13,10 @@
 
     <string name="componentx_explorer">组件浏览</string>
     <string name="simple_recycler_view_adapter_unprocessed_data">未处理的数据类型[%s] %s</string>
+    <string name="framework_hate_bug">讨厌BUG!</string>
+    <string name="framework_random_crash">随机崩溃!</string>
+    <string name="framework_force_anr">无响应</string>
+    <string name="framework_play_egg">完蛋</string>
+    <string name="framework_gg">GG</string>
+    <string name="framework_crash">崩溃</string>
 </resources>

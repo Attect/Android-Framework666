@@ -33,6 +33,11 @@ class MainActivity : ActivityX() {
 
         setStatusBarColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, theme))
 
+        //清除崩溃自动重启遗留的Fragment
+        supportFragmentManager.findFragmentById(R.id.fragmentContainer)?.let {
+            supportFragmentManager.beginTransaction().remove(it).commit()
+        }
+
         initBottomNavigation()
     }
 

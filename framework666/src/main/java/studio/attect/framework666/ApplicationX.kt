@@ -4,6 +4,7 @@ import android.app.Application
 import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
+import studio.attect.framework666.simple.CrashAndANRComponentX
 
 /**
  * 综合Application
@@ -23,5 +24,6 @@ open class ApplicationX : Application() {
         Rumble.init(applicationContext)
 
         ComponentXMap.mark(ComponentXExplorer.Companion)
+        ComponentXMap.mark(CrashAndANRComponentX.Companion)
     }
 }
