@@ -3,7 +3,6 @@ package studio.attect.framework666
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
 import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
@@ -35,6 +34,24 @@ open class ApplicationX : Application() {
     }
 
     /**
+     * 自定义处理主线程未捕获异常逻辑
+     * 如果你采用了bugly之类的异常上报扩展，可以在此处手动提交Throwable
+     * 此方法在信号之前执行
+     */
+    open fun mainThreadUnCatchException(e: Throwable) {
+
+    }
+
+    /**
+     * 自定义处理子线程未捕获异常逻辑
+     * 如果你采用了bugly之类的异常上报扩展，可以在此处手动提交Throwable
+     * 此方法在信号之前执行
+     */
+    open fun childThreadUnCatchException(thread: Thread?, e: Throwable?) {
+
+    }
+
+    /**
      * 阻止崩溃，并通过SignalViewModel向所有观察者告知App发生了严重错误
      * 错误发生后将继续运行
      * 应该显著提示用户（数据可能严重错误了），例如截图并转向Bug反馈界面
@@ -48,6 +65,7 @@ open class ApplicationX : Application() {
                     Looper.loop()
                 } catch (e: Throwable) {
                     e.printStackTrace()
+                    mainThreadUnCatchException(e)
                     StaticViewModelStore.getViewModelProvider(SignalViewModel.STORE_KEY, this@ApplicationX).get(SignalViewModel::class.java).signal.value = SignalViewModel.CRASH
                 }
             }
@@ -61,7 +79,7 @@ open class ApplicationX : Application() {
      */
     inner class CrashHandler : Thread.UncaughtExceptionHandler {
         override fun uncaughtException(t: Thread?, e: Throwable?) {
-            e?.printStackTrace()
+            childThreadUnCatchException(t, e)
             object : Thread() {
                 override fun run() {
                     Looper.prepare()
