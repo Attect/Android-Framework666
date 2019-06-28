@@ -19,4 +19,8 @@
     <string name="framework_play_egg">完蛋</string>
     <string name="framework_gg">GG</string>
     <string name="framework_crash">崩溃</string>
+
+    <string name="framework_bug_title">发生了一些问题</string>
+    <string name="framework_bug_message">您可以但不推荐继续使用App</string>
+
 </resources>

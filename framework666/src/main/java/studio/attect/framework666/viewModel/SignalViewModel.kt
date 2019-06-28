@@ -38,11 +38,12 @@ class SignalViewModel : ViewModel() {
          */
         const val NOTING = 0
 
-        private const val STORE_KEY = "appLifeSignal"
+        const val STORE_KEY = "appLifeSignal"
 
         @JvmStatic
         fun newInstance(caller: StaticViewModelStore.StaticViewModelStoreCaller): SignalViewModel? {
             return caller.getStaticViewModel(STORE_KEY, SignalViewModel::class.java)
         }
+
     }
 }

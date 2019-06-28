@@ -10,11 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
+import com.irozon.sneaker.Sneaker
 import kotlinx.android.synthetic.main.componentx_crash_and_anr.*
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
@@ -25,6 +27,7 @@ import studio.attect.framework666.extensions.dp2px
 import studio.attect.framework666.extensions.isAlive
 import studio.attect.framework666.extensions.transparentStatusBar
 import studio.attect.framework666.helper.BugFucker
+import studio.attect.framework666.viewModel.SignalViewModel
 
 /**
  * 崩溃及异常Crash模拟ComponentX
@@ -40,6 +43,18 @@ class CrashAndANRComponentX : FragmentX() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activityX?.signal?.observe(this, Observer {
+            when (it) {
+                SignalViewModel.CRASH -> {
+                    Sneaker.with(requireActivity())
+                        .setTitle(getString(R.string.framework_bug_title))
+                        .setMessage(getString(R.string.framework_bug_message))
+                        .autoHide(false)
+                        .sneakError()
+                }
+            }
+        })
+        //region colors
         spicyEyeColors.put(getColor(R.color.red_600), getColor(R.color.cover_on_red_600))
         spicyEyeColors.put(getColor(R.color.pink_600), getColor(R.color.cover_on_pink_600))
         spicyEyeColors.put(getColor(R.color.purple_600), getColor(R.color.cover_on_purple_600))
@@ -97,6 +112,7 @@ class CrashAndANRComponentX : FragmentX() {
         spicyEyeColors.put(getColor(R.color.brown_400), getColor(R.color.cover_on_brown_400))
         spicyEyeColors.put(getColor(R.color.grey_400), getColor(R.color.cover_on_grey_400))
         spicyEyeColors.put(getColor(R.color.blue_grey_400), getColor(R.color.cover_on_blue_grey_400))
+        //endregion
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -145,7 +161,9 @@ class CrashAndANRComponentX : FragmentX() {
             }
         })
         crash.setOnClickListener {
+            //Thread() {
             BugFucker.fuckCrash()
+            //}.start()
         }
         anr.setOnClickListener {
             BugFucker.fuckANR()
@@ -177,7 +195,7 @@ class CrashAndANRComponentX : FragmentX() {
             updateSpiceEyeColor(crash)
             updateSpiceEyeColor(anr)
             if (play) updateSpicyEyeHeaderUI()
-        }, (500..1000).shuffled().last().toLong())
+        }, (400..800).shuffled().last().toLong())
     }
 
     private fun updateSpiceEyeMoreUI() {
@@ -187,7 +205,7 @@ class CrashAndANRComponentX : FragmentX() {
                 updateSpiceEyeColor(it)
             }
             if (play) updateSpiceEyeMoreUI()
-        }, (100..400).shuffled().last().toLong())
+        }, (50..200).shuffled().last().toLong())
     }
 
     private fun getColor(@ColorRes color: Int) = ResourcesCompat.getColor(resources, color, requireContext().theme)

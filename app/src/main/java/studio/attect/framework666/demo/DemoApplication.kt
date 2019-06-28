@@ -14,12 +14,14 @@ class DemoApplication : ApplicationX() {
 
     override fun onCreate() {
         super.onCreate()
-
         markComponents()
+
     }
 
     private fun markComponents() {
         ComponentXMap.mark(NormalComponent.Companion)
         ComponentXMap.mark(RecyclerViewComponent.Companion)
     }
+
+
 }
