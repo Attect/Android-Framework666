@@ -8,6 +8,8 @@ import studio.attect.framework666.Logcat
 import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
 import studio.attect.framework666.interfaces.DataX
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 
 /**
@@ -37,7 +39,8 @@ fun <T : DataX> Context.cacheDataX(tag: String, @CacheDataX.Companion.StoreType 
         this.storeType = storeType
     }
 
-    val outputStream = openFileOutput(CacheManager.getCacheFileName(tag), MODE_PRIVATE)
+    val file = File(CacheManager.getCacheFileName(this, tag))
+    val outputStream = FileOutputStream(file)
     try {
         outputStream.write(DataXOffice().putDataX(cacheDataX).offWork())
 

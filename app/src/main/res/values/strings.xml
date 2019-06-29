@@ -17,5 +17,14 @@
     <string name="remove_more_items">移除多项</string>
     <string name="remove_all_items">移除所有</string>
 
+    <string name="framework_hate_bug">讨厌BUG!</string>
+    <string name="framework_random_crash">随机崩溃!</string>
+    <string name="framework_force_anr">无响应</string>
+    <string name="framework_play_egg">完蛋</string>
+    <string name="framework_gg">GG</string>
+    <string name="framework_crash">崩溃</string>
+
+    <string name="framework_bug_title">发生了一些问题</string>
+    <string name="framework_bug_message">您可以但不推荐继续使用App</string>
 
 </resources>

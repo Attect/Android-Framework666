@@ -6,9 +6,10 @@ import java.io.File
 import java.nio.charset.Charset
 
 object CacheManager {
-    val cacheDirName = "framework666_Cache"
+    private const val cacheDirName = "framework666_Cache"
     fun ensureCacheDir(context: Context): Boolean {
-        val dir = context.getFileStreamPath(cacheDirName)
+        val cacheDir = context.cacheDir
+        val dir = File(cacheDir.absolutePath + "/" + cacheDirName)
         if (!dir.exists()) {
             return dir.mkdirs()
         } else {
@@ -23,5 +24,5 @@ object CacheManager {
         return true
     }
 
-    fun getCacheFileName(tag: String) = "$cacheDirName/Cache_" + Base64.encodeToString(tag.toByteArray(Charset.forName("UTF-8")), Base64.DEFAULT)
+    fun getCacheFileName(context: Context, tag: String) = context.cacheDir.absolutePath + "/$cacheDirName/Cache_" + Base64.encodeToString(tag.toByteArray(Charset.forName("UTF-8")), Base64.DEFAULT)
 }

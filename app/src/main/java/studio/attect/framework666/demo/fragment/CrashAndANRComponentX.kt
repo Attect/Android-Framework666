@@ -18,9 +18,9 @@ import androidx.lifecycle.Observer
 import com.irozon.sneaker.Sneaker
 import kotlinx.android.synthetic.main.componentx_crash_and_anr.*
 import studio.attect.framework666.FragmentX
-import studio.attect.framework666.R
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ComponentXCompanion
+import studio.attect.framework666.demo.R
 import studio.attect.framework666.extensions.currentSafeTop
 import studio.attect.framework666.extensions.dp2px
 import studio.attect.framework666.extensions.isAlive
