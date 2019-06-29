@@ -1,6 +1,5 @@
 package studio.attect.framework666
 
-import android.content.Context
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.MenuItem
@@ -21,7 +20,6 @@ import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.PerceptionFragment
-import studio.attect.framework666.interfaces.UnExpectedExitHandler
 
 /**
  * 使用本框架
@@ -30,7 +28,7 @@ import studio.attect.framework666.interfaces.UnExpectedExitHandler
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-abstract class FragmentX : PerceptionFragment(), ComponentX, UnExpectedExitHandler {
+abstract class FragmentX : PerceptionFragment(), ComponentX {
 
     val applicationX: ApplicationX? = null
         get() {
@@ -139,10 +137,6 @@ abstract class FragmentX : PerceptionFragment(), ComponentX, UnExpectedExitHandl
         if (activity != null && activity is ContainerX) return activity as ContainerX
         return null
     }
-
-    override fun OnUnExpectedExit() {
-    }
-
 
     /**
      * 初始化约定结构的Appbar

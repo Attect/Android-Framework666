@@ -20,7 +20,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import pub.devrel.easypermissions.EasyPermissions
 import studio.attect.framework666.activity.PerceptionActivity
 import studio.attect.framework666.extensions.*
-import studio.attect.framework666.interfaces.UnExpectedExitHandler
 import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.framework666.viewModel.WindowInsetsViewModel
@@ -32,7 +31,7 @@ import studio.attect.framework666.viewModel.WindowInsetsViewModel
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-abstract class ActivityX : PerceptionActivity(), UnExpectedExitHandler {
+abstract class ActivityX : PerceptionActivity() {
 
     val applicationX by lazy {
         application as ApplicationX
@@ -257,7 +256,4 @@ abstract class ActivityX : PerceptionActivity(), UnExpectedExitHandler {
         }
     }
 
-    override fun OnUnExpectedExit() {
-
-    }
 }
