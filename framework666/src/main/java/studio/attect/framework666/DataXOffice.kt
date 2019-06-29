@@ -13,8 +13,9 @@ class DataXOffice {
     private val packer = MessagePack.newDefaultBufferPacker()
     lateinit var unpacker: MessageUnpacker
 
-    fun unpack(byteArray: ByteArray) {
+    fun unpack(byteArray: ByteArray): DataXOffice {
         unpacker = MessagePack.newDefaultUnpacker(byteArray)
+        return this
     }
 
     fun offWork(): ByteArray = packer.toByteArray()
@@ -365,5 +366,10 @@ class DataXOffice {
         if (unpacker.tryUnpackNil()) return null
         return unpacker.unpackMapHeader()
     }
+
+    /**
+     * 积压字节数
+     */
+    fun backLog(): Long = packer.totalWrittenBytes
 
 }

@@ -1,6 +1,7 @@
 package studio.attect.framework666.demo.fragment
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -17,15 +18,17 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.irozon.sneaker.Sneaker
 import kotlinx.android.synthetic.main.componentx_crash_and_anr.*
+import net.steamcrafted.materialiconlib.IconValue
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ComponentXCompanion
 import studio.attect.framework666.demo.R
+import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.extensions.currentSafeTop
 import studio.attect.framework666.extensions.dp2px
 import studio.attect.framework666.extensions.isAlive
 import studio.attect.framework666.extensions.transparentStatusBar
-import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.viewModel.SignalViewModel
 
 /**
@@ -226,7 +229,7 @@ class CrashAndANRComponentX : FragmentX() {
 
         override fun getIcon(context: Context?): Drawable? {
             context?.let {
-                return ResourcesCompat.getDrawable(context.resources, android.R.drawable.ic_dialog_info, context.theme)
+                return MaterialDrawableBuilder.with(context).setIcon(IconValue.ANDROID_DEBUG_BRIDGE).setSizeDp(24).setColor(Color.WHITE).build()
             }
             return null
         }

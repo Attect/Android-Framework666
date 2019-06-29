@@ -36,6 +36,7 @@ class ContainerXActivity : ActivityX(), ContainerX {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         if (!intent.hasExtra(DATA_KEY)) {
             finish()
             return
@@ -56,6 +57,9 @@ class ContainerXActivity : ActivityX(), ContainerX {
         }
 
         setContentView(R.layout.activity_container_x)
+
+        //防止崩溃重叠，使用原有Fragment(你问我如果要处理一下崩溃怎么办……SignalViewModel应该能解君愁)
+        if (supportFragmentManager.findFragmentById(R.id.componentXContainer) != null) return
 
         componentX?.let {
             val fragment = it.getComponentXFragmentInstance(intent.getBundleExtra(ARGUMENT_KEY))

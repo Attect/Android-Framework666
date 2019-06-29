@@ -3,6 +3,7 @@ package studio.attect.framework666.demo
 import studio.attect.framework666.ApplicationX
 import studio.attect.framework666.RuntimeBuildConfig
 import studio.attect.framework666.compomentX.ComponentXMap
+import studio.attect.framework666.demo.fragment.CacheComponent
 import studio.attect.framework666.demo.fragment.CrashAndANRComponentX
 import studio.attect.framework666.demo.fragment.NormalComponent
 import studio.attect.framework666.demo.fragment.RecyclerViewComponent
@@ -30,6 +31,7 @@ class DemoApplication : ApplicationX() {
 
     private fun markComponents() {
         ComponentXMap.mark(CrashAndANRComponentX.Companion)
+        ComponentXMap.mark(CacheComponent.Companion)
         ComponentXMap.mark(NormalComponent.Companion)
         ComponentXMap.mark(RecyclerViewComponent.Companion)
     }

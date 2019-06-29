@@ -10,7 +10,7 @@ import studio.attect.framework666.interfaces.DataX
  *
  * @author Attect
  */
-class CacheDataX<out T : DataX>(val data: T) : DataX {
+class CacheDataX<out T : DataX>(val data: T?) : DataX {
     /**
      * 创建数据的Build版本
      * 创建缓存时记得设置，不设置就是框架的版本
@@ -42,22 +42,38 @@ class CacheDataX<out T : DataX>(val data: T) : DataX {
 
 
     override fun putToOffice(office: DataXOffice) {
+        office.putLong(evalHeaderSize()) //head total bytes size:1~9
         office.putInt(versionCode)
         office.putInt(storeType)
         office.putString(tag)
         office.putLong(time)
         office.putLong(effectiveDuration)
-        data.putToOffice(office)
+        data?.putToOffice(office)
     }
 
     override fun applyFromOffice(office: DataXOffice) {
+        office.getLong() //空操作一次，跳过head total bytes数据
         office.getInt()?.let { versionCode = it }
         office.getInt()?.let { storeType = it }
         office.getString()?.let { tag = it }
         office.getLong()?.let { time = it }
         office.getLong()?.let { effectiveDuration = it }
-        data.applyFromOffice(office)
+        data?.applyFromOffice(office)
     }
+
+    /**
+     * 求出头部大小
+     */
+    private fun evalHeaderSize(): Long {
+        val office = DataXOffice()
+        office.putInt(versionCode)
+        office.putInt(storeType)
+        office.putString(tag)
+        office.putLong(time)
+        office.putLong(effectiveDuration)
+        return office.backLog()
+    }
+
 
     companion object {
         /**
@@ -87,6 +103,13 @@ class CacheDataX<out T : DataX>(val data: T) : DataX {
         @IntDef(STORE_TYPE_CRASH, STORE_TYPE_AUTO, STORE_TYPE_SKETCH)
         @Retention(AnnotationRetention.SOURCE)
         annotation class StoreType
+
+        /**
+         * 保存为文件后，要读出文件头至少要读取的字节数
+         * 此值由MessagePack的Packer.packLong(Long.MAX_VALUE)后得到
+         *
+         */
+        const val FILE_HEAD_LENGTH_MIN_LENGTH = 9
 
     }
 

@@ -27,4 +27,7 @@
     <string name="framework_bug_title">发生了一些问题</string>
     <string name="framework_bug_message">您可以但不推荐继续使用App</string>
 
+    <string name="label_persistent_cache">持久缓存</string>
+    <string name="cache_component_title">缓存测试</string>
+
 </resources>
