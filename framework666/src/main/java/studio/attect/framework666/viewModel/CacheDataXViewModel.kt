@@ -29,4 +29,8 @@ class CacheDataXViewModel : ViewModel() {
      */
     val cacheDataXLoadList = MutableLiveData<ArrayList<String>>()
 
+    /**
+     * 有一个线程正在读取
+     */
+    val readerWorking = false
 }
