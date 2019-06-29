@@ -1,4 +1,4 @@
-package studio.attect.framework666.helper
+package studio.attect.framework666.demo.helper
 
 /**
  * 草!崩溃了

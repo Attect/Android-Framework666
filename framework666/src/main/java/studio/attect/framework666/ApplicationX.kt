@@ -6,7 +6,6 @@ import android.os.Looper
 import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
-import studio.attect.framework666.simple.CrashAndANRComponentX
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.staticviewmodelstore.StaticViewModelStore
 
@@ -30,7 +29,6 @@ open class ApplicationX : Application() {
         Rumble.init(applicationContext)
 
         ComponentXMap.mark(ComponentXExplorer.Companion)
-        ComponentXMap.mark(CrashAndANRComponentX.Companion)
     }
 
     /**

@@ -1,4 +1,4 @@
-package studio.attect.framework666.simple
+package studio.attect.framework666.demo.fragment
 
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
@@ -26,7 +25,7 @@ import studio.attect.framework666.extensions.currentSafeTop
 import studio.attect.framework666.extensions.dp2px
 import studio.attect.framework666.extensions.isAlive
 import studio.attect.framework666.extensions.transparentStatusBar
-import studio.attect.framework666.helper.BugFucker
+import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.viewModel.SignalViewModel
 
 /**
