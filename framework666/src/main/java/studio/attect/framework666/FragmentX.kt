@@ -14,12 +14,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.PerceptionFragment
+import studio.attect.framework666.interfaces.DataX
+import studio.attect.framework666.viewModel.CacheDataXViewModel
 
 /**
  * 使用本框架
@@ -69,6 +72,9 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
             return null
         }
 
+    lateinit var cacheDataXViewModel: CacheDataXViewModel
+
+
     //endregion
 
     //region 约定布局
@@ -95,6 +101,26 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
 
     var toolbarTitle: AppCompatTextView? = null
     //endregion
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        cacheDataXViewModel = ViewModelProviders.of(this).get(CacheDataXViewModel::class.java)
+
+        //观察缓存读取队列
+        cacheDataXViewModel.cacheDataXLoadMap.observe(this, Observer {
+            if (cacheDataXViewModel.readerWorking || cacheDataXViewModel.cacheDataXLoadMap.value == null || cacheDataXViewModel.cacheDataXLoadMap.value?.isEmpty() == true) return@Observer
+            readCacheOnBackgroundThread()
+        })
+
+        //观察缓存成功读取
+        cacheDataXViewModel.cacheDataX.observe(this, Observer {
+            var size = 0
+            cacheDataXViewModel.cacheDataXLoadMap.value?.size?.let { size = it }
+            if (!cacheDataXViewModel.readerWorking && size > 0) {
+                readCacheOnBackgroundThread()
+            }
+        })
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -234,6 +260,47 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
             toolbarTitle?.setText(resId)
         } else {
             activityX?.setTitle(resId)
+        }
+    }
+
+
+    private fun readCacheOnBackgroundThread() {
+        if (!isAlive()) return
+        cacheDataXViewModel.cacheDataXLoadMap.value?.let { loadList ->
+            cacheDataXViewModel.readerWorking = true
+            Thread() {
+                val firstTag = loadList.keys.first()
+                val dataXClass = loadList[firstTag]
+                loadList.remove(firstTag)
+                dataXClass?.let { cls ->
+                    cacheDataXViewModel.cacheDataX.postValue(requireContext().readCacheDataX(firstTag, cls))
+                }
+                if (loadList.size == 0) cacheDataXViewModel.readerWorking = false
+            }.start()
+        }
+    }
+
+
+    /**
+     * 检查缓存情况
+     * 子线程操作
+     * 推荐在OnCreate中调用，setContentView之前，用户体验最佳
+     * 结果在cacheDataXViewModel.fastCacheDataXResultList中观察
+     */
+    fun checkCacheX(vararg tags: String) {
+        Thread() {
+            cacheDataXViewModel.fastCacheDataXResultList.postValue(requireContext().fastCheckCache(tags.toList()))
+        }.start()
+    }
+
+    fun readCacheX(cacheInstance: List<Pair<String, Class<out DataX>>>) {
+        //刷新数据触发观察
+        cacheDataXViewModel.cacheDataXLoadMap.update {
+            it?.let { map ->
+                cacheInstance.forEach {
+                    map[it.first] = it.second
+                }
+            }
         }
     }
 }

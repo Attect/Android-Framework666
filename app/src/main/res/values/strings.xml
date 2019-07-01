@@ -28,6 +28,10 @@
     <string name="framework_bug_message">您可以但不推荐继续使用App</string>
 
     <string name="label_persistent_cache">持久缓存</string>
+    <string name="label_edit_cache">编辑缓存</string>
     <string name="cache_component_title">缓存测试</string>
+    <string name="text_input_edit_text">文本编辑框</string>
+    <string name="load_last_edit_content">恢复上次编辑的内容</string>
+    <string name="loading">正在加载</string>
 
 </resources>

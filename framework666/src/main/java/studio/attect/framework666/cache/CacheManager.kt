@@ -24,5 +24,5 @@ object CacheManager {
         return true
     }
 
-    fun getCacheFileName(context: Context, tag: String) = context.cacheDir.absolutePath + "/$cacheDirName/Cache_" + Base64.encodeToString(tag.toByteArray(Charset.forName("UTF-8")), Base64.DEFAULT)
+    fun getCacheFileName(context: Context, tag: String) = context.cacheDir.absolutePath + "/$cacheDirName/Cache_" + Base64.encodeToString(tag.toByteArray(Charset.forName("UTF-8")), Base64.NO_WRAP)
 }

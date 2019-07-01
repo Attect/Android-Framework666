@@ -15,11 +15,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import pub.devrel.easypermissions.EasyPermissions
 import studio.attect.framework666.activity.PerceptionActivity
 import studio.attect.framework666.extensions.*
+import studio.attect.framework666.interfaces.DataX
+import studio.attect.framework666.viewModel.CacheDataXViewModel
 import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.framework666.viewModel.WindowInsetsViewModel
@@ -52,6 +55,9 @@ abstract class ActivityX : PerceptionActivity() {
 
     val windowInsets: MutableLiveData<WindowInsetsCompat>
         get() = windowInsetsViewModel.windowInsetsCompatMutableLiveData
+
+
+    lateinit var cacheDataXViewModel: CacheDataXViewModel
 
     //endregion
 
@@ -90,6 +96,23 @@ abstract class ActivityX : PerceptionActivity() {
         SignalViewModel.newInstance(this)?.let { signalViewModel = it }
         commonEventViewModel = getViewModel(CommonEventViewModel::class.java)
         WindowInsetsViewModel.newInstance(this)?.let { windowInsetsViewModel = it }
+        cacheDataXViewModel = ViewModelProviders.of(this).get(CacheDataXViewModel::class.java)
+
+        //观察缓存读取队列
+        cacheDataXViewModel.cacheDataXLoadMap.observe(this, Observer {
+            if (cacheDataXViewModel.readerWorking || cacheDataXViewModel.cacheDataXLoadMap.value == null || cacheDataXViewModel.cacheDataXLoadMap.value?.isEmpty() == true) return@Observer
+            readCacheOnBackgroundThread()
+        })
+
+        //观察缓存成功读取
+        cacheDataXViewModel.cacheDataX.observe(this, Observer {
+            var size = 0
+            cacheDataXViewModel.cacheDataXLoadMap.value?.size?.let { size = it }
+            if (!cacheDataXViewModel.readerWorking && size > 0) {
+                readCacheOnBackgroundThread()
+            }
+        })
+
 
         transparentStatusBar(true) //如果想改变默认颜色，无需删掉这个，可以直接再调用一次传入不同的参数
     }
@@ -257,4 +280,41 @@ abstract class ActivityX : PerceptionActivity() {
     }
 
 
+    private fun readCacheOnBackgroundThread() {
+        cacheDataXViewModel.cacheDataXLoadMap.value?.let { loadList ->
+            cacheDataXViewModel.readerWorking = true
+            Thread() {
+                val firstTag = loadList.keys.first()
+                val dataXClass = loadList[firstTag]
+                loadList.remove(firstTag)
+                dataXClass?.let { cls ->
+                    cacheDataXViewModel.cacheDataX.value = readCacheDataX(firstTag, cls)
+                }
+                if (loadList.size == 0) cacheDataXViewModel.readerWorking = false
+            }.start()
+        }
+    }
+
+    /**
+     * 检查缓存情况
+     * 子线程操作
+     * 推荐在OnCreate中调用，setContentView之前，用户体验最佳
+     * 结果在cacheDataXViewModel.fastCacheDataXResultList中观察
+     */
+    fun checkCacheX(vararg tags: String) {
+        Thread() {
+            cacheDataXViewModel.fastCacheDataXResultList.postValue(fastCheckCache(tags.toList()))
+        }.start()
+    }
+
+    fun readCacheX(vararg cacheInstance: Pair<String, Class<out DataX>>) {
+        //刷新数据触发观察
+        cacheDataXViewModel.cacheDataXLoadMap.update {
+            it?.let { map ->
+                cacheInstance.forEach {
+                    map[it.first] = it.second
+                }
+            }
+        }
+    }
 }

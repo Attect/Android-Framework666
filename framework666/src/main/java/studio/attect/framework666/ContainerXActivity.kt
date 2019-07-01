@@ -36,7 +36,6 @@ class ContainerXActivity : ActivityX(), ContainerX {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         if (!intent.hasExtra(DATA_KEY)) {
             finish()
             return

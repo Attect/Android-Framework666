@@ -3,7 +3,6 @@ package studio.attect.framework666.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import studio.attect.staticviewmodelstore.StaticViewModelStore
-import kotlin.math.sign
 
 /**
  * 信号数据
@@ -15,7 +14,7 @@ class SignalViewModel : ViewModel() {
 
     val signal = MutableLiveData<Int>()
         get() {
-            if (field.value == null) field.value = NOTING
+            if (field.value == null) field.postValue(null)
             return field
     }
 
