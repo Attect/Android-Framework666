@@ -118,7 +118,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:focusableInTouchMode="true">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/editCacheLabel"
@@ -135,7 +136,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toBottomOf="@id/editCacheLabel"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="12dp"
                         android:hint="@string/text_input_edit_text">
 
                         <com.google.android.material.textfield.TextInputEditText
@@ -157,6 +158,192 @@
                         android:text="@string/load_last_edit_content"
                         android:background="?attr/selectableItemBackground"
                         android:visibility="gone" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardUseCompatPadding="true"
+                app:contentPadding="12dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/largeCacheLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_large_cache"
+                        android:textColor="@color/grey_500"
+                        android:textSize="12sp"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@id/largeCacheLabel"
+                        android:layout_marginTop="8dp">
+
+                        <ProgressBar
+                            android:id="@+id/largeCacheProgressBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/largeCacheWriteInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_execute" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/largeCacheCheckInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_execute" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/largeCacheReadInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_execute" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/writeLargeCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/write_to_disk"
+                                android:layout_weight="1" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/checkLargeCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/check"
+                                android:layout_weight="1" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/readLargeCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/read_file" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/deleteLargeCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/delete" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardUseCompatPadding="true"
+                app:contentPadding="12dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/massCacheLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_mass_cache"
+                        android:textColor="@color/grey_500"
+                        android:textSize="12sp"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintTop_toBottomOf="@id/massCacheLabel"
+                        android:layout_marginTop="8dp">
+
+                        <ProgressBar
+                            android:id="@+id/massCacheProgressBar"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/massCacheWriteInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_execute" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/massCacheCheckInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_execute" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/massCacheReadInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/no_execute" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/writeMassCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/write_to_disk"
+                                android:layout_weight="1" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/checkMassCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/check"
+                                android:layout_weight="1" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/readMassCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/read_file" />
+
+                            <androidx.appcompat.widget.AppCompatButton
+                                android:id="@+id/deleteMassCacheButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/delete" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

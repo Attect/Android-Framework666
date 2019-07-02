@@ -116,7 +116,7 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
         cacheDataXViewModel.cacheDataX.observe(this, Observer {
             var size = 0
             cacheDataXViewModel.cacheDataXLoadMap.value?.size?.let { size = it }
-            if (!cacheDataXViewModel.readerWorking && size > 0) {
+            if (size > 0) {
                 readCacheOnBackgroundThread()
             }
         })
@@ -287,10 +287,14 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
      * 推荐在OnCreate中调用，setContentView之前，用户体验最佳
      * 结果在cacheDataXViewModel.fastCacheDataXResultList中观察
      */
-    fun checkCacheX(vararg tags: String) {
+    fun checkCacheX(tags: List<String>) {
         Thread() {
-            cacheDataXViewModel.fastCacheDataXResultList.postValue(requireContext().fastCheckCache(tags.toList()))
+            cacheDataXViewModel.fastCacheDataXResultList.postValue(requireContext().fastCheckCache(tags))
         }.start()
+    }
+
+    fun checkCacheX(vararg tags: String) {
+        checkCacheX(tags.toList())
     }
 
     fun readCacheX(cacheInstance: List<Pair<String, Class<out DataX>>>) {

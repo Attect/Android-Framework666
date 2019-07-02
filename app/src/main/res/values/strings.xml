@@ -29,9 +29,18 @@
 
     <string name="label_persistent_cache">持久缓存</string>
     <string name="label_edit_cache">编辑缓存</string>
+    <string name="label_large_cache">大缓存</string>
     <string name="cache_component_title">缓存测试</string>
     <string name="text_input_edit_text">文本编辑框</string>
     <string name="load_last_edit_content">恢复上次编辑的内容</string>
     <string name="loading">正在加载</string>
+    <string name="write_to_disk">写入</string>
+    <string name="check">检查</string>
+    <string name="read_file">读取</string>
+    <string name="delete">删除</string>
+    <string name="no_execute">未执行</string>
+    <string name="working">工作中</string>
+    <string name="can_not_get_storage_manager">储存空间信息获取失败</string>
+    <string name="label_mass_cache">多文件缓存</string>
 
 </resources>

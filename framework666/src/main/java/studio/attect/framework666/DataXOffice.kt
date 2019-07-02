@@ -1,16 +1,17 @@
 package studio.attect.framework666
 
 import org.msgpack.core.MessagePack
+import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
 import studio.attect.framework666.interfaces.DataX
+import java.io.InputStream
 import java.math.BigInteger
 
 /**
  * 缓存数据处理办公室
  * @author Attect
  */
-class DataXOffice {
-    private val packer = MessagePack.newDefaultBufferPacker()
+class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBufferPacker()) {
     lateinit var unpacker: MessageUnpacker
 
     fun unpack(byteArray: ByteArray): DataXOffice {
@@ -18,7 +19,10 @@ class DataXOffice {
         return this
     }
 
-    fun offWork(): ByteArray = packer.toByteArray()
+    fun unpack(inputStream: InputStream): DataXOffice {
+        unpacker = MessagePack.newDefaultUnpacker(inputStream)
+        return this
+    }
 
     fun putBoolean(boolean: Boolean?): DataXOffice {
         if (boolean == null) {
