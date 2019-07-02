@@ -34,6 +34,16 @@ import studio.attect.framework666.interfaces.DataX
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * 缓存测试组件
+ *
+ * 用户主动保存
+ * 自动草稿缓存
+ * 大文件缓存
+ * 碎文件缓存
+ *
+ * @author Attect
+ */
 class CacheComponent : FragmentX() {
 
     private var persistentCache = PersistentCache()

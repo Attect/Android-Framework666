@@ -5,6 +5,12 @@ import android.util.Base64
 import java.io.File
 import java.nio.charset.Charset
 
+/**
+ * 缓存管理器
+ * 管理和确保一些数据
+ *
+ * @author Attect
+ */
 object CacheManager {
     private const val cacheDirName = "framework666_Cache"
     fun ensureCacheDir(context: Context): Boolean {
