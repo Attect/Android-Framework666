@@ -1,7 +1,6 @@
 package studio.attect.framework666.simple
 
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -100,6 +99,8 @@ class ComponentXExplorer : FragmentX() {
             }
             return "组件浏览"
         }
+
+        override fun getColor(context: Context?): Int? = null
 
         override fun newInstance(): ComponentX = ComponentXExplorer()
 

@@ -275,6 +275,8 @@ class RecyclerViewComponent : FragmentX() {
             return "回收视图"
         }
 
+        override fun getColor(context: Context?): Int? = null
+
         override fun newInstance(): ComponentX = RecyclerViewComponent()
 
     }

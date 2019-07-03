@@ -2,7 +2,6 @@ package studio.attect.framework666.compomentX
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.annotation.DrawableRes
 
 /**
  * ComponentX的基本信息和实例获取 接口
@@ -31,6 +30,12 @@ interface ComponentXCompanion {
      * 你必须确保始终返回一个名称，必定存在一个写死的
      */
     fun getName(context: Context?): String
+
+    /**
+     * 相关颜色
+     * 一些情况下需要
+     */
+    fun getColor(context: Context?): Int?
 
     /**
      * 获得一个ComponentX实例

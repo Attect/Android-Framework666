@@ -241,6 +241,8 @@ class CrashAndANRComponentX : FragmentX() {
             return "讨厌BUG!"
         }
 
+        override fun getColor(context: Context?): Int? = null
+
         override fun newInstance(): ComponentX = CrashAndANRComponentX()
 
     }

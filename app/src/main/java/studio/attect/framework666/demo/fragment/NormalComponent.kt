@@ -48,6 +48,8 @@ class NormalComponent : FragmentX() {
             return "普通组件"
         }
 
+        override fun getColor(context: Context?): Int? = null
+
         override fun newInstance(): ComponentX = NormalComponent()
 
     }

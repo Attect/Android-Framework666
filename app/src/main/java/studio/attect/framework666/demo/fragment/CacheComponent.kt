@@ -427,6 +427,8 @@ class CacheComponent : FragmentX() {
             return "缓存测试"
         }
 
+        override fun getColor(context: Context?): Int? = null
+
         override fun newInstance(): ComponentX = CacheComponent()
 
     }

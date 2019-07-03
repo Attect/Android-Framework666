@@ -64,13 +64,14 @@ class NotFoundComponentX : FragmentX() {
             return null
         }
 
-
         override fun getName(context: Context?): String {
             context?.let {
                 return context.resources.getString(R.string.componentx_not_found)
             }
             return "功能缺失"
         }
+
+        override fun getColor(context: Context?): Int? = null
 
         override fun newInstance(): ComponentX = NotFoundComponentX()
 
