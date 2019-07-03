@@ -5,11 +5,9 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import studio.attect.framework666.Logcat
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.interfaces.PerceptionComponent
 import studio.attect.framework666.waring
-import studio.attect.staticviewmodelstore.StaticViewModelLifecycleFragment
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -19,7 +17,7 @@ import kotlin.collections.HashMap
  *
  * @author Attect
  */
-abstract class PerceptionFragment : StaticViewModelLifecycleFragment(), PerceptionComponent {
+abstract class PerceptionFragment : OnBackPressedQueueFragment(), PerceptionComponent {
     /**
      * 给用户一个振动反馈
      */
