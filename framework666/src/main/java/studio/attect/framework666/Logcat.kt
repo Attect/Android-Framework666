@@ -35,7 +35,7 @@ object Logcat {
 
     @JvmStatic
     fun d(tag: String = TAG, message: String) {
-        if (BuildConfig.DEBUG) {
+        if (RuntimeBuildConfig.DEBUG) {
             defaultLogcatPrinter.d(tag, message)
         } else if (releaseLogcatPrinters.isNotEmpty()) {
             releaseLogcatPrinters.forEach {
@@ -49,7 +49,7 @@ object Logcat {
 
     @JvmStatic
     fun w(tag: String = TAG, message: String) {
-        if (BuildConfig.DEBUG) {
+        if (RuntimeBuildConfig.DEBUG) {
             defaultLogcatPrinter.w(tag, message)
         } else if (releaseLogcatPrinters.isNotEmpty()) {
             releaseLogcatPrinters.forEach {
@@ -64,7 +64,7 @@ object Logcat {
 
     @JvmStatic
     fun i(tag: String = TAG, message: String) {
-        if (BuildConfig.DEBUG) {
+        if (RuntimeBuildConfig.DEBUG) {
             defaultLogcatPrinter.i(tag, message)
         } else if (releaseLogcatPrinters.isNotEmpty()) {
             releaseLogcatPrinters.forEach {
@@ -79,7 +79,7 @@ object Logcat {
 
     @JvmStatic
     fun e(tag: String = TAG, message: String) {
-        if (BuildConfig.DEBUG) {
+        if (RuntimeBuildConfig.DEBUG) {
             defaultLogcatPrinter.e(tag, message)
         } else if (releaseLogcatPrinters.isNotEmpty()) {
             releaseLogcatPrinters.forEach {

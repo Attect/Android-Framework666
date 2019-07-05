@@ -14,7 +14,7 @@ class SignalViewModel : ViewModel() {
 
     val signal = MutableLiveData<Int>()
         get() {
-            if (field.value == null) field.postValue(null)
+            if (field.value == null) field.postValue(NOTING)
             return field
     }
 

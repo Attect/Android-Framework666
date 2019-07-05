@@ -113,6 +113,14 @@ abstract class ActivityX : PerceptionActivity() {
             }
         })
 
+        signal.observe(this, Observer {
+            when (it) {
+                SignalViewModel.EXIT_ACTIVITY -> {
+                    finish()
+                }
+            }
+        })
+
 
         transparentStatusBar(true) //如果想改变默认颜色，无需删掉这个，可以直接再调用一次传入不同的参数
     }
