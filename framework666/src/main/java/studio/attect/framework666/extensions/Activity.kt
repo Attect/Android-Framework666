@@ -135,3 +135,14 @@ fun Activity.secureDisplay(enable: Boolean = true) {
         window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 }
+
+/**
+ * 返回到主屏幕程序
+ * 通常用于转到后台保留
+ */
+fun Activity.toHomeScreen() {
+    val startMain = Intent(Intent.ACTION_MAIN)
+    startMain.addCategory(Intent.CATEGORY_HOME)
+    startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    startActivity(startMain)
+}

@@ -29,7 +29,7 @@ import studio.attect.framework666.compomentX.ContainerX
  *
  * @author Attect
  */
-class ContainerXActivity : ActivityX(), ContainerX {
+open class ContainerXActivity : ActivityX(), ContainerX {
     private var tag = ""
     private var componentX: ComponentX? = null
 
@@ -117,12 +117,20 @@ class ContainerXActivity : ActivityX(), ContainerX {
         private const val ARGUMENT_KEY = "arguments"
 
         /**
+         * 如果自己实现ContainerX
+         * 将class设置到这里
+         * 当然，自己实现的必须继承自ContainerXActivity
+         */
+        @JvmStatic
+        var runtimeContainerClass: Class<out ContainerXActivity> = ContainerXActivity::class.java
+
+        /**
          * 启动一个ComponentX
          * 不带任何参数
          */
         @JvmStatic
         fun startActivity(context: Context, tag: String) {
-            val intent = Intent(context, ContainerXActivity::class.java)
+            val intent = Intent(context, runtimeContainerClass)
             intent.putExtra(DATA_KEY, tag)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
@@ -134,7 +142,7 @@ class ContainerXActivity : ActivityX(), ContainerX {
          */
         @JvmStatic
         fun startActivity(context: Context, tag: String, argument: ArgumentX?) {
-            val intent = Intent(context, ContainerXActivity::class.java)
+            val intent = Intent(context, runtimeContainerClass)
             intent.putExtra(DATA_KEY, tag)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             argument?.let {
@@ -156,7 +164,7 @@ class ContainerXActivity : ActivityX(), ContainerX {
         @JvmStatic
         fun startActivityForResult(fragment: Fragment, tag: String, argument: ArgumentX?, requestCode: Int = Int.MIN_VALUE) {
             fragment.context?.let { context ->
-                val intent = Intent(context, ContainerXActivity::class.java)
+                val intent = Intent(context, runtimeContainerClass)
                 intent.putExtra(DATA_KEY, tag)
                 argument?.let {
                     intent.putExtra(ARGUMENT_KEY, it.toBundle())
@@ -182,7 +190,7 @@ class ContainerXActivity : ActivityX(), ContainerX {
         @JvmOverloads
         @JvmStatic
         fun startActivityForResult(activity: Activity, tag: String, argument: ArgumentX?, requestCode: Int = Int.MIN_VALUE) {
-            val intent = Intent(activity, ContainerXActivity::class.java)
+            val intent = Intent(activity, runtimeContainerClass)
             intent.putExtra(DATA_KEY, tag)
             argument?.let {
                 intent.putExtra(ARGUMENT_KEY, it.toBundle())
@@ -207,7 +215,7 @@ class ContainerXActivity : ActivityX(), ContainerX {
         @JvmOverloads
         @JvmStatic
         fun getPendingIntent(context: Context, tag: String, argument: ArgumentX? = null, action: String? = null, requestCode: Int = System.currentTimeMillis().toInt()): PendingIntent {
-            val intent = Intent(context, ContainerXActivity::class.java)
+            val intent = Intent(context, runtimeContainerClass)
             intent.putExtra(DATA_KEY, tag)
             intent.action = action
             argument?.let {
