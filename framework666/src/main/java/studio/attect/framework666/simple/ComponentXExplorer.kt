@@ -17,8 +17,8 @@ import studio.attect.framework666.ContainerXActivity
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
 import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXCompanion
 import studio.attect.framework666.compomentX.ComponentXMap
+import studio.attect.framework666.compomentX.ComponentXProvider
 import studio.attect.framework666.interfaces.UniqueData
 
 /**
@@ -52,7 +52,7 @@ class ComponentXExplorer : FragmentX() {
         ComponentXMap.keys.forEach { key ->
             ComponentXMap[key]?.let {
                 val itemData = ItemData()
-                itemData.componentXCompanion = it
+                itemData.componentXProvider = it
                 componentXList.add(itemData)
             }
         }
@@ -60,9 +60,9 @@ class ComponentXExplorer : FragmentX() {
     }
 
     class ItemData : UniqueData {
-        lateinit var componentXCompanion: ComponentXCompanion
+        lateinit var componentXProvider: ComponentXProvider
 
-        override fun uniqueTag(): Any = componentXCompanion.getTag()
+        override fun uniqueTag(): Any = componentXProvider.getTag()
     }
 
 
@@ -74,16 +74,16 @@ class ComponentXExplorer : FragmentX() {
         private val tagView = itemView.findViewById<AppCompatTextView>(R.id.tag)
 
         override fun applyData(data: ItemData, position: Int) {
-            iconView.setImageDrawable(data.componentXCompanion.getIcon(itemView.context))
-            titleView.text = data.componentXCompanion.getName(itemView.context)
-            tagView.text = data.componentXCompanion.getTag()
+            iconView.setImageDrawable(data.componentXProvider.getIcon(itemView.context))
+            titleView.text = data.componentXProvider.getName(itemView.context)
+            tagView.text = data.componentXProvider.getTag()
             itemView.setOnClickListener {
-                ContainerXActivity.startActivity(it.context, data.componentXCompanion.getTag())
+                ContainerXActivity.startActivity(it.context, data.componentXProvider.getTag())
             }
         }
     }
 
-    companion object : ComponentXCompanion {
+    companion object : ComponentXProvider {
         override fun getTag(): String = "componentx_explorer"
 
         override fun getIcon(context: Context?): Drawable? {

@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable
  *
  * @author Attect
  */
-interface ComponentXCompanion {
+interface ComponentXProvider {
 
     /**
      * 对应ComponentX的tag

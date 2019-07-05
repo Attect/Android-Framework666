@@ -19,7 +19,7 @@ import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXCompanion
+import studio.attect.framework666.compomentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.extensions.systemLongAnimTime
 import studio.attect.framework666.interfaces.UniqueData
@@ -251,7 +251,7 @@ class RecyclerViewComponent : FragmentX() {
         }
     }
 
-    companion object : ComponentXCompanion {
+    companion object : ComponentXProvider {
 
         override fun getTag(): String = "recycler_view_demo"
 

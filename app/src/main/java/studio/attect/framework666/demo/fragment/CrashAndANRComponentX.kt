@@ -22,7 +22,7 @@ import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXCompanion
+import studio.attect.framework666.compomentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.extensions.currentSafeTop
@@ -224,7 +224,7 @@ class CrashAndANRComponentX : FragmentX() {
         return coverColor
     }
 
-    companion object : ComponentXCompanion {
+    companion object : ComponentXProvider {
         override fun getTag(): String = "crash_and_anr"
 
         override fun getIcon(context: Context?): Drawable? {

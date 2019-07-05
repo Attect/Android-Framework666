@@ -23,7 +23,7 @@ import studio.attect.framework666.Logcat
 import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
 import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXCompanion
+import studio.attect.framework666.compomentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.cache.TestLargeTestDataX
 import studio.attect.framework666.extensions.deleteCacheDataX
@@ -396,7 +396,7 @@ class CacheComponent : FragmentX() {
 
     }
 
-    companion object : ComponentXCompanion {
+    companion object : ComponentXProvider {
 
         const val TAG_PERSISTENT_CACHE = "cacheTest_persistentCache"
 

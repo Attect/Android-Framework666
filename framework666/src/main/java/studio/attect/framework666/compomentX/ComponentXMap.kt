@@ -16,13 +16,13 @@ import studio.attect.framework666.simple.NotFoundComponentX.Arguments
  *
  * @author Attect
  */
-object ComponentXMap : HashMap<String, ComponentXCompanion>() {
+object ComponentXMap : HashMap<String, ComponentXProvider>() {
 
-    fun mark(componentXCompanion: ComponentXCompanion) {
-        put(componentXCompanion.getTag(), componentXCompanion)
+    fun mark(componentXProvider: ComponentXProvider) {
+        put(componentXProvider.getTag(), componentXProvider)
     }
 
-    fun detail(tag: String?): ComponentXCompanion {
+    fun detail(tag: String?): ComponentXProvider {
         tag?.let { t ->
             get(t)?.let {
                 return it
