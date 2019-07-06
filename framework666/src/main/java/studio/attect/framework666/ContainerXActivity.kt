@@ -12,6 +12,7 @@ import studio.attect.framework666.compomentX.ArgumentX
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.compomentX.ContainerX
+import studio.attect.framework666.simple.NotFoundComponentX
 
 /**
  * 万能的承载ComponentX的Activity
@@ -48,11 +49,19 @@ open class ContainerXActivity : ActivityX(), ContainerX {
             return
         }
 
+        var fragmentArgument = intent.getBundleExtra(ARGUMENT_KEY)
+
         componentX = ComponentXMap.detail(tag).newInstance()
 
         if (componentX == null) {
             finish()
             return
+        }
+
+        if (componentX is NotFoundComponentX) {
+            val notFoundArgument = NotFoundComponentX.Arguments()
+            notFoundArgument.tagName = tag
+            fragmentArgument = notFoundArgument.toBundle()
         }
 
         setContentView(R.layout.activity_container_x)
@@ -61,9 +70,9 @@ open class ContainerXActivity : ActivityX(), ContainerX {
         if (supportFragmentManager.findFragmentById(R.id.componentXContainer) != null) return
 
         componentX?.let {
-            val fragment = it.getComponentXFragmentInstance(intent.getBundleExtra(ARGUMENT_KEY))
+            val fragment = it.getComponentXFragmentInstance(fragmentArgument)
             if (fragment !is NavHostFragment) {
-                fragment.arguments = intent.getBundleExtra(ARGUMENT_KEY)
+                fragment.arguments = fragmentArgument
             }
             supportFragmentManager.beginTransaction().add(R.id.componentXContainer, fragment, tag).commit()
         }

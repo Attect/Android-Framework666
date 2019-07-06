@@ -35,7 +35,7 @@ class NotFoundComponentX : FragmentX() {
 
     class Arguments : ArgumentX {
         private val TAG = "tag"
-        var tagName = ""
+        var tagName = "not set"
 
         override fun fromBundle(bundle: Bundle?) {
             bundle?.let {
