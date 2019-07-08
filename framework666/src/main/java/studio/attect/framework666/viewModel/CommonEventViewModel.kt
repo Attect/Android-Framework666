@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
  *
  * @author attect
  */
-class CommonEventViewModel : ViewModel() {
+open class CommonEventViewModel : ViewModel() {
 
     val event = MutableLiveData<Int>()
         get() {
