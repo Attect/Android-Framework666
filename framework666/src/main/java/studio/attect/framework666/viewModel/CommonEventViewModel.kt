@@ -25,31 +25,37 @@ open class CommonEventViewModel : ViewModel() {
         /**
          * 消极事件
          */
+        @JvmStatic
         val NEGATIVE = -1
 
         /**
          * 无事件
          */
+        @JvmStatic
         val NONE = 0
 
         /**
          * 积极事件
          */
+        @JvmStatic
         val POSITIVE = 1
 
         /**
          * 继续操作
          */
+        @JvmStatic
         val CONTINUE = 2
 
         /**
          * 返回向前
          */
+        @JvmStatic
         val FORWARD = 3
 
         /**
          * 有数据变更
          */
+        @JvmStatic
         val DATA_UPDATED = 4
     }
 }
