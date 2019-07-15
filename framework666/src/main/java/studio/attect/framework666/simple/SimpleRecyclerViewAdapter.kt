@@ -22,9 +22,10 @@ import studio.attect.framework666.interfaces.UniqueData
  *
  * 注意：ViewType在此类作为LayoutRes使用！！
  *
+ * @param owner 持有者引用，因ViewHolder可能为内部类而准备的
  * @author Attect
  */
-class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter.BasicViewHolder<out UniqueData>>() {
+class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRecyclerViewAdapter.BasicViewHolder<out UniqueData>>() {
 
     /**
      * 根据不同的类型持有不同ViewHolder的class
@@ -291,8 +292,17 @@ class SimpleRecyclerViewAdapter : RecyclerView.Adapter<SimpleRecyclerViewAdapter
      * @param cls BasicViewHolder.class
      */
     private fun buildViewHolder(view: View, cls: Class<out BasicViewHolder<out UniqueData>>): BasicViewHolder<out UniqueData> {
+        //处理ViewHolder为内部类的情况
+        cls.constructors[0]?.parameterTypes?.let { parameterTypes ->
+            if (parameterTypes.size > 1) {
+                val constructor = cls.getConstructor(parameterTypes[0], View::class.java)
+                return constructor.newInstance(owner, view)
+            }
+        }
+
         val constructor = cls.getConstructor(View::class.java)
         return constructor.newInstance(view)
+
     }
 
     abstract class BasicViewHolder<T : UniqueData>(itemView: View) : RecyclerView.ViewHolder(itemView) {

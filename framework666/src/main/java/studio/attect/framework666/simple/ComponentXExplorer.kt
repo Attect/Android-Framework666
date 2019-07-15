@@ -29,7 +29,7 @@ import studio.attect.framework666.interfaces.UniqueData
  */
 class ComponentXExplorer : FragmentX() {
 
-    private val recyclerViewAdapter = SimpleRecyclerViewAdapter()
+    private val recyclerViewAdapter = SimpleRecyclerViewAdapter(this)
     private val layoutManager by lazy { LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false) }
 
 

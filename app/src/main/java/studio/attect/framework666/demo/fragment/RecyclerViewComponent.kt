@@ -31,7 +31,7 @@ import studio.attect.framework666.simple.SimpleRecyclerViewAdapter
  * @author Attect
  */
 class RecyclerViewComponent : FragmentX() {
-    private val recyclerViewAdapter = SimpleRecyclerViewAdapter()
+    private val recyclerViewAdapter = SimpleRecyclerViewAdapter(this)
     private val layoutManager by lazy { LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -233,7 +233,7 @@ class RecyclerViewComponent : FragmentX() {
         override fun uniqueTag(): Any = text
     }
 
-    class TextViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
+    inner class TextViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
         private val textView = itemView.findViewById<AppCompatTextView>(R.id.text)
 
         override fun applyData(data: ItemData, position: Int) {
@@ -241,7 +241,7 @@ class RecyclerViewComponent : FragmentX() {
         }
     }
 
-    class TextColorViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
+    inner class TextColorViewHolder(itemView: View) : SimpleRecyclerViewAdapter.BasicViewHolder<ItemData>(itemView) {
         private val textView = itemView.findViewById<AppCompatTextView>(R.id.text)
         private val colorView = itemView.findViewById<View>(R.id.colorBlock)
 
