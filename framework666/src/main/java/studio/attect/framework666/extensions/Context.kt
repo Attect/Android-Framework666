@@ -116,12 +116,13 @@ fun Context.makeSureFileWriteEnvironment(file: File, expectedSize: Long, callbac
 /**
  * 缓存一个DataX
  */
-fun <T : DataX> Context.writeCacheDataX(tag: String, @CacheDataX.Companion.StoreType storeType: Int, data: T): Boolean {
+fun <T : DataX> Context.writeCacheDataX(tag: String, @CacheDataX.Companion.StoreType storeType: Int, data: T, effectiveDuration: Long = -1): Boolean {
     if (!CacheManager.ensureCacheDir(this)) return false
 
     val cacheDataX = CacheDataX(data).apply {
         this.tag = tag
         this.storeType = storeType
+        this.effectiveDuration = effectiveDuration
     }
 
     val file = File(CacheManager.getCacheFileName(this, tag))
