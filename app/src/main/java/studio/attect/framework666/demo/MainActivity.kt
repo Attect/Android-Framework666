@@ -6,15 +6,11 @@ import android.os.Bundle
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.Observer
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import studio.attect.framework666.ActivityX
-import studio.attect.framework666.Logcat
 import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.demo.fragment.NormalComponent
 import studio.attect.framework666.demo.fragment.RecyclerViewComponent
-import studio.attect.framework666.extensions.fromJson
 import studio.attect.framework666.extensions.setStatusBarColor
 import studio.attect.framework666.simple.ComponentXExplorer
 
@@ -43,10 +39,10 @@ class MainActivity : ActivityX() {
     }
 
     private fun initBottomNavigation() {
-        Gson().fromJson<ArrayList<String>>(preference.getString(BOTTOM_TAG_PREFERENCE_NAME, "[]"))?.let {
-            bottomNavigationTags.clear()
-            bottomNavigationTags.addAll(it)
-        }
+//        Gson().fromJson<ArrayList<String>>(preference.getString(BOTTOM_TAG_PREFERENCE_NAME, "[]"))?.let {
+//            bottomNavigationTags.clear()
+//            bottomNavigationTags.addAll(it)
+//        }
 
         if (bottomNavigationTags.size != BOTTOM_NAVIGATION_NUM) {
             bottomNavigationTags.clear()

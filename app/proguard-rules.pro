@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#保持SimpleRecyclerViewAdapter$BasicViewHolder的子类
+-keep class * extends studio.attect.framework666.simple.SimpleRecyclerViewAdapter$BasicViewHolder {
+    <init>(...);
+}
+

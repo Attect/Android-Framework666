@@ -76,7 +76,7 @@ class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRe
      */
     @JvmOverloads
     fun addMoreData(moreData: List<UniqueData>, @LayoutRes layoutRes: Int, position: Int = dataList.size, fake: Boolean = false): Int? {
-        if (moreData.isNotEmpty()) {
+        if (!moreData.isNullOrEmpty()) {
             if (!fake) {
                 moreData.forEach {
                     if (it is SimpleListData<*>) {
