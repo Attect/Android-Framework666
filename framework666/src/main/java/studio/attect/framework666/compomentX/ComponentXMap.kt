@@ -1,5 +1,6 @@
 package studio.attect.framework666.compomentX
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import studio.attect.framework666.simple.NotFoundComponentX
 import studio.attect.framework666.simple.NotFoundComponentX.Arguments
@@ -32,17 +33,26 @@ object ComponentXMap : HashMap<String, ComponentXProvider>() {
         return NotFoundComponentX.Companion
     }
 
-    fun go(tag: String?): Fragment {
+    @JvmOverloads
+    fun go(tag: String?, arguments: Bundle? = null): Fragment {
         tag?.let { t ->
             get(t)?.let {
-                return it.newInstance().getComponentXFragmentInstance()
+                val componentX = it.newInstance()
+                if (componentX is NavigatedComponentX) {
+                    return componentX.getComponentXFragmentInstance(arguments)
+                }
+                val fragment = componentX.getComponentXFragmentInstance()
+                if (arguments != null) {
+                    fragment.arguments = arguments
+                }
+                return fragment
             }
         }
         val componentX = NotFoundComponentX.newInstance()
-        val arguments = Arguments()
-        arguments.tagName = tag ?: "NULL"
+        val notFoundArguments = Arguments()
+        notFoundArguments.tagName = tag ?: "NULL"
         val fragment = componentX.getComponentXFragmentInstance()
-        fragment.arguments = arguments.toBundle()
+        fragment.arguments = notFoundArguments.toBundle()
         return fragment
     }
 }
