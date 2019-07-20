@@ -35,7 +35,7 @@ class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRe
     /**
      * 列表所有的数据都在这里
      */
-    private val dataList = ArrayList<SimpleListData<out UniqueData>>()
+    val dataList = ArrayList<SimpleListData<out UniqueData>>()
 
     /**
      * 注册一个类型的ViewHolder（Class）
