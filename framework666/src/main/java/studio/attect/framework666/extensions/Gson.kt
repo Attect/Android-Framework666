@@ -10,13 +10,16 @@ import com.google.gson.reflect.TypeToken
  * 解决了嵌套范型麻烦的问题
  * 做了异常捕获，防止太多意外崩溃影响体验
  *
+ * 内联函数（为了解决泛型）
+ * 只能在Kotlin中使用
+ *
  * @param T 期望结果类型
  * @param json JSON格式的字符串
  * @return 解析JSON后得到的对象，可能为null
  */
-fun <T> Gson.fromJson(json: String?): T? {
+inline fun <reified T : Any> Gson.fromJson(json: String?): T? {
     try {
-        return fromJson(json, object : TypeToken<T>() {}.type)
+        return fromJson<T>(json, object : TypeToken<T>() {}.type)
     } catch (e: JsonSyntaxException) {
         e.printStackTrace()
     } catch (e: JsonIOException) {
