@@ -322,6 +322,9 @@ class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRe
 
         private val textView: AppCompatTextView = itemView.findViewById(R.id.text)
 
+        /**
+         * 注意[position]是创建ViewHolder时的数据位置，不会随着列表的变化而更新
+         */
         override fun applyData(data: SimpleListData<out UniqueData>, position: Int) {
             textView.text = itemView.context.getString(R.string.simple_recycler_view_adapter_unprocessed_data).format(data.layoutRes, data.uniqueTag())
         }

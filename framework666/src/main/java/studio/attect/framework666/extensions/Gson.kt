@@ -17,7 +17,7 @@ import com.google.gson.reflect.TypeToken
  * @param json JSON格式的字符串
  * @return 解析JSON后得到的对象，可能为null
  */
-inline fun <reified T : Any> Gson.fromJson(json: String?): T? {
+inline fun <reified T> Gson.fromJson(json: String?): T? {
     try {
         return fromJson<T>(json, object : TypeToken<T>() {}.type)
     } catch (e: JsonSyntaxException) {
