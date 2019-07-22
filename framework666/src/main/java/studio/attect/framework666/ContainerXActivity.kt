@@ -34,6 +34,12 @@ open class ContainerXActivity : ActivityX(), ContainerX {
     private var tag = ""
     private var componentX: ComponentX? = null
 
+    /**
+     * 提供容器布局id
+     * 如果需要更换基础布局，继承此类后重写此方法
+     */
+    open fun containerLayout() = R.layout.activity_container_x
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,7 +70,7 @@ open class ContainerXActivity : ActivityX(), ContainerX {
             fragmentArgument = notFoundArgument.toBundle()
         }
 
-        setContentView(R.layout.activity_container_x)
+        setContentView(containerLayout())
 
         //防止崩溃重叠，使用原有Fragment(你问我如果要处理一下崩溃怎么办……SignalViewModel应该能解君愁)
         if (supportFragmentManager.findFragmentById(R.id.componentXContainer) != null) return
