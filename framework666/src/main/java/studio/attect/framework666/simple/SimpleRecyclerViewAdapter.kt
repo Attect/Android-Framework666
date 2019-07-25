@@ -164,6 +164,21 @@ class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRe
     }
 
     /**
+     * 更新或添加
+     * 如果数据不存在，则添加到指定位置
+     * @param data 要加入列表的数据
+     * @param layoutRes 添加的数据对应的布局,fake为true时，可以给定任意值
+     * @param position 要插入的位置，默认为列表末尾
+     * @param fake 是否做假操作，可以获取到新数据的位置
+     * @return 更新的位置或添加的位置
+     */
+    fun updateOrAdd(data: UniqueData, @LayoutRes layoutRes: Int, position: Int = dataList.size, fake: Boolean = false): Int {
+        val updateResult = updateData(data, layoutRes, fake)
+        if (updateResult != null) return updateResult
+        return addData(data, layoutRes, position, fake)
+    }
+
+    /**
      * 删除一条数据
      * 根据唯一的tag进行删除
      * 此方法可用于无需判断数据是否存在进行安全删除操作调用，并能得知结果
