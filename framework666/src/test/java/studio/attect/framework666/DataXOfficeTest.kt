@@ -1,8 +1,8 @@
 package studio.attect.framework666
 
+import org.junit.Assert.assertArrayEquals
 import org.junit.Test
-
-import org.junit.Assert.*
+import org.msgpack.core.MessagePack
 import studio.attect.framework666.extensions.toHexString
 import studio.attect.framework666.interfaces.DataX
 
@@ -10,20 +10,22 @@ class DataXOfficeTest {
 
     @Test
     fun putBoolean() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putBoolean(true)
         dataXOffice.putBoolean(false)
         dataXOffice.putBoolean(null)
-        assert(dataXOffice.offWork().toHexString() == "C3 C2 C0")
+        assert(packer.toByteArray().toHexString() == "C3 C2 C0")
     }
 
     @Test
     fun getBoolean() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putBoolean(true)
         dataXOffice.putBoolean(false)
         dataXOffice.putBoolean(null)
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         assert(dataXOffice.getBoolean() == true)
         assert(dataXOffice.getBoolean() == false)
@@ -32,36 +34,40 @@ class DataXOfficeTest {
 
     @Test
     fun putBooleanArray() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putBooleanArray(booleanArrayOf(true, false, true))
-        assert(dataXOffice.offWork().toHexString() == "93 C3 C2 C3")
+        assert(packer.toByteArray().toHexString() == "93 C3 C2 C3")
     }
 
     @Test
     fun getBooleanArray() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putBooleanArray(booleanArrayOf(true, false, true))
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         assertArrayEquals(dataXOffice.getBooleanArray(), booleanArrayOf(true, false, true))
     }
 
     @Test
     fun putByte() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putByte(0b00000001)
         dataXOffice.putByte(0b00000010)
         dataXOffice.putByte(0b00000011)
-        assert(dataXOffice.offWork().toHexString() == "01 02 03")
+        assert(packer.toByteArray().toHexString() == "01 02 03")
     }
 
     @Test
     fun getByte() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putByte(0b00000001)
         dataXOffice.putByte(0b00000010)
         dataXOffice.putByte(0b00000011)
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         val byte1 = 0b00000001.toByte()
         val byte2 = 0b00000010.toByte()
@@ -73,16 +79,18 @@ class DataXOfficeTest {
 
     @Test
     fun putByteArray() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putByteArray(byteArrayOf(0b00000001, 0b00000010, 0b00000011))
-        assert(dataXOffice.offWork().toHexString() == "93 01 02 03")
+        assert(packer.toByteArray().toHexString() == "93 01 02 03")
     }
 
     @Test
     fun getByteArray() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         dataXOffice.putByteArray(byteArrayOf(0b00000001, 0b00000010, 0b00000011))
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         assertArrayEquals(dataXOffice.getByteArray(), byteArrayOf(0b00000001, 0b00000010, 0b00000011))
     }
@@ -197,22 +205,24 @@ class DataXOfficeTest {
 
     @Test
     fun putArray() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         val userJack = UserData(900001, "jack")
         val userTom = UserData(900002, "tom")
         val userJerry = UserData(900003, "jerry")
         dataXOffice.putArray(arrayOf(userJack, userTom, userJerry))
-        assert(dataXOffice.offWork().toHexString() == "93 CE 00 0D BB A1 A4 6A 61 63 6B CE 00 0D BB A2 A3 74 6F 6D CE 00 0D BB A3 A5 6A 65 72 72 79")
+        assert(packer.toByteArray().toHexString() == "93 CE 00 0D BB A1 A4 6A 61 63 6B CE 00 0D BB A2 A3 74 6F 6D CE 00 0D BB A3 A5 6A 65 72 72 79")
     }
 
     @Test
     fun getArray() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         val userJack = UserData(900001, "jack")
         val userTom = UserData(900002, "tom")
         val userJerry = UserData(900003, "jerry")
         dataXOffice.putArray(arrayOf(userJack, userTom, userJerry))
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         val userArray = dataXOffice.getArray(UserData::class.java)
         assert(userArray?.get(0) == userJack)
@@ -222,18 +232,20 @@ class DataXOfficeTest {
 
     @Test
     fun putDataX() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         val userData = UserData(6385678, "Attect")
         dataXOffice.putDataX(userData)
-        println(dataXOffice.offWork().toHexString())
+        println(packer.toByteArray().toHexString())
     }
 
     @Test
     fun getDataX() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         val userData = UserData(6385678, "Attect")
         dataXOffice.putDataX(userData)
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         val restoreUserData = UserData().apply { applyFromOffice(dataXOffice) }
         assert(userData == restoreUserData)
@@ -241,7 +253,8 @@ class DataXOfficeTest {
 
     @Test
     fun putMap() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         val priceMap = HashMap<String, Double>()
         priceMap.put("OnePlus5", 2999.0)
         priceMap.put("Huawei P30", 3988.0)
@@ -253,12 +266,13 @@ class DataXOfficeTest {
             dataXOffice.putDouble(price)
         }
 
-        assert(dataXOffice.offWork().toHexString() == "83 AA 48 75 61 77 65 69 20 50 33 30 CB 40 AF 28 00 00 00 00 00 A8 4F 6E 65 50 6C 75 73 35 CB 40 A7 6E 00 00 00 00 00 A5 52 65 64 6D 69 CB 40 88 F8 00 00 00 00 00")
+        assert(packer.toByteArray().toHexString() == "83 AA 48 75 61 77 65 69 20 50 33 30 CB 40 AF 28 00 00 00 00 00 A8 4F 6E 65 50 6C 75 73 35 CB 40 A7 6E 00 00 00 00 00 A5 52 65 64 6D 69 CB 40 88 F8 00 00 00 00 00")
     }
 
     @Test
     fun getMap() {
-        val dataXOffice = DataXOffice()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
         val priceMap = HashMap<String, Double>()
         priceMap.put("OnePlus5", 2999.0)
         priceMap.put("Huawei P30", 3988.0)
@@ -270,7 +284,7 @@ class DataXOfficeTest {
             dataXOffice.putDouble(price)
         }
 
-        val box = dataXOffice.offWork()
+        val box = packer.toByteArray()
         dataXOffice.unpack(box)
         val restorePriceMap = HashMap<String, Double>()
         val mapSize = dataXOffice.getMap()
