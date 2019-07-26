@@ -3,7 +3,13 @@ package studio.attect.framework666.utils
 import android.os.Build
 import java.util.*
 
+/**
+ * @author attect
+ */
 object IntegerArrayUtils {
+    /**
+     * 将Java的Integer[]转成Kotlin的IntArray
+     */
     @JvmStatic
     fun toIntArray(integerArray: Array<Int?>?): IntArray {
         integerArray?.let { integers ->
