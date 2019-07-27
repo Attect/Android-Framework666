@@ -366,6 +366,13 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         }
     }
 
+    inline fun <reified T : DataX> getDataX(clazz: Class<T>): T? {
+        if (unpacker.tryUnpackNil()) return null
+        val dataX = clazz.newInstance()
+        dataX.applyFromOffice(this)
+        return dataX
+    }
+
     fun putMap(mapSize: Int): DataXOffice {
         packer.packMapHeader(mapSize)
         return this
