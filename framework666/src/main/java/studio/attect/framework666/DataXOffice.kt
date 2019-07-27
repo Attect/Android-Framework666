@@ -354,11 +354,16 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         }
     }
 
-    fun putDataX(dataX: DataX): DataXOffice {
-        val oldSize = packer.totalWrittenBytes
-        dataX.putToOffice(this)
-        if (oldSize == packer.totalWrittenBytes) throw IllegalStateException("DataX没有提交任何资料给DataX办公室，违反了规定")
-        return this
+    fun putDataX(dataX: DataX?): DataXOffice {
+        if (dataX == null) {
+            packer.packNil()
+            return this
+        } else {
+            val oldSize = packer.totalWrittenBytes
+            dataX.putToOffice(this)
+            if (oldSize == packer.totalWrittenBytes) throw IllegalStateException("DataX没有提交任何资料给DataX办公室，违反了规定")
+            return this
+        }
     }
 
     fun putMap(mapSize: Int): DataXOffice {
