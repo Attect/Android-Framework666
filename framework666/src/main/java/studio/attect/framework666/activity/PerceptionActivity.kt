@@ -6,9 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import com.irozon.sneaker.Sneaker
-import studio.attect.framework666.Logcat
 import studio.attect.framework666.debug
-import studio.attect.framework666.extensions.coverToTTSFriendlyString
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.interfaces.PerceptionComponent
 import studio.attect.framework666.waring
@@ -132,8 +130,8 @@ abstract class PerceptionActivity : OnBackPressedQueueActivity(), PerceptionComp
         vibrator(vibratorLevel)
         makeNotificationSound()
         if (speak) {
-            speakText(title.coverToTTSFriendlyString())
-            speakText(message.coverToTTSFriendlyString())
+            speakText(title)
+            speakText(message)
         }
     }
 

@@ -117,6 +117,45 @@ class DataXOfficeTest {
 
     @Test
     fun getInt() {
+//        val userData = UserData()
+//        val packer = MessagePack.newDefaultBufferPacker()
+//        val dataXOffice = DataXOffice(packer)
+//        userData.putToOffice(dataXOffice)
+//        val box = packer.toByteArray()
+//        dataXOffice.unpack(box)
+//        val newUserData = dataXOffice.getDataX(UserData::class.java)
+//        println(newUserData)
+//        assert(userData == newUserData)
+
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
+        val number: Int? = null
+
+        //putToOffice
+        dataXOffice.putInt(number)
+        dataXOffice.putInt(123)
+        dataXOffice.putInt(1)
+        dataXOffice.putInt(null)
+        dataXOffice.putString(null)
+        dataXOffice.putString("")
+        dataXOffice.putString("123")
+        dataXOffice.putDouble(513.13)
+        dataXOffice.putDouble(null)
+
+        //applyFromOffice
+        val box = packer.toByteArray()
+        dataXOffice.unpack(box)
+
+        println(dataXOffice.getInt())
+        println(dataXOffice.getInt())
+        println(dataXOffice.getInt())
+        println(dataXOffice.getInt())
+        println(dataXOffice.getString())
+        println(dataXOffice.getString())
+        println(dataXOffice.getString())
+        println(dataXOffice.getDouble())
+        println(dataXOffice.getDouble())
+
     }
 
     @Test
