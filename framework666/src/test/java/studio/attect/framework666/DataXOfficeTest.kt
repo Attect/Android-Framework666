@@ -252,6 +252,18 @@ class DataXOfficeTest {
     }
 
     @Test
+    fun getInnerDataX() {
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
+        val userData = InnerUserData(123456, "Attect")
+        dataXOffice.putDataX(userData)
+        val box = packer.toByteArray()
+        dataXOffice.unpack(box)
+        val restoreUserData = dataXOffice.getDataX(InnerUserData::class.java, this)
+        assert(userData == restoreUserData)
+    }
+
+    @Test
     fun putMap() {
         val packer = MessagePack.newDefaultBufferPacker()
         val dataXOffice = DataXOffice(packer)
@@ -338,6 +350,45 @@ class DataXOfficeTest {
         }
 
 
+    }
+
+    inner class InnerUserData() : DataX {
+
+        constructor(i: Int? = null, u: String? = null) : this() {
+            id = i
+            username = u
+        }
+
+        var id: Int? = null
+        var username: String? = null
+
+        override fun putToOffice(office: DataXOffice) {
+            office.putInt(id)
+            office.putString(username)
+        }
+
+        override fun applyFromOffice(office: DataXOffice) {
+            id = office.getInt()
+            username = office.getString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as InnerUserData
+
+            if (id != other.id) return false
+            if (username != other.username) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = id ?: 0
+            result = 32 * result + (username?.hashCode() ?: 0)
+            return result
+        }
     }
 
 

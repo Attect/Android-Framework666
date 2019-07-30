@@ -354,6 +354,18 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         }
     }
 
+    inline fun <reified T : DataX, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
+        if (unpacker.tryUnpackNil()) return null
+        return Array(unpacker.unpackArrayHeader()) {
+            if (unpacker.tryUnpackNil()) return@Array null
+            val constructor = clazz.getConstructor(clazz.constructors[0].parameterTypes[0])
+            val data = constructor.newInstance(owner)
+            data.applyFromOffice(this)
+            return@Array data
+        }
+    }
+
+
     fun putDataX(dataX: DataX?): DataXOffice {
         if (dataX == null) {
             packer.packNil()
@@ -368,7 +380,16 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
     inline fun <reified T : DataX> getDataX(clazz: Class<T>): T? {
         if (unpacker.tryUnpackNil()) return null
+
         val dataX = clazz.newInstance()
+        dataX.applyFromOffice(this)
+        return dataX
+    }
+
+    inline fun <reified T : DataX, reified K> getDataX(clazz: Class<T>, owner: K): T? {
+        if (unpacker.tryUnpackNil()) return null
+        val constructor = clazz.getConstructor(clazz.constructors[0].parameterTypes[0])
+        val dataX = constructor.newInstance(owner)
         dataX.applyFromOffice(this)
         return dataX
     }

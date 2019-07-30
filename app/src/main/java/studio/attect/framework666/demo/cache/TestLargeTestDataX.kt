@@ -26,6 +26,7 @@ class TestLargeTestDataX : DataX {
         for (i in 0 until 1024) {
             office.getString()
         }
+        office.getDataX(TestLargeTestDataX::class.java, Any())
     }
 
 }
