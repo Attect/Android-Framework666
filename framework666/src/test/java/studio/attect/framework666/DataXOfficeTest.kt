@@ -51,6 +51,47 @@ class DataXOfficeTest {
     }
 
     @Test
+    fun getBooleanList() {
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
+        val list = arrayListOf(true, false, true, null, true, true)
+        dataXOffice.putBooleanList(list)
+        val box = packer.toByteArray()
+        dataXOffice.unpack(box)
+        dataXOffice.getBooleanList()?.let { newList ->
+            list.forEachIndexed { index, value ->
+                assert(value == newList[index])
+            }
+        }
+    }
+
+    @Test
+    fun getBooleanEmptyList() {
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
+        val list = arrayListOf<Boolean?>()
+        dataXOffice.putBooleanList(list)
+        val box = packer.toByteArray()
+        dataXOffice.unpack(box)
+        dataXOffice.getBooleanList()?.let { newList ->
+            list.forEachIndexed { index, value ->
+                assert(value == newList[index])
+            }
+        }
+    }
+
+    @Test
+    fun getBooleanNullList() {
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
+        val list: ArrayList<Boolean?>? = null
+        dataXOffice.putBooleanList(list)
+        val box = packer.toByteArray()
+        dataXOffice.unpack(box)
+        assert(dataXOffice.getBooleanList() == null)
+    }
+
+    @Test
     fun putByte() {
         val packer = MessagePack.newDefaultBufferPacker()
         val dataXOffice = DataXOffice(packer)
@@ -387,7 +428,6 @@ class DataXOfficeTest {
             result = 31 * result + (username?.hashCode() ?: 0)
             return result
         }
-
 
     }
 

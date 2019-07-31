@@ -57,6 +57,28 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return booleanArray
     }
 
+    fun putBooleanList(booleanList: List<Boolean?>?): DataXOffice {
+        if (booleanList == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(booleanList.size)
+            booleanList.forEach {
+                putBoolean(it)
+            }
+        }
+        return this
+    }
+
+    fun getBooleanList(): ArrayList<Boolean?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Boolean?>()
+        for (i in 0 until size) {
+            arrayList.add(getBoolean())
+        }
+        return arrayList
+    }
+
     fun putByte(byte: Byte?): DataXOffice {
         if (byte == null) {
             packer.packNil()
@@ -88,6 +110,28 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             byteArray[i] = unpacker.unpackByte()
         }
         return byteArray
+    }
+
+    fun putByteList(byteList: List<Byte?>?): DataXOffice {
+        if (byteList == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(byteList.size)
+            byteList.forEach {
+                putByte(it)
+            }
+        }
+        return this
+    }
+
+    fun getByteList(): ArrayList<Byte?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Byte?>()
+        for (i in 0 until size) {
+            arrayList.add(getByte())
+        }
+        return arrayList
     }
 
     fun putShort(short: Short?): DataXOffice {
@@ -123,6 +167,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return shortArray
     }
 
+
     fun putInt(int: Int?): DataXOffice {
         if (int == null) {
             packer.packNil()
@@ -154,6 +199,29 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             intArray[i] = unpacker.unpackInt()
         }
         return intArray
+    }
+
+
+    fun putIntList(intList: List<Int?>?): DataXOffice {
+        if (intList == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(intList.size)
+            intList.forEach {
+                putInt(it)
+            }
+        }
+        return this
+    }
+
+    fun getIntList(): ArrayList<Int?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Int?>()
+        for (i in 0 until size) {
+            arrayList.add(getInt())
+        }
+        return arrayList
     }
 
     fun putLong(long: Long?): DataXOffice {
@@ -189,6 +257,29 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return longArray
     }
 
+
+    fun putLongList(list: List<Long?>?): DataXOffice {
+        if (list == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(list.size)
+            list.forEach {
+                putLong(it)
+            }
+        }
+        return this
+    }
+
+    fun getLongList(): ArrayList<Long?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Long?>()
+        for (i in 0 until size) {
+            arrayList.add(getLong())
+        }
+        return arrayList
+    }
+
     fun putBigInteger(bigInteger: BigInteger?): DataXOffice {
         if (bigInteger == null) {
             packer.packNil()
@@ -210,11 +301,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         } else {
             packer.packArrayHeader(array.size)
             array.forEach {
-                if (it == null) {
-                    packer.packNil()
-                } else {
-                    packer.packBigInteger(it)
-                }
+                putBigInteger(it)
             }
         }
         return this
@@ -224,10 +311,32 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
     fun getBigIntegerArray(): Array<BigInteger?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
-            if (unpacker.tryUnpackNil()) return@Array null
-            return@Array unpacker.unpackBigInteger()
+            return@Array getBigInteger()
         }
     }
+
+    fun putBigIntegerList(list: List<BigInteger?>?): DataXOffice {
+        if (list == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(list.size)
+            list.forEach {
+                putBigInteger(it)
+            }
+        }
+        return this
+    }
+
+    fun getBigIntegerList(): ArrayList<BigInteger?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<BigInteger?>()
+        for (i in 0 until size) {
+            arrayList.add(getBigInteger())
+        }
+        return arrayList
+    }
+
 
     fun putFloat(float: Float?): DataXOffice {
         if (float == null) {
@@ -262,6 +371,28 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return floatArray
     }
 
+    fun putFloatList(list: List<Float?>?): DataXOffice {
+        if (list == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(list.size)
+            list.forEach {
+                putFloat(it)
+            }
+        }
+        return this
+    }
+
+    fun getFloatList(): ArrayList<Float?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Float?>()
+        for (i in 0 until size) {
+            arrayList.add(getFloat())
+        }
+        return arrayList
+    }
+
     fun putDouble(double: Double?): DataXOffice {
         if (double == null) {
             packer.packNil()
@@ -284,6 +415,37 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             doubleArray.forEach { packer.packDouble(it) }
         }
         return this
+    }
+
+    fun getDoubleArray(): DoubleArray? {
+        if (unpacker.tryUnpackNil()) return null
+        val doubleArray = DoubleArray(unpacker.unpackArrayHeader())
+        for (i in 0 until doubleArray.size) {
+            doubleArray[i] = unpacker.unpackDouble()
+        }
+        return doubleArray
+    }
+
+    fun putDoubleList(list: List<Double?>?): DataXOffice {
+        if (list == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(list.size)
+            list.forEach {
+                putDouble(it)
+            }
+        }
+        return this
+    }
+
+    fun getDoubleList(): ArrayList<Double?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Double?>()
+        for (i in 0 until size) {
+            arrayList.add(getDouble())
+        }
+        return arrayList
     }
 
     fun putString(string: String?): DataXOffice {
@@ -324,57 +486,49 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         }
     }
 
-    fun putArray(array: Array<out DataX?>?): DataXOffice {
-        if (array == null || array.isEmpty()) {
+    fun putStringList(list: List<String?>?): DataXOffice {
+        if (list == null) {
             packer.packNil()
         } else {
-            packer.packArrayHeader(array.size)
-            array.forEach {
-                if (it == null) {
-                    packer.packNil()
-                } else {
-                    val oldSize = packer.totalWrittenBytes
-                    it.putToOffice(this)
-                    if (oldSize == packer.totalWrittenBytes) {
-                        throw IllegalStateException("数组中的对象没有给DataX办公室提交任何东西，请确保至少送达一个数据")
-                    }
-                }
+            packer.packArrayHeader(list.size)
+            list.forEach {
+                putString(it)
             }
         }
         return this
     }
 
-    inline fun <reified T : DataX> getArray(cls: Class<T>): Array<T?>? {
+    fun getStringList(): ArrayList<String?>? {
         if (unpacker.tryUnpackNil()) return null
-        return Array(unpacker.unpackArrayHeader()) {
-            if (unpacker.tryUnpackNil()) return@Array null
-            val data = cls.newInstance()
-            data.applyFromOffice(this)
-            return@Array data
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<String?>()
+        for (i in 0 until size) {
+            arrayList.add(getString())
         }
+        return arrayList
     }
 
-    inline fun <reified T : DataX, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
+
+    fun putMap(mapSize: Int): DataXOffice {
+        packer.packMapHeader(mapSize)
+        return this
+    }
+
+    fun getMap(): Int? {
         if (unpacker.tryUnpackNil()) return null
-        return Array(unpacker.unpackArrayHeader()) {
-            if (unpacker.tryUnpackNil()) return@Array null
-            val constructor = clazz.getConstructor(clazz.constructors[0].parameterTypes[0])
-            val data = constructor.newInstance(owner)
-            data.applyFromOffice(this)
-            return@Array data
-        }
+        return unpacker.unpackMapHeader()
     }
 
 
     fun putDataX(dataX: DataX?): DataXOffice {
-        if (dataX == null) {
+        return if (dataX == null) {
             packer.packNil()
-            return this
+            this
         } else {
             val oldSize = packer.totalWrittenBytes
             dataX.putToOffice(this)
             if (oldSize == packer.totalWrittenBytes) throw IllegalStateException("DataX没有提交任何资料给DataX办公室，违反了规定")
-            return this
+            this
         }
     }
 
@@ -394,14 +548,62 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return dataX
     }
 
-    fun putMap(mapSize: Int): DataXOffice {
-        packer.packMapHeader(mapSize)
+    fun putArray(array: Array<out DataX?>?): DataXOffice {
+        if (array == null || array.isEmpty()) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(array.size)
+            array.forEach {
+                putDataX(it)
+            }
+        }
         return this
     }
 
-    fun getMap(): Int? {
+    inline fun <reified T : DataX> getArray(cls: Class<T>): Array<T?>? {
         if (unpacker.tryUnpackNil()) return null
-        return unpacker.unpackMapHeader()
+        return Array(unpacker.unpackArrayHeader()) {
+            return@Array getDataX(cls)
+        }
+    }
+
+    inline fun <reified T : DataX, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
+        if (unpacker.tryUnpackNil()) return null
+        return Array(unpacker.unpackArrayHeader()) {
+            return@Array getDataX(clazz, owner)
+        }
+    }
+
+    fun putList(list: List<DataX?>?): DataXOffice {
+        if (list == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(list.size)
+            list.forEach {
+                putDataX(it)
+            }
+        }
+        return this
+    }
+
+    inline fun <reified T : DataX> getList(clazz: Class<T>): ArrayList<T?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<T?>()
+        for (i in 0 until size) {
+            arrayList.add(getDataX(clazz))
+        }
+        return arrayList
+    }
+
+    inline fun <reified T : DataX, reified K> getList(clazz: Class<T>, owner: K): ArrayList<T?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<T?>()
+        for (i in 0 until size) {
+            arrayList.add(getDataX(clazz, owner))
+        }
+        return arrayList
     }
 
     /**
