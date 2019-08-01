@@ -352,7 +352,7 @@ class DataXOfficeTest {
         priceMap["Huawei P30"] = 3988.0
         priceMap["Redmi"] = 799.0
 
-        dataXOffice.putMap(priceMap.size)
+        dataXOffice.putMap(priceMap)
         priceMap.forEach { (phone, price) ->
             dataXOffice.putString(phone)
             dataXOffice.putDouble(price)
@@ -370,7 +370,7 @@ class DataXOfficeTest {
         priceMap["Huawei P30"] = 3988.0
         priceMap["Redmi"] = 799.0
 
-        dataXOffice.putMap(priceMap.size)
+        dataXOffice.putMap(priceMap)
         priceMap.forEach { (phone, price) ->
             dataXOffice.putString(phone)
             dataXOffice.putDouble(price)
@@ -379,16 +379,15 @@ class DataXOfficeTest {
         val box = packer.toByteArray()
         dataXOffice.unpack(box)
         val restorePriceMap = HashMap<String, Double>()
-        val mapSize = dataXOffice.getMap()
-        mapSize?.let {
-            for (i in 0 until it) {
-                dataXOffice.getString()?.let { key ->
-                    dataXOffice.getDouble()?.let { value ->
-                        restorePriceMap.put(key, value)
-                    }
-                }
+        val mapInfo = dataXOffice.getMap(String::class.java, Double::class.java)
+        mapInfo?.let { data ->
+            val map = data.second
+            for (i in 0 until data.first) {
+                map.put(dataXOffice.getString(), dataXOffice.getDouble())
             }
+
         }
+
         restorePriceMap.forEach { (phone, price) ->
             assert(priceMap[phone] == price)
         }

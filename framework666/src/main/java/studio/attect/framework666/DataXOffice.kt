@@ -509,14 +509,19 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
     }
 
 
-    fun putMap(mapSize: Int): DataXOffice {
-        packer.packMapHeader(mapSize)
+    fun <T, K> putMap(map: Map<T, K>?): DataXOffice {
+        if (map == null) {
+            packer.packNil()
+            return this
+        }
+        packer.packMapHeader(map.size)
         return this
     }
 
-    fun getMap(): Int? {
+
+    inline fun <reified T, reified K> getMap(keyClass: Class<T>, valueClass: Class<K>): Pair<Int, HashMap<T?, K?>>? {
         if (unpacker.tryUnpackNil()) return null
-        return unpacker.unpackMapHeader()
+        return Pair(unpacker.unpackMapHeader(), HashMap())
     }
 
 
