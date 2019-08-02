@@ -629,7 +629,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 遇到非基本类型时，会递归调用此类将树形结构存入
      * 支持List/Map
      * 键会被丢弃
-     * const/final修饰的字段将会被跳过
+     * const修饰的字段将会被跳过
      * 支持字段为null
      */
     fun put(any: Any?) {
@@ -641,7 +641,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             writeAuto(any)
         } else {
             any::class::memberProperties.get().forEach { kField ->
-                if (kField is KMutableProperty<*> && !kField.isConst && !kField.isFinal) { //跳过val类型、const/final关键字
+                if (kField is KMutableProperty<*> && !kField.isConst) { //跳过val类型、const关键字
                     val accessible = kField.isAccessible
                     if (!kField.isAccessible) kField.isAccessible = true
                     val nullable = kField.returnType.isMarkedNullable
@@ -800,7 +800,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                             print(kField.returnType.javaType.toString())
                             if (nullable) print("?")
                             println(" " + kField.name)
-                            if (kField.returnType.javaType is ParameterizedType) {
+                            if (kField.returnType.javaType is ParameterizedType && !kField.isConst) {
                                 val parameterizedType = kField.returnType.javaType as ParameterizedType
                                 kField.javaField?.let { javaField ->
                                     println("${kField.name}:${simpleTypeForRead(javaField.type.canonicalName)} has ParameterizedType:${kField.returnType.javaType}")
