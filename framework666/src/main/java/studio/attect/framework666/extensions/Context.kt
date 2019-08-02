@@ -167,8 +167,8 @@ fun <T : DataX> Context.writeCacheDataX(tag: String, @CacheDataX.Companion.Store
  * MessagePack并不需要数据完整也能读出头部数据
  * @return 有效的缓存文件头，不包含数据部分
  */
-fun Context.fastCheckCache(tags: List<String>): ArrayList<CacheDataX<DataX>> {
-    val resultArray = arrayListOf<CacheDataX<DataX>>()
+fun Context.fastCheckCache(tags: List<String>): ArrayList<CacheDataX> {
+    val resultArray = arrayListOf<CacheDataX>()
     tags.forEach { tag ->
         val file = File(CacheManager.getCacheFileName(this, tag))
         if (file.exists() && file.isFile && file.canRead() && file.length() > CacheDataX.FILE_HEAD_LENGTH_MIN_LENGTH) {
@@ -241,7 +241,7 @@ fun Context.fastCheckCache(tags: List<String>): ArrayList<CacheDataX<DataX>> {
  * @param dataClass 数据DataX的类
  * @return null为不存在有效缓存，否则tag与缓存数据成对返回
  */
-fun Context.readCacheDataX(tag: String, dataClass: Class<out DataX>): Pair<String, DataX>? {
+fun Context.readCacheDataX(tag: String, dataClass: Class<out DataX>): Pair<String, Any>? {
     val file = File(CacheManager.getCacheFileName(this, tag))
     if (file.exists() && file.isFile && file.canRead() && file.length() > CacheDataX.FILE_HEAD_LENGTH_MIN_LENGTH) {
         file.inputStream().use { input ->
@@ -276,6 +276,7 @@ fun Context.readCacheDataX(tag: String, dataClass: Class<out DataX>): Pair<Strin
         val dataX = dataClass.newInstance()
         val cacheDataX = CacheDataX(dataX)
         cacheDataX.applyFromOffice(dataXOffice)
+
         if (cacheDataX.versionCode == RuntimeBuildConfig.VERSION_CODE && //检查版本
             cacheDataX.time > 0 && (cacheDataX.effectiveDuration <= 0 || (System.currentTimeMillis() - cacheDataX.time) <= cacheDataX.effectiveDuration)
         ) { //计算保质期

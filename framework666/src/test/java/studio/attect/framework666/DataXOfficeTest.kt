@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import org.msgpack.core.MessagePack
+import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.extensions.toHexString
 import studio.attect.framework666.interfaces.DataX
 
@@ -429,6 +430,15 @@ class DataXOfficeTest {
         println(userData)
         println(newUserData)
         assert(userData == newUserData)
+    }
+
+    @Test
+    fun test() {
+        val cacheDataX = CacheDataX()
+        println(DataX::class.java.canonicalName)
+        cacheDataX::class.java.interfaces.forEach {
+            println(it.canonicalName)
+        }
     }
 
     class UserData constructor() : DataX {

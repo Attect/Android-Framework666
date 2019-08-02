@@ -641,6 +641,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             writeAuto(any)
         } else {
             any::class::memberProperties.get().forEach { kField ->
+                debug("kField is KMutableProperty<*>:${kField is KMutableProperty<*>} && !kField.isConst:${!kField.isConst}")
                 if (kField is KMutableProperty<*> && !kField.isConst) { //跳过val类型、const关键字
                     val accessible = kField.isAccessible
                     if (!kField.isAccessible) kField.isAccessible = true
@@ -682,7 +683,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             is Float -> putFloat(it)
             is FloatArray -> putFloatArray(it)
             is String -> putString(it)
-
+            is DataX -> putDataX(it)
             is Array<*> -> {
                 if (it.isNullOrEmpty()) {
                     packer.packNil()
@@ -741,6 +742,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             is Float,
             is FloatArray,
             is String,
+            is DataX,
             is Array<*>,
             is List<*>,
             is Map<*, *> -> return true
@@ -750,10 +752,21 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
     }
 
     fun <T> get(clazz: Class<T>, owner: Any? = null): T? {
+        var isDataX = false
+        clazz.interfaces.forEach {
+            if (it.canonicalName == DataX::class.java.canonicalName) {
+                isDataX = true
+            }
+        }
         val simpleTypeName = simpleTypeForRead(clazz.canonicalName)
         if (simpleTypeName != null) {
             val basicTypeResult = autoReadBasicType(simpleTypeName)
             if (basicTypeResult.first) return basicTypeResult.second as T?
+        } else if (isDataX) { //如果是DataX，走DataX的读取逻辑
+            if (unpacker.tryUnpackNil()) return null
+            val dataX = clazz.newInstance() as DataX
+            dataX.applyFromOffice(this)
+            return dataX as T
         } else {
             if (clazz.constructors.isNotEmpty()) {
                 var foundConstructor = clazz.constructors[0]

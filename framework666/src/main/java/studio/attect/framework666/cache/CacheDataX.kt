@@ -10,7 +10,13 @@ import studio.attect.framework666.interfaces.DataX
  *
  * @author Attect
  */
-class CacheDataX<out T : DataX>(val data: T?) : DataX {
+class CacheDataX() : DataX {
+    constructor(dataX: Any?) : this() {
+        data = dataX
+    }
+
+    var data: Any? = null
+
     /**
      * 创建数据的Build版本
      * 创建缓存时记得设置，不设置就是框架的版本
@@ -48,7 +54,14 @@ class CacheDataX<out T : DataX>(val data: T?) : DataX {
         office.putString(tag)
         office.putLong(time)
         office.putLong(effectiveDuration)
-        data?.putToOffice(office)
+        data?.let {
+            if (it is DataX) {
+                it.putToOffice(office)
+            } else {
+                office.put(it)
+            }
+        }
+
     }
 
     override fun applyFromOffice(office: DataXOffice) {
@@ -58,7 +71,14 @@ class CacheDataX<out T : DataX>(val data: T?) : DataX {
         office.getString()?.let { tag = it }
         office.getLong()?.let { time = it }
         office.getLong()?.let { effectiveDuration = it }
-        data?.applyFromOffice(office)
+        data?.let {
+            if (it is DataX) {
+                it.applyFromOffice(office)
+            } else {
+                office.put(it)
+            }
+        }
+
     }
 
     /**

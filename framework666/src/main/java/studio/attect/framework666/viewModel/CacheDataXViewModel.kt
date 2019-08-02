@@ -15,14 +15,14 @@ class CacheDataXViewModel : ViewModel() {
      * 快速检查缓存的结果
      * 数据中只包含头部数据
      */
-    val fastCacheDataXResultList = MutableLiveData<ArrayList<CacheDataX<DataX>>>()
+    val fastCacheDataXResultList = MutableLiveData<ArrayList<CacheDataX>>()
 
     /**
      * 缓存数据读取结果
      * 注意线程安全
      * 取值后应该置为null
      */
-    val cacheDataX = MutableLiveData<Pair<String, DataX>?>()
+    val cacheDataX = MutableLiveData<Pair<String, Any>?>()
 
     /**
      * 等待读取的缓存的tag合集
