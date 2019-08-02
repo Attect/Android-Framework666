@@ -641,7 +641,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             writeAuto(any)
         } else {
             any::class::memberProperties.get().forEach { kField ->
-                debug("kField is KMutableProperty<*>:${kField is KMutableProperty<*>} && !kField.isConst:${!kField.isConst}")
+                //                println("kField is KMutableProperty<*>:${kField is KMutableProperty<*>} && !kField.isConst:${!kField.isConst}")
                 if (kField is KMutableProperty<*> && !kField.isConst) { //跳过val类型、const关键字
                     val accessible = kField.isAccessible
                     if (!kField.isAccessible) kField.isAccessible = true

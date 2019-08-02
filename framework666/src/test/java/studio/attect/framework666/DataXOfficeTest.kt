@@ -289,9 +289,9 @@ class DataXOfficeTest {
     fun putArray() {
         val packer = MessagePack.newDefaultBufferPacker()
         val dataXOffice = DataXOffice(packer)
-        val userJack = UserData(900001, "jack")
-        val userTom = UserData(900002, "tom")
-        val userJerry = UserData(900003, "jerry")
+        val userJack = TestUserData(900001, "jack")
+        val userTom = TestUserData(900002, "tom")
+        val userJerry = TestUserData(900003, "jerry")
         dataXOffice.putArray(arrayOf(userJack, userTom, userJerry))
         assert(packer.toByteArray().toHexString() == "93 CE 00 0D BB A1 A4 6A 61 63 6B CE 00 0D BB A2 A3 74 6F 6D CE 00 0D BB A3 A5 6A 65 72 72 79")
     }
@@ -300,13 +300,13 @@ class DataXOfficeTest {
     fun getArray() {
         val packer = MessagePack.newDefaultBufferPacker()
         val dataXOffice = DataXOffice(packer)
-        val userJack = UserData(900001, "jack")
-        val userTom = UserData(900002, "tom")
-        val userJerry = UserData(900003, "jerry")
+        val userJack = TestUserData(900001, "jack")
+        val userTom = TestUserData(900002, "tom")
+        val userJerry = TestUserData(900003, "jerry")
         dataXOffice.putArray(arrayOf(userJack, userTom, userJerry))
         val box = packer.toByteArray()
         dataXOffice.unpack(box)
-        val userArray = dataXOffice.getArray(UserData::class.java)
+        val userArray = dataXOffice.getArray(TestUserData::class.java)
         assert(userArray?.get(0) == userJack)
         assert(userArray?.get(1) == userTom)
         assert(userArray?.get(2) == userJerry)
@@ -316,7 +316,7 @@ class DataXOfficeTest {
     fun putDataX() {
         val packer = MessagePack.newDefaultBufferPacker()
         val dataXOffice = DataXOffice(packer)
-        val userData = UserData(6385678, "Attect")
+        val userData = TestUserData(6385678, "Attect")
         dataXOffice.putDataX(userData)
         println(packer.toByteArray().toHexString())
     }
@@ -325,11 +325,11 @@ class DataXOfficeTest {
     fun getDataX() {
         val packer = MessagePack.newDefaultBufferPacker()
         val dataXOffice = DataXOffice(packer)
-        val userData = UserData(6385678, "Attect")
+        val userData = TestUserData(6385678, "Attect")
         dataXOffice.putDataX(userData)
         val box = packer.toByteArray()
         dataXOffice.unpack(box)
-        val restoreUserData = UserData().apply { applyFromOffice(dataXOffice) }
+        val restoreUserData = TestUserData().apply { applyFromOffice(dataXOffice) }
         assert(userData == restoreUserData)
     }
 
@@ -441,7 +441,7 @@ class DataXOfficeTest {
         }
     }
 
-    class UserData constructor() : DataX {
+    class UserData constructor() {
         constructor(id: Int? = null, username: String? = null) : this() {
             this.id = id
             this.username = username
@@ -458,15 +458,6 @@ class DataXOfficeTest {
 
         fun newBook(name: String, page: Int): Book = Book(name, page)
 
-        override fun putToOffice(office: DataXOffice) {
-            office.putInt(id)
-            office.putString(username)
-        }
-
-        override fun applyFromOffice(office: DataXOffice) {
-            id = office.getInt()
-            username = office.getString()
-        }
 
 
         override fun equals(other: Any?): Boolean {
@@ -540,8 +531,7 @@ class DataXOfficeTest {
     }
 
 
-
-    inner class InnerUserData() : DataX {
+    open class TestUserData() : DataX {
 
         constructor(i: Int? = null, u: String? = null) : this() {
             id = i
@@ -565,7 +555,7 @@ class DataXOfficeTest {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
 
-            other as InnerUserData
+            other as TestUserData
 
             if (id != other.id) return false
             if (username != other.username) return false
@@ -577,6 +567,13 @@ class DataXOfficeTest {
             var result = id ?: 0
             result = 32 * result + (username?.hashCode() ?: 0)
             return result
+        }
+    }
+
+    inner class InnerUserData() : TestUserData() {
+        constructor(i: Int? = null, u: String? = null) : this() {
+            id = i
+            username = u
         }
     }
 
