@@ -9,6 +9,7 @@ import java.io.InputStream
 import java.lang.reflect.ParameterizedType
 import java.math.BigInteger
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
@@ -622,6 +623,15 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return arrayList
     }
 
+    /**
+     * 写入“任意”类型的数据实例[any]
+     * 会将var定义的字段根据相关类型自动打包
+     * 遇到非基本类型时，会递归调用此类将树形结构存入
+     * 支持List/Map
+     * 键会被丢弃
+     * const/final修饰的字段将会被跳过
+     * 支持字段为null
+     */
     fun put(any: Any?) {
         if (any == null) {
             packer.packNil()
@@ -631,7 +641,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             writeAuto(any)
         } else {
             any::class::memberProperties.get().forEach { kField ->
-                if (kField is KMutableProperty<*>) { //跳过val类型
+                if (kField is KMutableProperty<*> && !kField.isConst && !kField.isFinal) { //跳过val类型、const/final关键字
                     val accessible = kField.isAccessible
                     if (!kField.isAccessible) kField.isAccessible = true
                     val nullable = kField.returnType.isMarkedNullable
@@ -799,24 +809,42 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                         println("List java field:${kField.javaField?.genericType}")
                                         if (!unpacker.tryUnpackNil()) { //List对象为null
                                             kField.javaField?.type?.let { fieldClass ->
-                                                val list = fieldClass.newInstance() as List<Any?>
+                                                var list = fieldClass.newInstance() as List<Any?>
                                                 val listSize = unpacker.unpackArrayHeader()
                                                 val listType = parameterizedType.actualTypeArguments[0]
                                                 val listTypeName = simpleTypeForRead(listType.rawTypeName)
                                                 println("simpleListTypeName:$listTypeName rawName:${listType.rawTypeName} name:${listType}")
                                                 when (listType) {
-                                                    is Class<*> -> for (i in 0 until listSize) {
+                                                    is Class<*> -> {
                                                         when (list) {
-                                                            is ArrayList<Any?> -> list.add(get(listType, instance))
-                                                            is LinkedList<Any?> -> list.add(get(listType, instance))
-                                                            else -> println("not support list")
+                                                            is ArrayList<Any?> -> for (i in 0 until listSize) list.add(get(listType, instance))
+                                                            is LinkedList<Any?> -> for (i in 0 until listSize) list.add(get(listType, instance))
+                                                            else -> { //处理定义时写的是var field:List<Any?>的情况
+                                                                list = ArrayList()
+                                                                for (i in 0 until listSize) list.add(get(listType, instance))
+                                                            }
                                                         }
                                                     }
-                                                    is ParameterizedType -> for (i in 0 until listSize) {
+                                                    is ParameterizedType -> {
                                                         when (list) {
-                                                            is ArrayList<Any?> -> list.add(autoReadParameterizedType(instance, listTypeName, listType))
-                                                            is LinkedList<Any?> -> list.add(autoReadParameterizedType(instance, listTypeName, listType))
-                                                            else -> println("not support list")
+                                                            is ArrayList<Any?> -> for (i in 0 until listSize) list.add(
+                                                                autoReadParameterizedType(
+                                                                    instance,
+                                                                    simpleTypeForRead(listType.rawTypeName),
+                                                                    listType
+                                                                )
+                                                            )
+                                                            is LinkedList<Any?> -> for (i in 0 until listSize) list.add(
+                                                                autoReadParameterizedType(
+                                                                    instance,
+                                                                    simpleTypeForRead(listType.rawTypeName),
+                                                                    listType
+                                                                )
+                                                            )
+                                                            else -> {
+                                                                list = ArrayList()
+                                                                for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType))
+                                                            }
                                                         }
                                                     }
                                                     else -> println("not support ParameterizedType:$parameterizedType [0]")
@@ -831,7 +859,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                         println("Map java field:${kField.javaField?.genericType}")
                                         if (!unpacker.tryUnpackNil()) { //Map对象为null
                                             kField.javaField?.type?.let { fieldClass ->
-                                                val map = fieldClass.newInstance() as Map<Any?, Any?>
+                                                var map = fieldClass.newInstance() as Map<Any?, Any?>
                                                 val mapSize = unpacker.unpackMapHeader()
                                                 val keyType = parameterizedType.actualTypeArguments[0]
                                                 val keyTypeName = simpleTypeForRead(keyType.rawTypeName)
@@ -841,21 +869,41 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                 var keyValue: Any? = null
                                                 var valueValue: Any? = null
 
-                                                for (i in 0 until mapSize) {
-                                                    when (keyType) {
-                                                        is Class<*> -> keyValue = get(keyType, instance)
-                                                        is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
-                                                        else -> println("not support map key")
+                                                when (map) {
+                                                    is HashMap,
+                                                    is ConcurrentHashMap,
+                                                    is LinkedHashMap -> {
+                                                        map as MutableMap<Any?, Any?>
+                                                        for (i in 0 until mapSize) {
+                                                            when (keyType) {
+                                                                is Class<*> -> keyValue = get(keyType, instance)
+                                                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                                                else -> println("not support map key")
+                                                            }
+                                                            when (valueType) {
+                                                                is Class<*> -> valueValue = get(valueType, instance)
+                                                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                                                else -> println("not support map value")
+                                                            }
+                                                            map.put(keyValue, valueValue)
+                                                        }
                                                     }
-                                                    when (valueType) {
-                                                        is Class<*> -> valueValue = get(valueType, instance)
-                                                        is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
-                                                        else -> println("not support map value")
-                                                    }
-                                                    when (map) {
-                                                        is HashMap -> map.put(keyValue, valueValue)
-                                                        is LinkedHashMap -> map.put(keyValue, valueValue)
-                                                        else -> println("not support map")
+                                                    else -> {
+                                                        map = HashMap()
+                                                        for (i in 0 until mapSize) {
+                                                            when (keyType) {
+                                                                is Class<*> -> keyValue = get(keyType, instance)
+                                                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                                                else -> println("not support map key")
+                                                            }
+                                                            when (valueType) {
+                                                                is Class<*> -> valueValue = get(valueType, instance)
+                                                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                                                else -> println("not support map value")
+                                                            }
+                                                            map.put(keyValue, valueValue)
+                                                        }
+
                                                     }
                                                 }
 
@@ -944,22 +992,10 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             if (!unpacker.tryUnpackNil()) {
                 val mapSize = unpacker.unpackMapHeader()
                 when (map) {
-                    is HashMap -> {
-                        for (i in 0 until mapSize) {
-                            when (keyType) {
-                                is Class<*> -> keyValue = get(keyType, instance)
-                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
-                                else -> println("not support map key")
-                            }
-                            when (valueType) {
-                                is Class<*> -> valueValue = get(valueType, instance)
-                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
-                                else -> println("not support map value")
-                            }
-                            map.put(keyValue, valueValue)
-                        }
-                    }
+                    is HashMap,
+                    is ConcurrentHashMap,
                     is LinkedHashMap -> {
+                        map as MutableMap<Any?, Any?>
                         for (i in 0 until mapSize) {
                             when (keyType) {
                                 is Class<*> -> keyValue = get(keyType, instance)
@@ -973,7 +1009,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                             }
                             map.put(keyValue, valueValue)
                         }
-
                     }
                     else -> {
                         map = HashMap()
@@ -1091,6 +1126,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
             HashMap<Any, Any>()::class.java.canonicalName,
             LinkedHashMap<Any, Any>()::class.java.canonicalName,
+            ConcurrentHashMap<Any, Any>()::class.java.canonicalName,
             Map::class.java.canonicalName
             -> {
                 return "Map"
