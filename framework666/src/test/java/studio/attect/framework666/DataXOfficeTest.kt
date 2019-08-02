@@ -1,5 +1,6 @@
 package studio.attect.framework666
 
+import com.google.gson.Gson
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import org.msgpack.core.MessagePack
@@ -394,7 +395,52 @@ class DataXOfficeTest {
 
     }
 
-    data class UserData(var id: Int? = null, var username: String? = null) : DataX {
+    @Test
+    fun put() {
+        val gson = Gson()
+        val packer = MessagePack.newDefaultBufferPacker()
+        val dataXOffice = DataXOffice(packer)
+        val userData = UserData(6385678, "Attect")
+        val book = userData.book
+        book.name = "C+++"
+        book.page = 1000
+        userData.book = book
+        userData.score = arrayListOf(1, 2, 3)
+        userData.backpack = arrayListOf(userData.newBook("Chinese", 5000), userData.newBook("Math", 200))
+        userData.cards = arrayListOf(arrayListOf(Card("joker", "R"), Card("Faker", "R")), arrayListOf(Card("Tom", "SR"), Card("Jerry", "SR")))
+        userData.map.apply {
+            put("广西", "南宁")
+            put("广东", "深圳")
+            put("美国", "新乡")
+        }
+        dataXOffice.put(userData)
+        val jsonString = gson.toJson(userData)
+        println("json[${jsonString.length}]:$jsonString")
+        println("put total data:${dataXOffice.backLog()}")
+        val box = packer.toByteArray()
+        println("force string:" + String(box))
+        dataXOffice.unpack(box)
+        val newUserData = dataXOffice.get(UserData::class.java)
+        println(userData)
+        println(newUserData)
+        assert(userData == newUserData)
+    }
+
+    class UserData constructor() : DataX {
+        constructor(id: Int? = null, username: String? = null) : this() {
+            this.id = id
+            this.username = username
+        }
+
+        var id: Int? = null
+        var username: String? = null
+        var book: Book = Book()
+        var score: ArrayList<Int> = arrayListOf()
+        var backpack: ArrayList<Book>? = null
+        var cards = ArrayList<ArrayList<Card>>()
+        var map = HashMap<String, String>()
+
+        fun newBook(name: String, page: Int): Book = Book(name, page)
 
         override fun putToOffice(office: DataXOffice) {
             office.putInt(id)
@@ -406,9 +452,6 @@ class DataXOfficeTest {
             username = office.getString()
         }
 
-        override fun toString(): String {
-            return "UserData(id=$id, username='$username')"
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -418,7 +461,7 @@ class DataXOfficeTest {
 
             if (id != other.id) return false
             if (username != other.username) return false
-
+            if (book != other.book) return false
             return true
         }
 
@@ -428,7 +471,60 @@ class DataXOfficeTest {
             return result
         }
 
+        override fun toString(): String {
+            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, card=$cards, map=$map)"
+        }
+
+
+        inner class Book() {
+            constructor(n: String, p: Int) : this() {
+                name = n
+                page = p
+            }
+
+            var name: String = ""
+            var page: Int = 0
+
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+                other as Book
+                if (name != other.name) return false
+                if (page != other.page) return false
+
+                return true
+            }
+
+            override fun hashCode(): Int {
+                var result = name.hashCode()
+                result = 33 * result + page
+                return result
+            }
+
+            override fun toString(): String {
+                return "Book(name='$name', page=$page)"
+            }
+        }
     }
+
+    class Card() {
+        constructor(n: String, l: String) : this() {
+            name = n
+            level = l
+        }
+
+        var name = ""
+        var level = ""
+        val price = 1
+        override fun toString(): String {
+            return "Card(name='$name', level='$level', price=$price)"
+        }
+
+
+    }
+
+
 
     inner class InnerUserData() : DataX {
 

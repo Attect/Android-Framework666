@@ -3,9 +3,20 @@ package studio.attect.framework666
 import org.msgpack.core.MessagePack
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
+import studio.attect.framework666.extensions.rawTypeName
 import studio.attect.framework666.interfaces.DataX
 import java.io.InputStream
+import java.lang.reflect.ParameterizedType
 import java.math.BigInteger
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.javaType
 
 /**
  * 缓存数据处理办公室
@@ -609,6 +620,471 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             arrayList.add(getDataX(clazz, owner))
         }
         return arrayList
+    }
+
+    fun put(any: Any?) {
+        if (any == null) {
+            packer.packNil()
+            return
+        }
+        if (isWriteRawDataType(any)) {
+            writeAuto(any)
+        } else {
+            any::class::memberProperties.get().forEach { kField ->
+                if (kField is KMutableProperty<*>) { //跳过val类型
+                    val accessible = kField.isAccessible
+                    if (!kField.isAccessible) kField.isAccessible = true
+                    val nullable = kField.returnType.isMarkedNullable
+                    kField.getter.call(any).let { field ->
+                        if (field != null && isWriteRawDataType(field)) {
+                            writeAuto(field)
+                        } else {
+                            put(field)
+                        }
+                    }
+
+                    kField.isAccessible = accessible
+                }
+
+            }
+        }
+    }
+
+    /**
+     * 自动根据类型写入
+     * 基本类型
+     */
+    private fun writeAuto(it: Any?) {
+        when (it) {
+            is Byte -> putByte(it)
+            is ByteArray -> putByteArray(it)
+            is Short -> putShort(it)
+            is ShortArray -> putShortArray(it)
+            is Int -> putInt(it)
+            is IntArray -> putIntArray(it)
+            is BigInteger -> putBigInteger(it)
+            is Long -> putLong(it)
+            is LongArray -> putLongArray(it)
+            is Boolean -> putBoolean(it)
+            is BooleanArray -> putBooleanArray(it)
+            is Double -> putDouble(it)
+            is DoubleArray -> putDoubleArray(it)
+            is Float -> putFloat(it)
+            is FloatArray -> putFloatArray(it)
+            is String -> putString(it)
+
+            is Array<*> -> {
+                if (it.isNullOrEmpty()) {
+                    packer.packNil()
+                } else {
+                    packer.packArrayHeader(it.size)
+                    it.forEach {
+                        put(it)
+                    }
+                }
+            }
+
+            is List<*> -> {
+                packer.packArrayHeader(it.size)
+                it.forEach {
+                    put(it)
+                }
+            }
+
+            is Map<*, *> -> {
+                packer.packMapHeader(it.size)
+                it.keys.forEach { key ->
+                    put(key) //put key
+                    put(it[key]) //put value
+                }
+            }
+
+            null -> {
+                packer.packNil()
+            }
+
+            else -> {
+                error("DataXOffice: error type : ${it.javaClass.name}")
+            }
+        }
+    }
+
+
+    /**
+     * 判断[any]是否可直接写入类型
+     */
+    private fun isWriteRawDataType(any: Any): Boolean {
+        when (any) {
+            is Byte,
+            is ByteArray,
+            is Short,
+            is ShortArray,
+            is Int,
+            is IntArray,
+            is BigInteger,
+            is Long,
+            is LongArray,
+            is Boolean,
+            is BooleanArray,
+            is Double,
+            is DoubleArray,
+            is Float,
+            is FloatArray,
+            is String,
+            is Array<*>,
+            is List<*>,
+            is Map<*, *> -> return true
+        }
+
+        return false
+    }
+
+    fun <T> get(clazz: Class<T>, owner: Any? = null): T? {
+        val simpleTypeName = simpleTypeForRead(clazz.canonicalName)
+        if (simpleTypeName != null) {
+            val basicTypeResult = autoReadBasicType(simpleTypeName)
+            if (basicTypeResult.first) return basicTypeResult.second as T?
+        } else {
+            if (clazz.constructors.isNotEmpty()) {
+                println("constructors number:${clazz.constructors.size}")
+                var foundConstructor = clazz.constructors[0]
+
+                clazz.constructors.forEachIndexed { index, constructor ->
+                    if (index > 0) {
+                        if (foundConstructor.parameterTypes.size > constructor.parameterTypes.size) {
+                            foundConstructor = constructor
+                        }
+                    }
+                }
+                var instance: Any? = null
+                if (foundConstructor.parameterTypes.isNotEmpty()) {
+                    if (foundConstructor.parameterTypes.size == 1 && owner != null) {
+                        println("try create inner class instance")
+                        clazz.getDeclaredConstructor(owner::class.java).let {
+                            println("inner class instance success")
+                            instance = it.newInstance(owner)
+                        }
+                    } else {
+                        println("unable create ${clazz.name} instance")
+                        println("parameterTypes.size:${foundConstructor.parameterTypes.size}")
+                        foundConstructor.parameterTypes.forEach {
+                            println(it.canonicalName)
+                        }
+                        //todo data class
+                    }
+                } else {
+                    val tmpInstance = foundConstructor.newInstance()
+                    (tmpInstance as? T).let {
+                        instance = it
+                    }
+
+                }
+
+                if (instance != null) {
+                    instance?.let { target ->
+                        println("object:" + target::class.java.canonicalName)
+                        target::class::memberProperties.get().forEach { kField ->
+                            val accessible = kField.isAccessible
+                            if (!kField.isAccessible) kField.isAccessible = true
+                            val nullable = kField.returnType.isMarkedNullable
+                            print("field: ")
+                            print(kField.returnType.javaType.toString())
+                            if (nullable) print("?")
+                            println(" " + kField.name)
+                            if (kField.returnType.javaType is ParameterizedType) {
+                                val parameterizedType = kField.returnType.javaType as ParameterizedType
+                                kField.javaField?.let { javaField ->
+                                    println("${kField.name}:${simpleTypeForRead(javaField.type.canonicalName)} has ParameterizedType:${kField.returnType.javaType}")
+                                    val fieldTypeName = simpleTypeForRead(javaField.type.canonicalName)
+                                    if (fieldTypeName == "List") {
+                                        println("List java field:${kField.javaField?.genericType}")
+                                        if (!unpacker.tryUnpackNil()) { //List对象为null
+                                            kField.javaField?.type?.let { fieldClass ->
+                                                val list = fieldClass.newInstance() as List<Any?>
+                                                val listSize = unpacker.unpackArrayHeader()
+                                                val listType = parameterizedType.actualTypeArguments[0]
+                                                val listTypeName = simpleTypeForRead(listType.rawTypeName)
+                                                println("simpleListTypeName:$listTypeName rawName:${listType.rawTypeName} name:${listType}")
+                                                when (listType) {
+                                                    is Class<*> -> for (i in 0 until listSize) {
+                                                        when (list) {
+                                                            is ArrayList<Any?> -> list.add(get(listType, instance))
+                                                            is LinkedList<Any?> -> list.add(get(listType, instance))
+                                                            else -> println("not support list")
+                                                        }
+                                                    }
+                                                    is ParameterizedType -> for (i in 0 until listSize) {
+                                                        when (list) {
+                                                            is ArrayList<Any?> -> list.add(autoReadParameterizedType(instance, listTypeName, listType))
+                                                            is LinkedList<Any?> -> list.add(autoReadParameterizedType(instance, listTypeName, listType))
+                                                            else -> println("not support list")
+                                                        }
+                                                    }
+                                                    else -> println("not support ParameterizedType:$parameterizedType [0]")
+                                                }
+                                                if (kField is KMutableProperty<*>) {
+                                                    kField.setter.call(instance, list)
+                                                }
+                                            }
+                                        }
+
+                                    } else if (fieldTypeName == "Map") {
+                                        println("Map java field:${kField.javaField?.genericType}")
+                                        if (!unpacker.tryUnpackNil()) { //Map对象为null
+                                            kField.javaField?.type?.let { fieldClass ->
+                                                val map = fieldClass.newInstance() as Map<Any?, Any?>
+                                                val mapSize = unpacker.unpackMapHeader()
+                                                val keyType = parameterizedType.actualTypeArguments[0]
+                                                val keyTypeName = simpleTypeForRead(keyType.rawTypeName)
+                                                val valueType = parameterizedType.actualTypeArguments[1]
+                                                val valueTypeName = simpleTypeForRead(valueType.rawTypeName)
+
+                                                var keyValue: Any? = null
+                                                var valueValue: Any? = null
+
+                                                for (i in 0 until mapSize) {
+                                                    when (keyType) {
+                                                        is Class<*> -> keyValue = get(keyType, instance)
+                                                        is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                                        else -> println("not support map key")
+                                                    }
+                                                    when (valueType) {
+                                                        is Class<*> -> valueValue = get(valueType, instance)
+                                                        is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                                        else -> println("not support map value")
+                                                    }
+                                                    when (map) {
+                                                        is HashMap -> map.put(keyValue, valueValue)
+                                                        is LinkedHashMap -> map.put(keyValue, valueValue)
+                                                        else -> println("not support map")
+                                                    }
+                                                }
+
+                                                if (kField is KMutableProperty<*>) {
+                                                    kField.setter.call(instance, map)
+                                                }
+
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            } else {
+                                if (kField is KMutableProperty<*>) {
+                                    val fieldTypeClass = kField.javaField?.type
+                                    if (fieldTypeClass != null) {
+                                        kField.setter.call(instance, get(fieldTypeClass, instance))
+                                    } else {
+                                        println("todo field class null")
+                                        //todo field class null
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                println("""instance :${instance.toString()}""")
+                return instance as? T
+            } else {
+                println("null because of no constructor")
+                return null
+            }
+        }
+        println("null because of rule bug")
+        return null
+    }
+
+    private fun autoReadParameterizedType(instance: Any?, fieldTypeName: String?, parameterizedType: ParameterizedType): Any? {
+        if (fieldTypeName == "List") {
+            val list = (parameterizedType.rawType as Class<*>).newInstance() as List<Any?>
+            val listType = parameterizedType.actualTypeArguments[0]
+            if (!unpacker.tryUnpackNil()) {
+                val listSize = unpacker.unpackArrayHeader()
+                when (listType) {
+                    is Class<*> -> for (i in 0 until listSize) {
+                        when (list) {
+                            is ArrayList<Any?> -> list.add(get(listType, instance))
+                            is LinkedList<Any?> -> list.add(get(listType, instance))
+                            else -> println("not support list")
+                        }
+                    }
+                    is ParameterizedType -> for (i in 0 until listSize) {
+                        when (list) {
+                            is ArrayList<Any?> -> list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType as ParameterizedType))
+                            is LinkedList<Any?> -> list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType as ParameterizedType))
+                            else -> println("not support list")
+                        }
+                    }
+                    else -> println("not support ParameterizedType:$parameterizedType [0]")
+                }
+                return list
+
+            } else {
+                return null //是List 但是是null
+            }
+
+
+        } else if (fieldTypeName == "Map") {
+            val map = (parameterizedType.rawType as Class<*>).newInstance() as Map<Any?, Any?>
+            val keyType = parameterizedType.actualTypeArguments[0]
+            val keyTypeName = simpleTypeForRead(keyType.rawTypeName)
+            val valueType = parameterizedType.actualTypeArguments[1]
+            val valueTypeName = simpleTypeForRead(valueType.rawTypeName)
+
+            var keyValue: Any? = null
+            var valueValue: Any? = null
+
+            if (!unpacker.tryUnpackNil()) {
+                val mapSize = unpacker.unpackMapHeader()
+                for (i in 0 until mapSize) {
+                    when (keyType) {
+                        is Class<*> -> keyValue = get(keyType, instance)
+                        is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                        else -> println("not support map key")
+                    }
+                    when (valueType) {
+                        is Class<*> -> valueValue = get(valueType, instance)
+                        is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                        else -> println("not support map value")
+                    }
+                    when (map) {
+                        is HashMap -> map.put(keyValue, valueValue)
+                        is LinkedHashMap -> map.put(keyValue, valueValue)
+                        else -> println("not support map")
+                    }
+                }
+                return map
+            } else {
+                return null //是Map但是是null
+            }
+        }
+        println("not support ParameterizedType:$parameterizedType [1]")
+        return null
+    }
+
+
+    private fun simpleTypeForRead(typeName: String?): String? {
+        when (typeName) {
+            "byte",
+            Byte::class.java.canonicalName,
+            java.lang.Byte::class.java.canonicalName
+            -> return "byte"
+
+            Array<Byte>::class.java.canonicalName,
+            ByteArray::class.java.canonicalName
+            -> return "ByteArray"
+
+            "short",
+            Short::class.java.canonicalName,
+            java.lang.Short::class.java.canonicalName
+            -> return "short"
+
+            Array<Short>::class.java.canonicalName,
+            ShortArray::class.java.canonicalName
+            -> return "ShortArray"
+
+            "int",
+            Int::class.java.canonicalName,
+            Integer::class.java.canonicalName
+            -> return "int"
+
+            Array<Int>::class.java.canonicalName,
+            IntArray::class.java.canonicalName
+            -> return "IntArray"
+
+            BigInteger::class.java.canonicalName
+            -> return "BigInteger"
+
+            Array<BigInteger>::class.java.canonicalName
+            -> return "BigIntegerArray"
+
+            "long",
+            Long::class.java.canonicalName,
+            java.lang.Long::class.java.canonicalName
+            -> return "long"
+
+            Array<Long>::class.java.canonicalName,
+            LongArray::class.java.canonicalName
+            -> return "LongArray"
+
+            "boolean",
+            Boolean::class.java.canonicalName,
+            java.lang.Boolean::class.java.canonicalName
+            -> return "boolean"
+
+            Array<Boolean>::class.java.canonicalName,
+            BooleanArray::class.java.canonicalName
+            -> return "BooleanArray"
+
+            "double",
+            Double::class.java.canonicalName,
+            java.lang.Double::class.java.canonicalName
+            -> return "double"
+
+            Array<Double>::class.java.canonicalName,
+            DoubleArray::class.java.canonicalName
+            -> return "DoubleArray"
+
+            "float",
+            Float::class.java.canonicalName,
+            java.lang.Float::class.java.canonicalName
+            -> return "float"
+
+            Array<Float>::class.java.canonicalName,
+            FloatArray::class.java.canonicalName
+            -> return "FloatArray"
+
+            String::class.java.canonicalName,
+            java.lang.String::class.java.canonicalName
+            -> return "String"
+
+            Array<String>::class.java.canonicalName
+            -> return "StringArray"
+
+            ArrayList<Any>()::class.java.canonicalName,
+            LinkedList<Any>()::class.java.canonicalName,
+            List::class.java.canonicalName
+            -> {
+                return "List"
+            }
+
+            HashMap<Any, Any>()::class.java.canonicalName,
+            LinkedHashMap<Any, Any>()::class.java.canonicalName,
+            Map::class.java.canonicalName
+            -> {
+                return "Map"
+            }
+
+            else -> return null
+        }
+    }
+
+    private fun autoReadBasicType(simpleTypeName: String?): Pair<Boolean, Any?> {
+        simpleTypeName?.let {
+            when (it) {
+                "byte" -> return Pair(true, getByte())
+                "ByteArray" -> return Pair(true, getByteArray())
+                "short" -> return Pair(true, getShort())
+                "ShortArray" -> return Pair(true, getShortArray())
+                "int" -> return Pair(true, getInt())
+                "IntArray" -> return Pair(true, getIntArray())
+                "BigInteger" -> return Pair(true, getBigInteger())
+                "long" -> return Pair(true, getLong())
+                "LongArray" -> return Pair(true, getLongArray())
+                "boolean" -> return Pair(true, getBoolean())
+                "BooleanArray" -> return Pair(true, getBooleanArray())
+                "double" -> return Pair(true, getDouble())
+                "DoubleArray" -> return Pair(true, getDoubleArray())
+                "float" -> return Pair(true, getFloat())
+                "FloatArray" -> return Pair(true, getFloatArray())
+                "String" -> return Pair(true, getString())
+                else -> return Pair(false, null)
+            }
+        }
+        return Pair(false, null)
     }
 
     /**
