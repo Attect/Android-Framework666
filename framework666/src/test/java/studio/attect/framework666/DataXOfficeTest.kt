@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import org.junit.Assert.assertArrayEquals
 import org.junit.Test
 import org.msgpack.core.MessagePack
-import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.extensions.toHexString
 import studio.attect.framework666.interfaces.DataX
 
@@ -419,27 +418,23 @@ class DataXOfficeTest {
             put("美国", arrayListOf("新乡", "西单"))
             put("韩国", arrayListOf("汉城"))
         }
+        val putTime = System.currentTimeMillis()
         dataXOffice.put(userData)
+        println("putTime:" + (System.currentTimeMillis() - putTime))
         val jsonString = gson.toJson(userData)
         println("json[${jsonString.length}]:$jsonString")
         println("put total data:${dataXOffice.backLog()}")
         val box = packer.toByteArray()
         println("force string:" + String(box))
         dataXOffice.unpack(box)
+        val getTime = System.currentTimeMillis()
         val newUserData = dataXOffice.get(UserData::class.java)
+        println("get time:" + (System.currentTimeMillis() - getTime))
         println(userData)
         println(newUserData)
         assert(userData == newUserData)
     }
 
-    @Test
-    fun test() {
-        val cacheDataX = CacheDataX()
-        println(DataX::class.java.canonicalName)
-        cacheDataX::class.java.interfaces.forEach {
-            println(it.canonicalName)
-        }
-    }
 
     class UserData constructor() {
         constructor(id: Int? = null, username: String? = null) : this() {

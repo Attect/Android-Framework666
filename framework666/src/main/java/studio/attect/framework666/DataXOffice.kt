@@ -641,11 +641,9 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             writeAuto(any)
         } else {
             any::class::memberProperties.get().forEach { kField ->
-                //                println("kField is KMutableProperty<*>:${kField is KMutableProperty<*>} && !kField.isConst:${!kField.isConst}")
                 if (kField is KMutableProperty<*> && !kField.isConst) { //跳过val类型、const关键字
                     val accessible = kField.isAccessible
                     if (!kField.isAccessible) kField.isAccessible = true
-                    val nullable = kField.returnType.isMarkedNullable
                     kField.getter.call(any).let { field ->
                         if (field != null && isWriteRawDataType(field)) {
                             writeAuto(field)
@@ -781,18 +779,9 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 var instance: Any? = null
                 if (foundConstructor.parameterTypes.isNotEmpty()) {
                     if (foundConstructor.parameterTypes.size == 1 && owner != null) {
-                        println("try create inner class instance")
                         clazz.getDeclaredConstructor(owner::class.java).let {
-                            println("inner class instance success")
                             instance = it.newInstance(owner)
                         }
-                    } else {
-                        println("unable create ${clazz.name} instance")
-                        println("parameterTypes.size:${foundConstructor.parameterTypes.size}")
-                        foundConstructor.parameterTypes.forEach {
-                            println(it.canonicalName)
-                        }
-                        //todo data class
                     }
                 } else {
                     val tmpInstance = foundConstructor.newInstance()
@@ -804,29 +793,21 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
                 if (instance != null) {
                     instance?.let { target ->
-                        println("object:" + target::class.java.canonicalName)
                         target::class::memberProperties.get().forEach { kField ->
                             val accessible = kField.isAccessible
                             if (!kField.isAccessible) kField.isAccessible = true
                             val nullable = kField.returnType.isMarkedNullable
-                            print("field: ")
-                            print(kField.returnType.javaType.toString())
-                            if (nullable) print("?")
-                            println(" " + kField.name)
                             if (kField.returnType.javaType is ParameterizedType && !kField.isConst) {
                                 val parameterizedType = kField.returnType.javaType as ParameterizedType
                                 kField.javaField?.let { javaField ->
-                                    println("${kField.name}:${simpleTypeForRead(javaField.type.canonicalName)} has ParameterizedType:${kField.returnType.javaType}")
                                     val fieldTypeName = simpleTypeForRead(javaField.type.canonicalName)
                                     if (fieldTypeName == "List") {
-                                        println("List java field:${kField.javaField?.genericType}")
                                         if (!unpacker.tryUnpackNil()) { //List对象为null
                                             kField.javaField?.type?.let { fieldClass ->
                                                 var list = fieldClass.newInstance() as List<Any?>
                                                 val listSize = unpacker.unpackArrayHeader()
                                                 val listType = parameterizedType.actualTypeArguments[0]
                                                 val listTypeName = simpleTypeForRead(listType.rawTypeName)
-                                                println("simpleListTypeName:$listTypeName rawName:${listType.rawTypeName} name:${listType}")
                                                 when (listType) {
                                                     is Class<*> -> {
                                                         when (list) {
@@ -869,7 +850,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                         }
 
                                     } else if (fieldTypeName == "Map") {
-                                        println("Map java field:${kField.javaField?.genericType}")
                                         if (!unpacker.tryUnpackNil()) { //Map对象为null
                                             kField.javaField?.type?.let { fieldClass ->
                                                 var map = fieldClass.newInstance() as Map<Any?, Any?>
@@ -937,7 +917,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                         kField.setter.call(instance, get(fieldTypeClass, instance))
                                     } else {
                                         println("todo field class null")
-                                        //todo field class null
+                                        //todo field class null 可是什么情况会这样？
                                     }
                                 }
                             }
@@ -945,15 +925,11 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
                     }
                 }
-
-                println("""instance :${instance.toString()}""")
                 return instance as? T
             } else {
-                println("null because of no constructor")
                 return null
             }
         }
-        println("null because of rule bug")
         return null
     }
 
@@ -1047,7 +1023,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 return null //是Map但是是null
             }
         }
-        println("not support ParameterizedType:$parameterizedType [1]")
         return null
     }
 
