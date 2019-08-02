@@ -527,7 +527,6 @@ class DataXOfficeTest {
             return "Card(name='$name', level='$level', price=$price)"
         }
 
-
     }
 
 
