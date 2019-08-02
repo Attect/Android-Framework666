@@ -413,6 +413,11 @@ class DataXOfficeTest {
             put("广东", "深圳")
             put("美国", "新乡")
         }
+        userData.cityMap.apply {
+            put("中国", arrayListOf("北京", "上海", "成都", "长沙"))
+            put("美国", arrayListOf("新乡", "西单"))
+            put("韩国", arrayListOf("汉城"))
+        }
         dataXOffice.put(userData)
         val jsonString = gson.toJson(userData)
         println("json[${jsonString.length}]:$jsonString")
@@ -439,6 +444,7 @@ class DataXOfficeTest {
         var backpack: ArrayList<Book>? = null
         var cards = ArrayList<ArrayList<Card>>()
         var map = HashMap<String, String>()
+        var cityMap = HashMap<String, ArrayList<String>>()
 
         fun newBook(name: String, page: Int): Book = Book(name, page)
 
@@ -472,7 +478,7 @@ class DataXOfficeTest {
         }
 
         override fun toString(): String {
-            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, card=$cards, map=$map)"
+            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, card=$cards, map=$map, cityMap=$cityMap)"
         }
 
 

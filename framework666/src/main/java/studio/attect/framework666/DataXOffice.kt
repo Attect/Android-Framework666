@@ -746,7 +746,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             if (basicTypeResult.first) return basicTypeResult.second as T?
         } else {
             if (clazz.constructors.isNotEmpty()) {
-                println("constructors number:${clazz.constructors.size}")
                 var foundConstructor = clazz.constructors[0]
 
                 clazz.constructors.forEachIndexed { index, constructor ->
