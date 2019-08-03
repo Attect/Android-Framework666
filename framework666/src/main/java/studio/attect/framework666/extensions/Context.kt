@@ -13,7 +13,6 @@ import studio.attect.framework666.Logcat
 import studio.attect.framework666.RuntimeBuildConfig
 import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
-import studio.attect.framework666.interfaces.DataX
 import studio.attect.framework666.simple.FileSafeWriteCallback
 import java.io.File
 import java.io.FileOutputStream
@@ -116,7 +115,7 @@ fun Context.makeSureFileWriteEnvironment(file: File, expectedSize: Long, callbac
 /**
  * 缓存一个DataX
  */
-fun <T : DataX> Context.writeCacheDataX(tag: String, @CacheDataX.Companion.StoreType storeType: Int, data: T, effectiveDuration: Long = -1): Boolean {
+fun <T> Context.writeCacheDataX(tag: String, @CacheDataX.Companion.StoreType storeType: Int, data: T, effectiveDuration: Long = -1): Boolean {
     if (!CacheManager.ensureCacheDir(this)) return false
 
     val cacheDataX = CacheDataX(data).apply {
@@ -241,7 +240,7 @@ fun Context.fastCheckCache(tags: List<String>): ArrayList<CacheDataX> {
  * @param dataClass 数据DataX的类
  * @return null为不存在有效缓存，否则tag与缓存数据成对返回
  */
-fun Context.readCacheDataX(tag: String, dataClass: Class<out DataX>): Pair<String, Any>? {
+fun Context.readCacheDataX(tag: String, dataClass: Class<*>): Pair<String, Any>? {
     val file = File(CacheManager.getCacheFileName(this, tag))
     if (file.exists() && file.isFile && file.canRead() && file.length() > CacheDataX.FILE_HEAD_LENGTH_MIN_LENGTH) {
         file.inputStream().use { input ->
@@ -273,8 +272,9 @@ fun Context.readCacheDataX(tag: String, dataClass: Class<out DataX>): Pair<Strin
         null //啥子玩意儿不会自动null，必须写这个else
     }?.let { _ ->
         val dataXOffice = DataXOffice().apply { unpack(file.inputStream()) }
-        val dataX = dataClass.newInstance()
-        val cacheDataX = CacheDataX(dataX)
+//        val dataX = dataClass.newInstance()
+        val cacheDataX = CacheDataX()
+        cacheDataX.dataClass = dataClass
         cacheDataX.applyFromOffice(dataXOffice)
 
         if (cacheDataX.versionCode == RuntimeBuildConfig.VERSION_CODE && //检查版本

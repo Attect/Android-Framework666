@@ -3,7 +3,6 @@ package studio.attect.framework666.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import studio.attect.framework666.cache.CacheDataX
-import studio.attect.framework666.interfaces.DataX
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -28,7 +27,7 @@ class CacheDataXViewModel : ViewModel() {
      * 等待读取的缓存的tag合集
      * 子线程将会从中取出，读取文件后变更此内容
      */
-    val cacheDataXLoadMap = MutableLiveData<ConcurrentHashMap<String, Class<out DataX>>>()
+    val cacheDataXLoadMap = MutableLiveData<ConcurrentHashMap<String, Class<*>>>()
         get() {
             if (field.value == null) field.value = ConcurrentHashMap()
             return field

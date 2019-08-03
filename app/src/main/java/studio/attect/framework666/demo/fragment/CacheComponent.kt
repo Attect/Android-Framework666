@@ -63,7 +63,7 @@ class CacheComponent : FragmentX() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cacheDataXViewModel.fastCacheDataXResultList.observe(this, Observer {
-            val requestLoadCache = ArrayList<Pair<String, Class<out DataX>>>()
+            val requestLoadCache = ArrayList<Pair<String, Class<*>>>()
             it.forEach { cacheDataX ->
                 when (cacheDataX.tag) {
                     TAG_PERSISTENT_CACHE -> requestLoadCache.add(Pair(TAG_PERSISTENT_CACHE, PersistentCache::class.java))
@@ -351,31 +351,31 @@ class CacheComponent : FragmentX() {
      * 持久缓存数据
      * 六个Checkbox的数据
      */
-    class PersistentCache : DataX {
+    class PersistentCache {
         var a = false
         var b = false
         var c = false
         var d = false
         var e = false
         var f = false
-
-        override fun putToOffice(office: DataXOffice) {
-            office.putBoolean(a)
-            office.putBoolean(b)
-            office.putBoolean(c)
-            office.putBoolean(d)
-            office.putBoolean(e)
-            office.putBoolean(f)
-        }
-
-        override fun applyFromOffice(office: DataXOffice) {
-            office.getBoolean()?.let { a = it }
-            office.getBoolean()?.let { b = it }
-            office.getBoolean()?.let { c = it }
-            office.getBoolean()?.let { d = it }
-            office.getBoolean()?.let { e = it }
-            office.getBoolean()?.let { f = it }
-        }
+//
+//        override fun putToOffice(office: DataXOffice) {
+//            office.putBoolean(a)
+//            office.putBoolean(b)
+//            office.putBoolean(c)
+//            office.putBoolean(d)
+//            office.putBoolean(e)
+//            office.putBoolean(f)
+//        }
+//
+//        override fun applyFromOffice(office: DataXOffice) {
+//            office.getBoolean()?.let { a = it }
+//            office.getBoolean()?.let { b = it }
+//            office.getBoolean()?.let { c = it }
+//            office.getBoolean()?.let { d = it }
+//            office.getBoolean()?.let { e = it }
+//            office.getBoolean()?.let { f = it }
+//        }
     }
 
     /**

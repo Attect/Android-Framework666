@@ -418,6 +418,7 @@ class DataXOfficeTest {
             put("美国", arrayListOf("新乡", "西单"))
             put("韩国", arrayListOf("汉城"))
         }
+        userData.shadow = "改改改"
         val putTime = System.currentTimeMillis()
         dataXOffice.put(userData)
         println("putTime:" + (System.currentTimeMillis() - putTime))
@@ -432,6 +433,7 @@ class DataXOfficeTest {
         println("get time:" + (System.currentTimeMillis() - getTime))
         println(userData)
         println(newUserData)
+        println("shadow:${newUserData?.shadow ?: ""}")
         assert(userData == newUserData)
     }
 
@@ -450,6 +452,9 @@ class DataXOfficeTest {
         var cards = ArrayList<ArrayList<Card>>()
         var map = HashMap<String, String>()
         var cityMap = HashMap<String, ArrayList<String>>()
+        @Transient
+        var shadow = "这不应该被变更"
+
 
         fun newBook(name: String, page: Int): Book = Book(name, page)
 

@@ -21,7 +21,6 @@ import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.PerceptionFragment
-import studio.attect.framework666.interfaces.DataX
 import studio.attect.framework666.viewModel.CacheDataXViewModel
 
 /**
@@ -297,7 +296,7 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
         checkCacheX(tags.toList())
     }
 
-    fun readCacheX(cacheInstance: List<Pair<String, Class<out DataX>>>) {
+    fun readCacheX(cacheInstance: List<Pair<String, Class<*>>>) {
         //刷新数据触发观察
         cacheDataXViewModel.cacheDataXLoadMap.update {
             it?.let { map ->

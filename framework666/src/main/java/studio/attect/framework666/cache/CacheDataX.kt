@@ -17,6 +17,9 @@ class CacheDataX() : DataX {
 
     var data: Any? = null
 
+    @Transient
+    var dataClass: Class<*>? = null
+
     /**
      * 创建数据的Build版本
      * 创建缓存时记得设置，不设置就是框架的版本
@@ -71,13 +74,19 @@ class CacheDataX() : DataX {
         office.getString()?.let { tag = it }
         office.getLong()?.let { time = it }
         office.getLong()?.let { effectiveDuration = it }
-        data?.let {
-            if (it is DataX) {
-                it.applyFromOffice(office)
-            } else {
-                office.put(it)
+        if (dataClass != null) {
+            dataClass?.let { data = office.get(it) }
+        } else {
+            data?.let {
+                //必须有实例才会知道类型
+                if (it is DataX) {
+                    it.applyFromOffice(office)
+                } else {
+                    data = office.get(it::class.java)
+                }
             }
         }
+
 
     }
 
