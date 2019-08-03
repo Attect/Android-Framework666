@@ -22,6 +22,8 @@ import kotlin.reflect.jvm.javaType
 
 /**
  * 缓存数据处理办公室
+ * 此处将数据打包成二进制数据，并负责将其还原
+ * 基于MsgPack
  * @author Attect
  */
 class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBufferPacker()) {
@@ -578,17 +580,17 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return this
     }
 
-    inline fun <reified T : DataX> getArray(cls: Class<T>): Array<T?>? {
+    inline fun <reified T> getArray(cls: Class<T>): Array<T?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
-            return@Array getDataX(cls)
+            return@Array get(cls)
         }
     }
 
-    inline fun <reified T : DataX, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
+    inline fun <reified T, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
-            return@Array getDataX(clazz, owner)
+            return@Array get(clazz, owner)
         }
     }
 
@@ -630,7 +632,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 遇到非基本类型时，会递归调用此类将树形结构存入
      * 支持List/Map
      * 键会被丢弃
-     * const修饰的字段将会被跳过
+     * const/transient修饰的字段将会被跳过
      * 支持字段为null
      */
     fun put(any: Any?) {
@@ -750,6 +752,14 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return false
     }
 
+    /**
+     * 根据给定类型，从数据中还原对象
+     * 由于原理是储存各类基本数据类型，一些高级类支持受限
+     * [clazz]可为任意对象的class，会自动解析内部所有var字段，将数据交由MessagePack打包
+     * [clazz]应该包含一个无参构造方法，或者仅含一个父类对象的构造方法（inner 内部类情况）
+     * [owner]为要还原的对象的持有父类，如果[clazz]为一个内部类，需要通过[owner]提供父类对象，否则无法实例化
+     * 返回根据给定的类型以及实际读取的数据所生成的对象，或者为null
+     */
     fun <T> get(clazz: Class<T>, owner: Any? = null): T? {
         var isDataX = false
         clazz.interfaces.forEach {
@@ -759,8 +769,19 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         }
         val simpleTypeName = simpleTypeForRead(clazz.canonicalName)
         if (simpleTypeName != null) {
-            val basicTypeResult = autoReadBasicType(simpleTypeName)
-            if (basicTypeResult.first) return basicTypeResult.second as T?
+            if (simpleTypeName != "Array") {
+                val basicTypeResult = autoReadBasicType(simpleTypeName)
+                if (basicTypeResult.first) return basicTypeResult.second as T?
+            } else {
+                if (unpacker.tryUnpackNil()) return null //不能用上面的inline方法，原因是T类型不确定
+                val arraySize = unpacker.unpackArrayHeader()
+                val arrayInstance = java.lang.reflect.Array.newInstance(clazz.componentType, arraySize) as Array<Any?>
+                for (i in 0 until arraySize) {
+                    arrayInstance[i] = get(clazz.componentType, owner)
+                }
+                return arrayInstance as T
+            }
+
         } else if (isDataX) { //如果是DataX，走DataX的读取逻辑
             if (unpacker.tryUnpackNil()) return null
             val dataX = clazz.newInstance() as DataX
@@ -924,7 +945,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                     }
                                 }
                             }
-
+                            kField.isAccessible = accessible
                         }
 
                     }
@@ -937,6 +958,11 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return null
     }
 
+    /**
+     * 根据泛型类型读取数据
+     * 需要提供可能的父类[instance]，读取的数据的类型[fieldTypeName]，带泛型的类型[parameterizedType]
+     * 返回读取到的数据类型，若不支持则会返回null，否则返回实例Any，类型自己强转
+     */
     private fun autoReadParameterizedType(instance: Any?, fieldTypeName: String?, parameterizedType: ParameterizedType): Any? {
         if (fieldTypeName == "List") {
             var list = (parameterizedType.rawType as Class<*>).newInstance() as List<Any?>
@@ -964,7 +990,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                             }
                         }
                     }
-                    else -> println("not support ParameterizedType:$parameterizedType [0]")
+                    else -> println("not support ParameterizedType:$parameterizedType [0]") //还会有什么类型？我暂且不知道
                 }
                 return list
             } else {
@@ -1031,6 +1057,10 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
     }
 
 
+    /**
+     * 将复杂的原始类型名称[typeName]归类为简单的类型名称
+     * 便于后面判断
+     */
     private fun simpleTypeForRead(typeName: String?): String? {
         when (typeName) {
             "byte",
@@ -1124,10 +1154,17 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 return "Map"
             }
 
-            else -> return null
+            else -> {
+                if (typeName?.endsWith("[]") == true) return "Array"
+                return null
+            }
         }
     }
 
+    /**
+     * 根据给定的简易类型名称[simpleTypeName]读取数据
+     * 返回成对数据，first为是否成功读取，第二个为数据，可能为null，因为存进去的可能就是个null
+     */
     private fun autoReadBasicType(simpleTypeName: String?): Pair<Boolean, Any?> {
         simpleTypeName?.let {
             when (it) {
@@ -1147,7 +1184,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 "float" -> return Pair(true, getFloat())
                 "FloatArray" -> return Pair(true, getFloatArray())
                 "String" -> return Pair(true, getString())
-                else -> return Pair(false, null)
+                else -> return Pair(false, null) //todo Any[]
             }
         }
         return Pair(false, null)

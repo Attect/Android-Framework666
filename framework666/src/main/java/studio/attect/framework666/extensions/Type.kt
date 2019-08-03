@@ -2,6 +2,9 @@ package studio.attect.framework666.extensions
 
 import java.lang.reflect.Type
 
+/**
+ * 获取Type的简易名称
+ */
 val Type.rawTypeName: String
     get() {
         val symbolPosition = toString().indexOf("<")

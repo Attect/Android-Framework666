@@ -6,6 +6,9 @@ import org.junit.Test
 import org.msgpack.core.MessagePack
 import studio.attect.framework666.extensions.toHexString
 import studio.attect.framework666.interfaces.DataX
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class DataXOfficeTest {
 
@@ -418,6 +421,8 @@ class DataXOfficeTest {
             put("美国", arrayListOf("新乡", "西单"))
             put("韩国", arrayListOf("汉城"))
         }
+        val array = arrayOf(userData.newBook("Kotlin", 999))
+        userData.array = array
         userData.shadow = "改改改"
         val putTime = System.currentTimeMillis()
         dataXOffice.put(userData)
@@ -452,6 +457,7 @@ class DataXOfficeTest {
         var cards = ArrayList<ArrayList<Card>>()
         var map = HashMap<String, String>()
         var cityMap = HashMap<String, ArrayList<String>>()
+        var array: Array<Book>? = null
         @Transient
         var shadow = "这不应该被变更"
 
@@ -479,7 +485,7 @@ class DataXOfficeTest {
         }
 
         override fun toString(): String {
-            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, card=$cards, map=$map, cityMap=$cityMap)"
+            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, cards=$cards, map=$map, cityMap=$cityMap, array=${Arrays.toString(array)}, shadow='$shadow')"
         }
 
 
