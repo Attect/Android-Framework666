@@ -427,7 +427,9 @@ class DataXOfficeTest {
         val putTime = System.currentTimeMillis()
         dataXOffice.put(userData)
         println("putTime:" + (System.currentTimeMillis() - putTime))
+        val jsonPutTime = System.currentTimeMillis()
         val jsonString = gson.toJson(userData)
+        println("jsonPutTime:" + (System.currentTimeMillis() - jsonPutTime))
         println("json[${jsonString.length}]:$jsonString")
         println("put total data:${dataXOffice.backLog()}")
         val box = packer.toByteArray()
@@ -435,7 +437,10 @@ class DataXOfficeTest {
         dataXOffice.unpack(box)
         val getTime = System.currentTimeMillis()
         val newUserData = dataXOffice.get(UserData::class.java)
-        println("get time:" + (System.currentTimeMillis() - getTime))
+        println("getTime:" + (System.currentTimeMillis() - getTime))
+        val jsonGetTime = System.currentTimeMillis()
+        gson.fromJson(jsonString, UserData::class.java)
+        println("jsonGetTime:" + (System.currentTimeMillis() - jsonGetTime))
         println(userData)
         println(newUserData)
         println("shadow:${newUserData?.shadow ?: ""}")
@@ -448,6 +453,9 @@ class DataXOfficeTest {
             this.id = id
             this.username = username
         }
+
+        val valData = 0
+
 
         var id: Int? = null
         var username: String? = null
