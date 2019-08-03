@@ -847,20 +847,20 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                                 is ArrayList<Any?> -> for (i in 0 until listSize) list.add(
                                                                     autoReadParameterizedType(
                                                                         instance,
-                                                                        simpleTypeForRead(listType.rawTypeName),
+                                                                        listTypeName,
                                                                         listType
                                                                     )
                                                                 )
                                                                 is LinkedList<Any?> -> for (i in 0 until listSize) list.add(
                                                                     autoReadParameterizedType(
                                                                         instance,
-                                                                        simpleTypeForRead(listType.rawTypeName),
+                                                                        listTypeName,
                                                                         listType
                                                                     )
                                                                 )
                                                                 else -> {
                                                                     list = ArrayList()
-                                                                    for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType))
+                                                                    for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listTypeName, listType))
                                                                 }
                                                             }
                                                         }
