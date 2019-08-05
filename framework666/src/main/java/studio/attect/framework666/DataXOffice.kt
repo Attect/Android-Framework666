@@ -1,6 +1,5 @@
 package studio.attect.framework666
 
-import com.google.gson.Gson
 import org.msgpack.core.MessagePack
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
@@ -634,53 +633,36 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
     fun put(any: Any?) {
         if (isWriteRawDataType(any)) {
             writeAuto(any)
+        } else if (any == null) {
+            packer.packNil()
         } else {
-            if (any == null) {
-                packer.packNil()
-//                packer.packBoolean(true) //此对象为null，而不是对象中的字段为null
-//                return
-//            }else{
-//                packer.packBoolean(false) //此对象不为null，需要在读取时将此对象实例化
-            } else {
-                any::class.java.declaredFields.forEach { field ->
-                    if (field.name != "this\$0" && !Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
-                        println("put field:${field.name} : ${field.genericType.rawTypeName}")
-                        val accessible = field.isAccessible
-                        if (!field.isAccessible) field.isAccessible = true
-                        field.get(any).let {
-                            if (it != null && isWriteRawDataType(it)) {
+            packer.packBoolean(false) //此对象不为null，需要在读取时将此对象实例化
+            any::class.java.declaredFields.forEach { field ->
+                if (field.name != "this\$0" && !Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
+//                        println("put field:${field.name} : ${field.genericType.rawTypeName}")
+                    val accessible = field.isAccessible
+                    if (!field.isAccessible) field.isAccessible = true
+                    field.get(any).let {
+                        if (simpleTypeForRead(field.genericType.rawTypeName) != null) {
+                            if (it == null) {
+                                packer.packNil()
+                            } else {
                                 writeAuto(it)
+                            }
+                        } else {
+                            if (it == null) {
+                                packer.packBoolean(true) //此对象为null，而不是对象中的字段为null
                             } else {
                                 put(it)
                             }
                         }
 
-                        field.isAccessible = accessible
+
                     }
+
+                    field.isAccessible = accessible
                 }
             }
-
-
-
-//            any::class::memberProperties.get().forEach { kField ->
-//                //memberProperties.get有严重的性能问题
-//                if (kField is KMutableProperty<*> && !kField.isConst && !Modifier.isTransient(kField.javaField?.modifiers ?: 0)) { //跳过val类型、const/transient关键字
-//                    val accessible = kField.isAccessible
-//                    if (!kField.isAccessible) kField.isAccessible = true
-//                    kField.getter.call(any).let { field ->
-//                        println("put ${kField.name} :$field")
-//                        if (field != null && isWriteRawDataType(field)) {
-//                            writeAuto(field)
-//                        } else {
-//                            put(field)
-//                        }
-//                    }
-//
-//                    kField.isAccessible = accessible
-//                }
-//
-//            }
-
         }
     }
 
@@ -796,7 +778,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 val basicTypeResult = autoReadBasicType(simpleType)
                 if (basicTypeResult.first) return basicTypeResult.second as T?
             } else {
-                if (unpacker.tryUnpackNil()) return null
+                if (unpacker.unpackBoolean()) return null
                 val arraySize = unpacker.unpackArrayHeader()
                 val arrayInstance = java.lang.reflect.Array.newInstance(clazz.componentType, arraySize) as Array<Any?>
                 for (i in 0 until arraySize) {
@@ -806,10 +788,12 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             }
 
         } else if (isDataX) { //如果是DataX，走DataX的读取逻辑
+            if (unpacker.unpackBoolean()) return null
             val dataX = clazz.newInstance() as DataX
             dataX.applyFromOffice(this)
             return dataX as T
         } else {
+            if (unpacker.unpackBoolean()) return null
             if (clazz.constructors.isNotEmpty()) {
                 var foundConstructor = clazz.constructors[0]
 
@@ -838,7 +822,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                     instance?.let { target ->
                         target::class.java.declaredFields.forEach { field ->
                             if (field.name != "this\$0" && unpacker.hasNext() && !Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
-                                println("get field:${field.name} ${field.genericType.rawTypeName}")
+//                                println("get field:${field.name} ${field.genericType.rawTypeName}")
                                 if (!unpacker.tryUnpackNil()) {
                                     val accessible = field.isAccessible
                                     if (!field.isAccessible) field.isAccessible = true
@@ -848,13 +832,16 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                         val fieldType = simpleTypeForRead(field.type.canonicalName)
                                         val fieldClass = field.type
                                         if (fieldType == SIMPLE_TYPE_LIST) {
-                                            var list = fieldClass.newInstance() as List<Any?>
+                                            var list: List<Any?>
+                                            if (fieldClass == List::class.java) {
+                                                list = ArrayList()
+                                            } else {
+                                                list = fieldClass.newInstance() as List<Any?>
+                                            }
+
                                             val listSize = unpacker.unpackArrayHeader()
                                             val listType = parameterizedType.actualTypeArguments[0]
                                             val listTypeName = simpleTypeForRead(listType.rawTypeName)
-                                            if (field.name == "projectList") {
-                                                println("projectList[$listSize]")
-                                            }
                                             when (listType) {
                                                 is Class<*> -> {
                                                     when (list) {
@@ -889,9 +876,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                     }
                                                 }
                                                 else -> println("not support ParameterizedType:$parameterizedType [0]")
-                                            }
-                                            if (field.name == "projectList") {
-                                                println(Gson().toJson(list))
                                             }
                                             field.set(instance, list)
                                         } else if (fieldType == SIMPLE_TYPE_MAP) {
@@ -953,140 +937,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                 }
                             } //nil check
                         }
-
-
-//                        target::class::memberProperties.get().forEach { kField ->
-//                            val accessible = kField.isAccessible
-//                            if (!kField.isAccessible) kField.isAccessible = true
-//                            val nullable = kField.returnType.isMarkedNullable
-//                            if (!kField.isConst && !Modifier.isTransient(kField.javaField?.modifiers ?: 0)) { //跳过const/transient关键字
-//                                if (kField.returnType.javaType is ParameterizedType) {
-//                                    val parameterizedType = kField.returnType.javaType as ParameterizedType
-//                                    kField.javaField?.let { javaField ->
-//                                        val fieldTypeName = simpleTypeForRead(javaField.type.canonicalName)
-//                                        if (fieldTypeName == SIMPLE_TYPE_LIST) {
-//                                            if (!unpacker.tryUnpackNil()) { //List对象为null
-//                                                kField.javaField?.type?.let { fieldClass ->
-//                                                    var list = fieldClass.newInstance() as List<Any?>
-//                                                    val listSize = unpacker.unpackArrayHeader()
-//                                                    val listType = parameterizedType.actualTypeArguments[0]
-//                                                    val listTypeName = simpleTypeForRead(listType.rawTypeName)
-//                                                    when (listType) {
-//                                                        is Class<*> -> {
-//                                                            when (list) {
-//                                                                is ArrayList<Any?> -> for (i in 0 until listSize) list.add(get(listType, instance))
-//                                                                is LinkedList<Any?> -> for (i in 0 until listSize) list.add(get(listType, instance))
-//                                                                else -> { //处理定义时写的是var field:List<Any?>的情况
-//                                                                    list = ArrayList()
-//                                                                    for (i in 0 until listSize) list.add(get(listType, instance))
-//                                                                }
-//                                                            }
-//                                                        }
-//                                                        is ParameterizedType -> {
-//                                                            when (list) {
-//                                                                is ArrayList<Any?> -> for (i in 0 until listSize) list.add(
-//                                                                    autoReadParameterizedType(
-//                                                                        instance,
-//                                                                        listTypeName,
-//                                                                        listType
-//                                                                    )
-//                                                                )
-//                                                                is LinkedList<Any?> -> for (i in 0 until listSize) list.add(
-//                                                                    autoReadParameterizedType(
-//                                                                        instance,
-//                                                                        listTypeName,
-//                                                                        listType
-//                                                                    )
-//                                                                )
-//                                                                else -> {
-//                                                                    list = ArrayList()
-//                                                                    for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listTypeName, listType))
-//                                                                }
-//                                                            }
-//                                                        }
-//                                                        else -> println("not support ParameterizedType:$parameterizedType [0]")
-//                                                    }
-//                                                    if (kField is KMutableProperty<*>) {
-//                                                        kField.setter.call(instance, list)
-//                                                    }
-//                                                }
-//                                            }
-//
-//                                        } else if (fieldTypeName == SIMPLE_TYPE_MAP) {
-//                                            if (!unpacker.tryUnpackNil()) { //Map对象为null
-//                                                kField.javaField?.type?.let { fieldClass ->
-//                                                    var map = fieldClass.newInstance() as Map<Any?, Any?>
-//                                                    val mapSize = unpacker.unpackMapHeader()
-//                                                    val keyType = parameterizedType.actualTypeArguments[0]
-//                                                    val keyTypeName = simpleTypeForRead(keyType.rawTypeName)
-//                                                    val valueType = parameterizedType.actualTypeArguments[1]
-//                                                    val valueTypeName = simpleTypeForRead(valueType.rawTypeName)
-//
-//                                                    var keyValue: Any? = null
-//                                                    var valueValue: Any? = null
-//
-//                                                    when (map) {
-//                                                        is HashMap,
-//                                                        is ConcurrentHashMap,
-//                                                        is LinkedHashMap -> {
-//                                                            map as MutableMap<Any?, Any?>
-//                                                            for (i in 0 until mapSize) {
-//                                                                when (keyType) {
-//                                                                    is Class<*> -> keyValue = get(keyType, instance)
-//                                                                    is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
-//                                                                    else -> println("not support map key")
-//                                                                }
-//                                                                when (valueType) {
-//                                                                    is Class<*> -> valueValue = get(valueType, instance)
-//                                                                    is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
-//                                                                    else -> println("not support map value")
-//                                                                }
-//                                                                map.put(keyValue, valueValue)
-//                                                            }
-//                                                        }
-//                                                        else -> {
-//                                                            map = HashMap()
-//                                                            for (i in 0 until mapSize) {
-//                                                                when (keyType) {
-//                                                                    is Class<*> -> keyValue = get(keyType, instance)
-//                                                                    is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
-//                                                                    else -> println("not support map key")
-//                                                                }
-//                                                                when (valueType) {
-//                                                                    is Class<*> -> valueValue = get(valueType, instance)
-//                                                                    is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
-//                                                                    else -> println("not support map value")
-//                                                                }
-//                                                                map.put(keyValue, valueValue)
-//                                                            }
-//
-//                                                        }
-//                                                    }
-//
-//                                                    if (kField is KMutableProperty<*>) {
-//                                                        kField.setter.call(instance, map)
-//                                                    }
-//
-//                                                }
-//
-//                                            }
-//                                        }
-//                                    }
-//
-//                                } else {
-//                                    if (kField is KMutableProperty<*>) {
-//                                        val fieldTypeClass = kField.javaField?.type
-//                                        if (fieldTypeClass != null) {
-//                                            kField.setter.call(instance, get(fieldTypeClass, instance))
-//                                        } else {
-//                                            println("todo field class null")
-//                                            //todo field class null 可是什么情况会这样？
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                            kField.isAccessible = accessible
-//                        }
 
                     }
                 }

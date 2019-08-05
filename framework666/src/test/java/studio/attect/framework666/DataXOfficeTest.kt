@@ -424,10 +424,12 @@ class DataXOfficeTest {
         val array = arrayOf(userData.newBook("Kotlin", 999))
         userData.array = array
         val nt = NullableThing()
-        nt.v = "success"
+        val ntnt = NullableThing()
+        nt.thing = ntnt
+        ntnt.v = "success"
         userData.nullableThing = nt
 
-        userData.shadow = "改改改"
+        userData.shadow = "改改改改改改改"
         val putTime = System.currentTimeMillis()
         dataXOffice.put(userData)
         println("putTime:" + (System.currentTimeMillis() - putTime))
