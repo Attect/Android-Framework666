@@ -423,6 +423,10 @@ class DataXOfficeTest {
         }
         val array = arrayOf(userData.newBook("Kotlin", 999))
         userData.array = array
+        val nt = NullableThing()
+        nt.v = "success"
+        userData.nullableThing = nt
+
         userData.shadow = "改改改"
         val putTime = System.currentTimeMillis()
         dataXOffice.put(userData)
@@ -462,10 +466,12 @@ class DataXOfficeTest {
         var book: Book = Book()
         var score: ArrayList<Int> = arrayListOf()
         var backpack: ArrayList<Book>? = null
+        var inneruser: UserData? = null
         var cards = ArrayList<ArrayList<Card>>()
         var map = HashMap<String, String>()
         var cityMap = HashMap<String, ArrayList<String>>()
         var array: Array<Book>? = null
+        var nullableThing: NullableThing? = null
         @Transient
         var shadow = "这不应该被变更"
 
@@ -493,7 +499,7 @@ class DataXOfficeTest {
         }
 
         override fun toString(): String {
-            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, cards=$cards, map=$map, cityMap=$cityMap, array=${Arrays.toString(array)}, shadow='$shadow')"
+            return "UserData(id=$id, username=$username, book=$book, score=$score, backpack=$backpack, cards=$cards, map=$map, cityMap=$cityMap, array=${Arrays.toString(array)}, shadow='$shadow', nullableThing='$nullableThing')"
         }
 
 
@@ -527,6 +533,17 @@ class DataXOfficeTest {
                 return "Book(name='$name', page=$page)"
             }
         }
+    }
+
+    class NullableThing {
+        var thing: NullableThing? = null
+        var v = "not set"
+
+        override fun toString(): String {
+            return "NullableThing(thing=$thing, v='$v')"
+        }
+
+
     }
 
     class Card() {

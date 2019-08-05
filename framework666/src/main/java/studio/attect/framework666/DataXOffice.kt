@@ -1,5 +1,6 @@
 package studio.attect.framework666
 
+import com.google.gson.Gson
 import org.msgpack.core.MessagePack
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
@@ -631,29 +632,34 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 支持字段为null
      */
     fun put(any: Any?) {
-        if (any == null) {
-            packer.packNil()
-            return
-        }
         if (isWriteRawDataType(any)) {
             writeAuto(any)
         } else {
-
-            any::class.java.declaredFields.forEach { field ->
-                if (!Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
-                    val accessible = field.isAccessible
-                    if (!field.isAccessible) field.isAccessible = true
-                    field.get(any).let {
-                        if (it != null && isWriteRawDataType(it)) {
-                            writeAuto(it)
-                        } else {
-                            put(it)
+            if (any == null) {
+                packer.packNil()
+//                packer.packBoolean(true) //此对象为null，而不是对象中的字段为null
+//                return
+//            }else{
+//                packer.packBoolean(false) //此对象不为null，需要在读取时将此对象实例化
+            } else {
+                any::class.java.declaredFields.forEach { field ->
+                    if (field.name != "this\$0" && !Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
+                        println("put field:${field.name} : ${field.genericType.rawTypeName}")
+                        val accessible = field.isAccessible
+                        if (!field.isAccessible) field.isAccessible = true
+                        field.get(any).let {
+                            if (it != null && isWriteRawDataType(it)) {
+                                writeAuto(it)
+                            } else {
+                                put(it)
+                            }
                         }
-                    }
 
-                    field.isAccessible = accessible
+                        field.isAccessible = accessible
+                    }
                 }
             }
+
 
 
 //            any::class::memberProperties.get().forEach { kField ->
@@ -683,6 +689,10 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 基本类型
      */
     private fun writeAuto(it: Any?) {
+        if (it == null) {
+            packer.packNil()
+            return
+        }
         when (it) {
             is Byte -> putByte(it)
             is ByteArray -> putByteArray(it)
@@ -702,14 +712,11 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             is String -> putString(it)
             is DataX -> putDataX(it)
             is Array<*> -> {
-                if (it.isNullOrEmpty()) {
-                    packer.packNil()
-                } else {
-                    packer.packArrayHeader(it.size)
-                    it.forEach {
-                        put(it)
-                    }
+                packer.packArrayHeader(it.size)
+                it.forEach {
+                    put(it)
                 }
+
             }
 
             is List<*> -> {
@@ -741,7 +748,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
     /**
      * 判断[any]是否可直接写入类型
      */
-    private fun isWriteRawDataType(any: Any): Boolean {
+    private fun isWriteRawDataType(any: Any?): Boolean {
         when (any) {
             is Byte,
             is ByteArray,
@@ -789,7 +796,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 val basicTypeResult = autoReadBasicType(simpleType)
                 if (basicTypeResult.first) return basicTypeResult.second as T?
             } else {
-                if (unpacker.tryUnpackNil()) return null //不能用上面的inline方法，原因是T类型不确定
+                if (unpacker.tryUnpackNil()) return null
                 val arraySize = unpacker.unpackArrayHeader()
                 val arrayInstance = java.lang.reflect.Array.newInstance(clazz.componentType, arraySize) as Array<Any?>
                 for (i in 0 until arraySize) {
@@ -799,7 +806,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             }
 
         } else if (isDataX) { //如果是DataX，走DataX的读取逻辑
-            if (unpacker.tryUnpackNil()) return null
             val dataX = clazz.newInstance() as DataX
             dataX.applyFromOffice(this)
             return dataX as T
@@ -826,25 +832,29 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                     (tmpInstance as? T).let {
                         instance = it
                     }
-
                 }
 
                 if (instance != null) {
                     instance?.let { target ->
                         target::class.java.declaredFields.forEach { field ->
-                            val accessible = field.isAccessible
-                            if (!field.isAccessible) field.isAccessible = true
-                            if (!Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
-                                if (field.genericType is ParameterizedType) {
-                                    val parameterizedType = field.genericType as ParameterizedType
-                                    val fieldType = simpleTypeForRead(field.type.canonicalName)
-                                    val fieldClass = field.type
-                                    if (fieldType == SIMPLE_TYPE_LIST) {
-                                        if (!unpacker.tryUnpackNil()) { //List对象为null
+                            if (field.name != "this\$0" && unpacker.hasNext() && !Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
+                                println("get field:${field.name} ${field.genericType.rawTypeName}")
+                                if (!unpacker.tryUnpackNil()) {
+                                    val accessible = field.isAccessible
+                                    if (!field.isAccessible) field.isAccessible = true
+
+                                    if (field.genericType is ParameterizedType) {
+                                        val parameterizedType = field.genericType as ParameterizedType
+                                        val fieldType = simpleTypeForRead(field.type.canonicalName)
+                                        val fieldClass = field.type
+                                        if (fieldType == SIMPLE_TYPE_LIST) {
                                             var list = fieldClass.newInstance() as List<Any?>
                                             val listSize = unpacker.unpackArrayHeader()
                                             val listType = parameterizedType.actualTypeArguments[0]
                                             val listTypeName = simpleTypeForRead(listType.rawTypeName)
+                                            if (field.name == "projectList") {
+                                                println("projectList[$listSize]")
+                                            }
                                             when (listType) {
                                                 is Class<*> -> {
                                                     when (list) {
@@ -880,11 +890,11 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                 }
                                                 else -> println("not support ParameterizedType:$parameterizedType [0]")
                                             }
+                                            if (field.name == "projectList") {
+                                                println(Gson().toJson(list))
+                                            }
                                             field.set(instance, list)
-                                        }
-
-                                    } else if (fieldType == SIMPLE_TYPE_MAP) {
-                                        if (!unpacker.tryUnpackNil()) { //Map对象为null
+                                        } else if (fieldType == SIMPLE_TYPE_MAP) {
                                             var map = fieldClass.newInstance() as Map<Any?, Any?>
                                             val mapSize = unpacker.unpackMapHeader()
                                             val keyType = parameterizedType.actualTypeArguments[0]
@@ -933,13 +943,15 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                 }
                                             }
                                             field.set(instance, map)
+
                                         }
+                                    } else {
+                                        field.set(instance, get(field.type, instance))
                                     }
-                                } else {
-                                    field.set(instance, get(field.type, instance))
+
+                                    field.isAccessible = accessible
                                 }
-                            }
-                            field.isAccessible = accessible
+                            } //nil check
                         }
 
 
