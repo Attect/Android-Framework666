@@ -631,36 +631,33 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 支持字段为null
      */
     fun put(any: Any?) {
-        if (isWriteRawDataType(any)) {
-            writeAuto(any)
-        } else if (any == null) {
-            packer.packNil()
-        } else {
-            packer.packBoolean(false) //此对象不为null，需要在读取时将此对象实例化
-            any::class.java.declaredFields.forEach { field ->
-                if (field.name != "this\$0" && !Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
-//                        println("put field:${field.name} : ${field.genericType.rawTypeName}")
-                    val accessible = field.isAccessible
-                    if (!field.isAccessible) field.isAccessible = true
-                    field.get(any).let {
-                        if (simpleTypeForRead(field.genericType.rawTypeName) != null) {
-                            if (it == null) {
-                                packer.packNil()
+        when {
+            isWriteRawDataType(any) -> writeAuto(any)
+            any == null -> packer.packNil()
+            else -> {
+                packer.packBoolean(false) //此对象不为null，需要在读取时将此对象实例化
+                any::class.java.declaredFields.forEach { field ->
+                    if (!Modifier.isFinal(field.modifiers) && !Modifier.isTransient(field.modifiers)) {
+                        //                    println("put field:${field.name} : ${field.genericType.typeName} ${field.genericType}")
+                        val accessible = field.isAccessible
+                        if (!field.isAccessible) field.isAccessible = true
+                        field.get(any).let {
+                            if (simpleTypeForRead(field.genericType.rawTypeName) != null) {
+                                if (it == null) {
+                                    packer.packNil()
+                                } else {
+                                    writeAuto(it)
+                                }
                             } else {
-                                writeAuto(it)
-                            }
-                        } else {
-                            if (it == null) {
-                                packer.packBoolean(true) //此对象为null，而不是对象中的字段为null
-                            } else {
-                                put(it)
+                                if (it == null) {
+                                    packer.packBoolean(true) //此对象为null，而不是对象中的字段为null
+                                } else {
+                                    put(it)
+                                }
                             }
                         }
-
-
+                        field.isAccessible = accessible
                     }
-
-                    field.isAccessible = accessible
                 }
             }
         }
@@ -671,11 +668,18 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 基本类型
      */
     private fun writeAuto(it: Any?) {
-        if (it == null) {
-            packer.packNil()
+        if (it is Array<*>) { //非标准的数组也是可空的，且空带层级
+            packer.packBoolean(false) //因此需要记录本身是否为空
+            packer.packArrayHeader(it.size)
+            it.forEach {
+                put(it)
+            }
             return
         }
         when (it) {
+            null -> {
+                packer.packNil()
+            }
             is Byte -> putByte(it)
             is ByteArray -> putByteArray(it)
             is Short -> putShort(it)
@@ -693,21 +697,12 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
             is FloatArray -> putFloatArray(it)
             is String -> putString(it)
             is DataX -> putDataX(it)
-            is Array<*> -> {
-                packer.packArrayHeader(it.size)
-                it.forEach {
-                    put(it)
-                }
-
-            }
-
             is List<*> -> {
                 packer.packArrayHeader(it.size)
                 it.forEach {
                     put(it)
                 }
             }
-
             is Map<*, *> -> {
                 packer.packMapHeader(it.size)
                 it.keys.forEach { key ->
@@ -715,11 +710,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                     put(it[key]) //put value
                 }
             }
-
-            null -> {
-                packer.packNil()
-            }
-
             else -> {
                 error("DataXOffice: error type : ${it.javaClass.name}")
             }
@@ -1052,82 +1042,45 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 便于后面判断
      */
     private fun simpleTypeForRead(typeName: String?): Int? {
-        when (typeName) {
-            "byte",
-            Byte::class.java.canonicalName,
-            java.lang.Byte::class.java.canonicalName
-            -> return SIMPLE_TYPE_BYTE
-
-            Array<Byte>::class.java.canonicalName,
-            ByteArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_BYTE_ARRAY
-
-            "short",
-            Short::class.java.canonicalName,
-            java.lang.Short::class.java.canonicalName
-            -> return SIMPLE_TYPE_SHORT
-
-            Array<Short>::class.java.canonicalName,
-            ShortArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_SHORT_ARRAY
-
+        when (typeName) { //此处按类型出现频率排序可提高效率
             "int",
             Int::class.java.canonicalName,
             Integer::class.java.canonicalName
             -> return SIMPLE_TYPE_INT
-
-            Array<Int>::class.java.canonicalName,
-            IntArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_INT_ARRAY
-
-            BigInteger::class.java.canonicalName
-            -> return SIMPLE_TYPE_BIG_INTEGER
-
-            Array<BigInteger>::class.java.canonicalName
-            -> return SIMPLE_TYPE_BIG_INTEGER_ARRAY
-
-            "long",
-            Long::class.java.canonicalName,
-            java.lang.Long::class.java.canonicalName
-            -> return SIMPLE_TYPE_LONG
-
-            Array<Long>::class.java.canonicalName,
-            LongArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_LONG_ARRAY
 
             "boolean",
             Boolean::class.java.canonicalName,
             java.lang.Boolean::class.java.canonicalName
             -> return SIMPLE_TYPE_BOOLEAN
 
-            Array<Boolean>::class.java.canonicalName,
-            BooleanArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_BOOLEAN_ARRAY
+            String::class.java.canonicalName,
+            java.lang.String::class.java.canonicalName
+            -> return SIMPLE_TYPE_STRING
 
             "double",
             Double::class.java.canonicalName,
             java.lang.Double::class.java.canonicalName
             -> return SIMPLE_TYPE_DOUBLE
 
-            Array<Double>::class.java.canonicalName,
-            DoubleArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_DOUBLE_ARRAY
-
             "float",
             Float::class.java.canonicalName,
             java.lang.Float::class.java.canonicalName
             -> return SIMPLE_TYPE_FLOAT
 
-            Array<Float>::class.java.canonicalName,
-            FloatArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_FLOAT_ARRAY
+            "long",
+            Long::class.java.canonicalName,
+            java.lang.Long::class.java.canonicalName
+            -> return SIMPLE_TYPE_LONG
 
-            String::class.java.canonicalName,
-            java.lang.String::class.java.canonicalName
-            -> return SIMPLE_TYPE_STRING
+            "byte",
+            Byte::class.java.canonicalName,
+            java.lang.Byte::class.java.canonicalName
+            -> return SIMPLE_TYPE_BYTE
 
-//            Array<String>::class.java.canonicalName
-//            -> return "StringArray"
+            "short",
+            Short::class.java.canonicalName,
+            java.lang.Short::class.java.canonicalName
+            -> return SIMPLE_TYPE_SHORT
 
             ArrayList<Any>()::class.java.canonicalName,
             LinkedList<Any>()::class.java.canonicalName,
@@ -1144,8 +1097,43 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 return SIMPLE_TYPE_MAP
             }
 
+            Array<Int>::class.java.canonicalName,
+            IntArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_INT_ARRAY
+
+            Array<Boolean>::class.java.canonicalName,
+            BooleanArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_BOOLEAN_ARRAY
+
+            Array<Double>::class.java.canonicalName,
+            DoubleArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_DOUBLE_ARRAY
+
+            Array<Float>::class.java.canonicalName,
+            FloatArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_FLOAT_ARRAY
+
+            Array<Long>::class.java.canonicalName,
+            LongArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_LONG_ARRAY
+
+
+            Array<Byte>::class.java.canonicalName,
+            ByteArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_BYTE_ARRAY
+
+            Array<Short>::class.java.canonicalName,
+            ShortArray::class.java.canonicalName
+            -> return SIMPLE_TYPE_SHORT_ARRAY
+
+            BigInteger::class.java.canonicalName
+            -> return SIMPLE_TYPE_BIG_INTEGER
+
+            Array<BigInteger>::class.java.canonicalName
+            -> return SIMPLE_TYPE_BIG_INTEGER_ARRAY
+
             else -> {
-                if (typeName?.endsWith("[]") == true) return SIMPLE_TYPE_ARRAY
+                if (typeName?.endsWith("[]") == true || typeName?.startsWith("[L") == true) return SIMPLE_TYPE_ARRAY
                 return null
             }
         }
