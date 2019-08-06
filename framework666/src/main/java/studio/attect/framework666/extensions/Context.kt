@@ -130,7 +130,9 @@ fun <T> Context.writeCacheDataX(tag: String, @CacheDataX.Companion.StoreType sto
     val outputStream = FileOutputStream(file)
     try {
         val packer = MessagePack.newDefaultBufferPacker()
+        val time = System.currentTimeMillis()
         DataXOffice(packer).putDataX(cacheDataX)
+        Logcat.i("序列化时间：${System.currentTimeMillis() - time}ms")
         if (packer.totalWrittenBytes * 2 >= internalStorageAllocatableSpace()) {
             Logcat.w("缓存${tag}写入失败(空间不足)")
             return false

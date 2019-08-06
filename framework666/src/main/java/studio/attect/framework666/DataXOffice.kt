@@ -3,7 +3,6 @@ package studio.attect.framework666
 import org.msgpack.core.MessagePack
 import org.msgpack.core.MessagePacker
 import org.msgpack.core.MessageUnpacker
-import studio.attect.framework666.extensions.rawTypeName
 import studio.attect.framework666.interfaces.DataX
 import java.io.InputStream
 import java.lang.reflect.Modifier
@@ -642,7 +641,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                         val accessible = field.isAccessible
                         if (!field.isAccessible) field.isAccessible = true
                         field.get(any).let {
-                            if (simpleTypeForRead(field.genericType.rawTypeName) != null) {
+                            if (simpleTypeByClass(field.type) != null) {
                                 if (it == null) {
                                     packer.packNil()
                                 } else {
@@ -762,7 +761,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 isDataX = true
             }
         }
-        val simpleType = simpleTypeForRead(clazz.canonicalName)
+        val simpleType = simpleTypeByClass(clazz)
         if (simpleType != null) {
             if (simpleType != SIMPLE_TYPE_ARRAY) {
                 val basicTypeResult = autoReadBasicType(simpleType)
@@ -819,7 +818,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
                                     if (field.genericType is ParameterizedType) {
                                         val parameterizedType = field.genericType as ParameterizedType
-                                        val fieldType = simpleTypeForRead(field.type.canonicalName)
+                                        val fieldType = simpleTypeByClass(field.type)
                                         val fieldClass = field.type
                                         if (fieldType == SIMPLE_TYPE_LIST) {
                                             var list: List<Any?>
@@ -831,7 +830,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
                                             val listSize = unpacker.unpackArrayHeader()
                                             val listType = parameterizedType.actualTypeArguments[0]
-                                            val listTypeName = simpleTypeForRead(listType.rawTypeName)
+                                            val listTypeName: Int?
                                             when (listType) {
                                                 is Class<*> -> {
                                                     when (list) {
@@ -848,20 +847,18 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                         is ArrayList<Any?> -> for (i in 0 until listSize) list.add(
                                                             autoReadParameterizedType(
                                                                 instance,
-                                                                listTypeName,
                                                                 listType
                                                             )
                                                         )
                                                         is LinkedList<Any?> -> for (i in 0 until listSize) list.add(
                                                             autoReadParameterizedType(
                                                                 instance,
-                                                                listTypeName,
                                                                 listType
                                                             )
                                                         )
                                                         else -> {
                                                             list = ArrayList()
-                                                            for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listTypeName, listType))
+                                                            for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listType))
                                                         }
                                                     }
                                                 }
@@ -872,9 +869,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                             var map = fieldClass.newInstance() as Map<Any?, Any?>
                                             val mapSize = unpacker.unpackMapHeader()
                                             val keyType = parameterizedType.actualTypeArguments[0]
-                                            val keyTypeName = simpleTypeForRead(keyType.rawTypeName)
                                             val valueType = parameterizedType.actualTypeArguments[1]
-                                            val valueTypeName = simpleTypeForRead(valueType.rawTypeName)
 
                                             var keyValue: Any? = null
                                             var valueValue: Any? = null
@@ -887,12 +882,12 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                     for (i in 0 until mapSize) {
                                                         when (keyType) {
                                                             is Class<*> -> keyValue = get(keyType, instance)
-                                                            is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                                            is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyType)
                                                             else -> println("not support map key")
                                                         }
                                                         when (valueType) {
                                                             is Class<*> -> valueValue = get(valueType, instance)
-                                                            is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                                            is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueType)
                                                             else -> println("not support map value")
                                                         }
                                                         map.put(keyValue, valueValue)
@@ -903,12 +898,12 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                                                     for (i in 0 until mapSize) {
                                                         when (keyType) {
                                                             is Class<*> -> keyValue = get(keyType, instance)
-                                                            is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                                            is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyType)
                                                             else -> println("not support map key")
                                                         }
                                                         when (valueType) {
                                                             is Class<*> -> valueValue = get(valueType, instance)
-                                                            is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                                            is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueType)
                                                             else -> println("not support map value")
                                                         }
                                                         map.put(keyValue, valueValue)
@@ -943,7 +938,8 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * 需要提供可能的父类[instance]，读取的数据的类型[fieldSimpleType]，带泛型的类型[parameterizedType]
      * 返回读取到的数据类型，若不支持则会返回null，否则返回实例Any，类型自己强转
      */
-    private fun autoReadParameterizedType(instance: Any?, fieldSimpleType: Int?, parameterizedType: ParameterizedType): Any? {
+    private fun autoReadParameterizedType(instance: Any?, parameterizedType: ParameterizedType): Any? {
+        val fieldSimpleType = simpleTypeByClass(parameterizedType.rawType as Class<*>)
         if (fieldSimpleType == SIMPLE_TYPE_LIST) {
             var list = (parameterizedType.rawType as Class<*>).newInstance() as List<Any?>
             val listType = parameterizedType.actualTypeArguments[0]
@@ -962,11 +958,11 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                     }
                     is ParameterizedType -> {
                         when (list) {
-                            is ArrayList<Any?> -> for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType))
-                            is LinkedList<Any?> -> for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType))
+                            is ArrayList<Any?> -> for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listType))
+                            is LinkedList<Any?> -> for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listType))
                             else -> {
                                 list = ArrayList()
-                                for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, simpleTypeForRead(listType.rawTypeName), listType))
+                                for (i in 0 until listSize) list.add(autoReadParameterizedType(instance, listType))
                             }
                         }
                     }
@@ -981,9 +977,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         } else if (fieldSimpleType == SIMPLE_TYPE_MAP) {
             var map = (parameterizedType.rawType as Class<*>).newInstance() as Map<Any?, Any?>
             val keyType = parameterizedType.actualTypeArguments[0]
-            val keyTypeName = simpleTypeForRead(keyType.rawTypeName)
             val valueType = parameterizedType.actualTypeArguments[1]
-            val valueTypeName = simpleTypeForRead(valueType.rawTypeName)
 
             var keyValue: Any? = null
             var valueValue: Any? = null
@@ -998,12 +992,12 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                         for (i in 0 until mapSize) {
                             when (keyType) {
                                 is Class<*> -> keyValue = get(keyType, instance)
-                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyType)
                                 else -> println("not support map key")
                             }
                             when (valueType) {
                                 is Class<*> -> valueValue = get(valueType, instance)
-                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueType)
                                 else -> println("not support map value")
                             }
                             map.put(keyValue, valueValue)
@@ -1014,12 +1008,12 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                         for (i in 0 until mapSize) {
                             when (keyType) {
                                 is Class<*> -> keyValue = get(keyType, instance)
-                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyTypeName, keyType)
+                                is ParameterizedType -> keyValue = autoReadParameterizedType(instance, keyType)
                                 else -> println("not support map key")
                             }
                             when (valueType) {
                                 is Class<*> -> valueValue = get(valueType, instance)
-                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueTypeName, valueType)
+                                is ParameterizedType -> valueValue = autoReadParameterizedType(instance, valueType)
                                 else -> println("not support map value")
                             }
                             map.put(keyValue, valueValue)
@@ -1036,108 +1030,56 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return null
     }
 
-
     /**
-     * 将复杂的原始类型名称[typeName]归类为简单的类型名称
-     * 便于后面判断
+     * 提高效率版类型简化
+     * 判断的顺序在一定程度上会影响效率
      */
-    private fun simpleTypeForRead(typeName: String?): Int? {
-        when (typeName) { //此处按类型出现频率排序可提高效率
-            "int",
-            Int::class.java.canonicalName,
-            Integer::class.java.canonicalName
-            -> return SIMPLE_TYPE_INT
-
-            "boolean",
-            Boolean::class.java.canonicalName,
-            java.lang.Boolean::class.java.canonicalName
-            -> return SIMPLE_TYPE_BOOLEAN
-
-            String::class.java.canonicalName,
-            java.lang.String::class.java.canonicalName
-            -> return SIMPLE_TYPE_STRING
-
-            "double",
-            Double::class.java.canonicalName,
-            java.lang.Double::class.java.canonicalName
-            -> return SIMPLE_TYPE_DOUBLE
-
-            "float",
-            Float::class.java.canonicalName,
-            java.lang.Float::class.java.canonicalName
-            -> return SIMPLE_TYPE_FLOAT
-
-            "long",
-            Long::class.java.canonicalName,
-            java.lang.Long::class.java.canonicalName
-            -> return SIMPLE_TYPE_LONG
-
-            "byte",
-            Byte::class.java.canonicalName,
-            java.lang.Byte::class.java.canonicalName
-            -> return SIMPLE_TYPE_BYTE
-
-            "short",
-            Short::class.java.canonicalName,
-            java.lang.Short::class.java.canonicalName
-            -> return SIMPLE_TYPE_SHORT
-
-            ArrayList<Any>()::class.java.canonicalName,
-            LinkedList<Any>()::class.java.canonicalName,
-            List::class.java.canonicalName
-            -> {
-                return SIMPLE_TYPE_LIST
+    private fun simpleTypeByClass(clazz: Class<*>): Int? {
+        if (!clazz.isArray) {
+            if (clazz.isPrimitive) { //基础类型
+                when (clazz) {
+                    Int::class.java -> return SIMPLE_TYPE_INT
+                    Boolean::class.java -> return SIMPLE_TYPE_BOOLEAN
+                    Double::class.java -> return SIMPLE_TYPE_DOUBLE
+                    Float::class.java -> return SIMPLE_TYPE_FLOAT
+                    Long::class.java -> return SIMPLE_TYPE_LONG
+                    Byte::class.java -> return SIMPLE_TYPE_BYTE
+                    Short::class.java -> return SIMPLE_TYPE_SHORT
+                }
+            } else {
+                when (clazz) {
+                    Integer::class.java -> return SIMPLE_TYPE_INT
+                    java.lang.Boolean::class.java -> return SIMPLE_TYPE_BOOLEAN
+                    java.lang.String::class.java -> return SIMPLE_TYPE_STRING
+                    java.lang.Double::class.java -> return SIMPLE_TYPE_DOUBLE
+                    java.lang.Float::class.java -> return SIMPLE_TYPE_FLOAT
+                    java.lang.Long::class.java -> return SIMPLE_TYPE_LONG
+                    java.lang.Byte::class.java -> return SIMPLE_TYPE_BYTE
+                    java.lang.Short::class.java -> return SIMPLE_TYPE_SHORT
+                    List::class.java, ArrayList::class.java, LinkedList::class.java -> return SIMPLE_TYPE_LIST
+                    Map::class.java, HashMap::class.java, LinkedHashMap::class.java, ConcurrentHashMap::class.java -> return SIMPLE_TYPE_MAP
+                }
             }
 
-            HashMap<Any, Any>()::class.java.canonicalName,
-            LinkedHashMap<Any, Any>()::class.java.canonicalName,
-            ConcurrentHashMap<Any, Any>()::class.java.canonicalName,
-            Map::class.java.canonicalName
-            -> {
-                return SIMPLE_TYPE_MAP
-            }
-
-            Array<Int>::class.java.canonicalName,
-            IntArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_INT_ARRAY
-
-            Array<Boolean>::class.java.canonicalName,
-            BooleanArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_BOOLEAN_ARRAY
-
-            Array<Double>::class.java.canonicalName,
-            DoubleArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_DOUBLE_ARRAY
-
-            Array<Float>::class.java.canonicalName,
-            FloatArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_FLOAT_ARRAY
-
-            Array<Long>::class.java.canonicalName,
-            LongArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_LONG_ARRAY
-
-
-            Array<Byte>::class.java.canonicalName,
-            ByteArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_BYTE_ARRAY
-
-            Array<Short>::class.java.canonicalName,
-            ShortArray::class.java.canonicalName
-            -> return SIMPLE_TYPE_SHORT_ARRAY
-
-            BigInteger::class.java.canonicalName
-            -> return SIMPLE_TYPE_BIG_INTEGER
-
-            Array<BigInteger>::class.java.canonicalName
-            -> return SIMPLE_TYPE_BIG_INTEGER_ARRAY
-
-            else -> {
-                if (typeName?.endsWith("[]") == true || typeName?.startsWith("[L") == true) return SIMPLE_TYPE_ARRAY
-                return null
+        } else { //数组类型
+            when (clazz) {
+                IntArray::class.java -> return SIMPLE_TYPE_INT_ARRAY
+                BooleanArray::class.java -> return SIMPLE_TYPE_BOOLEAN_ARRAY
+                DoubleArray::class.java -> return SIMPLE_TYPE_DOUBLE_ARRAY
+                FloatArray::class.java -> return SIMPLE_TYPE_FLOAT_ARRAY
+                LongArray::class.java -> return SIMPLE_TYPE_LONG_ARRAY
+                ByteArray::class.java -> return SIMPLE_TYPE_BYTE_ARRAY
+                ShortArray::class.java -> return SIMPLE_TYPE_SHORT_ARRAY
+                Array<BigInteger>::class.java -> return SIMPLE_TYPE_BIG_INTEGER_ARRAY
+                else -> {
+                    return SIMPLE_TYPE_ARRAY
+                }
             }
         }
+
+        return null
     }
+
 
     /**
      * 根据给定的简易类型名称[simpleType]读取数据
