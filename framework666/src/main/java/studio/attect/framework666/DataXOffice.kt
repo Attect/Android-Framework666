@@ -1104,7 +1104,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 SIMPLE_TYPE_FLOAT -> return Pair(true, getFloat())
                 SIMPLE_TYPE_FLOAT_ARRAY -> return Pair(true, getFloatArray())
                 SIMPLE_TYPE_STRING -> return Pair(true, getString())
-                else -> return Pair(false, null) //todo Any[]
+                else -> return Pair(false, null)
             }
         }
         return Pair(false, null)
