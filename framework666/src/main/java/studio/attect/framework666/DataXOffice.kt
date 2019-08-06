@@ -830,7 +830,6 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
                                             val listSize = unpacker.unpackArrayHeader()
                                             val listType = parameterizedType.actualTypeArguments[0]
-                                            val listTypeName: Int?
                                             when (listType) {
                                                 is Class<*> -> {
                                                     when (list) {
@@ -935,7 +934,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
 
     /**
      * 根据泛型类型读取数据
-     * 需要提供可能的父类[instance]，读取的数据的类型[fieldSimpleType]，带泛型的类型[parameterizedType]
+     * 需要提供可能的父类[instance]，带泛型的类型[parameterizedType]
      * 返回读取到的数据类型，若不支持则会返回null，否则返回实例Any，类型自己强转
      */
     private fun autoReadParameterizedType(instance: Any?, parameterizedType: ParameterizedType): Any? {
