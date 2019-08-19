@@ -20,7 +20,7 @@ import kotlin.collections.LinkedHashMap
  * 基于MsgPack
  * @author Attect
  */
-class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBufferPacker()) {
+class DataXOffice(val packer: MessagePacker = MessagePack.newDefaultBufferPacker()) {
     lateinit var unpacker: MessageUnpacker
 
     fun unpack(byteArray: ByteArray): DataXOffice {
@@ -629,7 +629,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
      * const/transient修饰的字段将会被跳过
      * 支持字段为null
      */
-    fun put(any: Any?) {
+    fun put(any: Any?): DataXOffice {
         when {
             isWriteRawDataType(any) -> writeAuto(any)
             any == null -> packer.packNil()
@@ -660,6 +660,7 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
                 }
             }
         }
+        return this
     }
 
     /**
