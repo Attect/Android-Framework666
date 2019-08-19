@@ -574,17 +574,17 @@ class DataXOffice(private val packer: MessagePacker = MessagePack.newDefaultBuff
         return this
     }
 
-    inline fun <reified T> getArray(cls: Class<T>): Array<T?>? {
+    inline fun <reified T : DataX> getArray(cls: Class<T>): Array<T?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
-            return@Array get(cls)
+            return@Array getDataX(cls)
         }
     }
 
-    inline fun <reified T, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
+    inline fun <reified T : DataX, reified K> getArray(clazz: Class<T>, owner: K): Array<T?>? {
         if (unpacker.tryUnpackNil()) return null
         return Array(unpacker.unpackArrayHeader()) {
-            return@Array get(clazz, owner)
+            return@Array getDataX(clazz, owner)
         }
     }
 
