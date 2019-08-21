@@ -22,9 +22,9 @@ object RuntimeBuildConfig {
             if (field == BuildConfig.DEBUG) field = value
         }
 
-    var APPLICATION_ID = BuildConfig.APPLICATION_ID
+    var APPLICATION_ID = BuildConfig.LIBRARY_PACKAGE_NAME
         set(value) {
-            if (field == BuildConfig.APPLICATION_ID) field = value
+            if (field == BuildConfig.LIBRARY_PACKAGE_NAME) field = value
         }
 
     var BUILD_TYPE = BuildConfig.BUILD_TYPE
