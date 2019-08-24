@@ -772,7 +772,11 @@ class DataXOffice(val packer: MessagePacker = MessagePack.newDefaultBufferPacker
                 val arraySize = unpacker.unpackArrayHeader()
                 val arrayInstance = java.lang.reflect.Array.newInstance(clazz.componentType, arraySize) as Array<Any?>
                 for (i in 0 until arraySize) {
-                    arrayInstance[i] = get(clazz.componentType, owner)
+                    //此处并不会为Null
+                    clazz.componentType?.let { componentType ->
+                        arrayInstance[i] = get(componentType, owner)
+                    }
+
                 }
                 return arrayInstance as T
             }
