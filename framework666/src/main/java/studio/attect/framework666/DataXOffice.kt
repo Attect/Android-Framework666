@@ -781,7 +781,6 @@ class DataXOffice(val packer: MessagePacker = MessagePack.newDefaultBufferPacker
             }
 
         } else if (isDataX) { //如果是DataX，走DataX的读取逻辑
-            if (unpacker.unpackBoolean()) return null
             val dataX = clazz.newInstance() as DataX
             dataX.applyFromOffice(this)
             return dataX as T
