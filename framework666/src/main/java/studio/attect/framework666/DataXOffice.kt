@@ -756,12 +756,7 @@ class DataXOffice(val packer: MessagePacker = MessagePack.newDefaultBufferPacker
      * 返回根据给定的类型以及实际读取的数据所生成的对象，或者为null
      */
     fun <T> get(clazz: Class<T>, owner: Any? = null): T? {
-        var isDataX = false
-        clazz.interfaces.forEach {
-            if (it.canonicalName == DataX::class.java.canonicalName) {
-                isDataX = true
-            }
-        }
+        val isDataX = DataX::class.java.isAssignableFrom(clazz)
         val simpleType = simpleTypeByClass(clazz)
         if (simpleType != null) {
             if (simpleType != SIMPLE_TYPE_ARRAY) {
