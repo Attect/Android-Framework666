@@ -176,6 +176,27 @@ class DataXOffice(val packer: MessagePacker = MessagePack.newDefaultBufferPacker
         return shortArray
     }
 
+    fun putShortList(shortList: List<Short?>?): DataXOffice {
+        if (shortList == null) {
+            packer.packNil()
+        } else {
+            packer.packArrayHeader(shortList.size)
+            shortList.forEach { putShort(it) }
+        }
+        return this
+    }
+
+    fun getShortList(): ArrayList<Short?>? {
+        if (unpacker.tryUnpackNil()) return null
+        val size = unpacker.unpackArrayHeader()
+        val arrayList = ArrayList<Short?>()
+        for (i in 0 until size) {
+            arrayList.add(getShort())
+        }
+        return arrayList
+    }
+
+
 
     fun putInt(int: Int?): DataXOffice {
         if (int == null) {
