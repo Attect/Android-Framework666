@@ -241,6 +241,7 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
                     }
                 })
             }
+
         }
     }
 

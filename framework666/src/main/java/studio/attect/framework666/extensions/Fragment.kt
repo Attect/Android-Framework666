@@ -4,6 +4,7 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import studio.attect.framework666.R
 import studio.attect.framework666.activity.OnBackPressedQueueActivity
 
 /**
@@ -52,6 +53,10 @@ fun Fragment.showBackArrow() {
     activity?.let { fragmentActivity ->
         if (fragmentActivity is AppCompatActivity) {
             fragmentActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
+        val backUpArrow: View? = findViewById(R.id.backUpArrow)
+        backUpArrow?.setOnClickListener {
+            fragmentActivity.onBackPressed()
         }
     }
 }
