@@ -173,7 +173,8 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
         appbarLayoutParent = findViewById(R.id.appbarLayoutParent)
         appbarLayout = appbarLayoutParent?.findViewById(R.id.appbarLayout)
         appbarLayoutParent?.let { parent ->
-            toolbar = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            val toolbar:View? = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            if(toolbar is Toolbar) this.toolbar = toolbar
             collapsingToolbarLayout = appbarLayoutParent?.findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
             windowInsets?.observe(this, Observer { windowInsetsCompat ->
                 parent.layoutParams?.let { lp ->
@@ -186,28 +187,28 @@ abstract class FragmentX : PerceptionFragment(), ComponentX {
                 }
             })
 
-            if (toolbar != null && toolbar?.parent is AppBarLayout) { //只对appbar中的toolbar操作
-                toolbar?.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
+            if (toolbar != null && toolbar.parent is AppBarLayout) { //只对appbar中的toolbar操作
+                toolbar.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
 
-                toolbarTitle = toolbar?.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
+                toolbarTitle = toolbar.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
                 toolbarTitle?.apply {
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.toolbar_title_text_size).toFloat())
                     setTextColor(ResourcesCompat.getColor(resources, R.color.appbarTitleColor, activityX?.theme))
                 }
 
-                activityX?.setSupportActionBar(toolbar) //需要这一步，否则菜单可能设置不上
+                activityX?.setSupportActionBar(this.toolbar) //需要这一步，否则菜单可能设置不上
                 //清空Android原有的标题
-                toolbar?.title = ""
+                this.toolbar?.title = ""
                 activityX?.title = ""
 
                 val appbarTitleColor = ResourcesCompat.getColor(resources, R.color.appbarTitleColor, activityX?.theme)
-                toolbar?.apply {
+                this.toolbar?.apply {
                     setTitleTextColor(appbarTitleColor)
                     setSubtitleTextColor(appbarTitleColor)
                 }
 
                 windowInsets?.observe(this, Observer { windowInsetsCompat ->
-                    toolbar?.layoutParams?.let { lp ->
+                    toolbar.layoutParams?.let { lp ->
                         if (lp is ViewGroup.MarginLayoutParams) {
                             lp.topMargin = windowInsetsCompat.currentSafeTop
                         }
