@@ -28,4 +28,3 @@
 - 极方便的RecyclerViewAdapter：提供SimpleRecyclerViewAdapter，将ViewHolder与Adapter解耦，提供独特简易的数据操作方法，轻松对列表进行增删改差，支持批量操作，且均支持多种ViewHolder，支持假操作预测数据变更效果。使用此Adpater你只需要关心你的数据对应哪个Layout，以及数据如何绑定到Layout上。还兼容部分其它开源Adapter结合使用（如[android-advancedrecyclerview](https://github.com/h6ah4i/android-advancedrecyclerview) 一起作出分组、拖拽排序等效果）
 - 繁杂操作扩展：针对安卓开发一些非常绕的写法，例如需要经过各种Compat包做兼容的调用的一些方法和属性，做了Kotlin扩展封装。
 
-下班了……之后再写
