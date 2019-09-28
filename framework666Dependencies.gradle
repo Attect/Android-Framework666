@@ -11,8 +11,6 @@ dependencies {
     // https://github.com/Attect/Sneaker
     implementation project(path: ':sneaker')
 
-    // https://github.com/Attect/WebSocketService
-    implementation project(path: ':websocketservice')
     //endregion
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -53,5 +51,4 @@ dependencies {
 
     implementation "org.msgpack:msgpack-core:${msgpack_version}"
 
-    implementation "com.squareup.okhttp3:okhttp:${okhttp_version}"
 }

@@ -13,10 +13,10 @@
             <option value="$PROJECT_DIR$/materialiconlib" />
             <option value="$PROJECT_DIR$/sneaker" />
             <option value="$PROJECT_DIR$/staticviewmodelstore" />
-            <option value="$PROJECT_DIR$/websocketservice" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>

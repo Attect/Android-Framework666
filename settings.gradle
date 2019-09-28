@@ -1,1 +1,1 @@
-include ':app', ':framework666', ':staticviewmodelstore', ':sneaker', ':websocketservice', ':materialiconlib'
+include ':app', ':framework666', ':staticviewmodelstore', ':sneaker', ':materialiconlib'
