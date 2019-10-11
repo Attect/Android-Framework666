@@ -39,11 +39,6 @@ class MainActivity : ActivityX() {
     }
 
     private fun initBottomNavigation() {
-//        Gson().fromJson<ArrayList<String>>(preference.getString(BOTTOM_TAG_PREFERENCE_NAME, "[]"))?.let {
-//            bottomNavigationTags.clear()
-//            bottomNavigationTags.addAll(it)
-//        }
-
         if (bottomNavigationTags.size != BOTTOM_NAVIGATION_NUM) {
             bottomNavigationTags.clear()
             bottomNavigationTags.add(NormalComponent.getTag())
@@ -81,7 +76,7 @@ class MainActivity : ActivityX() {
             bottomNavigation.addView(view)
         }
 
-        changePage(NormalComponent.getTag()) //默认页
+        changePage(preference.getString(BOTTOM_TAG_PREFERENCE_NAME, null) ?: NormalComponent.getTag()) //默认页
     }
 
     private fun changePage(tag: String) {
@@ -103,7 +98,9 @@ class MainActivity : ActivityX() {
         }
 
         currentComponentTag = tag
+        preference.edit().putString(BOTTOM_TAG_PREFERENCE_NAME, currentComponentTag).apply()
     }
+
 
     inner class BottomNavigationViewHolder {
         lateinit var imageView: AppCompatImageView
