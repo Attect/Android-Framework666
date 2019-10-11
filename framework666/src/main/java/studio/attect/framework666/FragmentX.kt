@@ -20,7 +20,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ContainerX
 import studio.attect.framework666.extensions.*
-import studio.attect.framework666.fragment.PerceptionFragment
+import studio.attect.framework666.fragment.MisoperationFragment
 import studio.attect.framework666.viewModel.CacheDataXViewModel
 
 /**
@@ -30,7 +30,7 @@ import studio.attect.framework666.viewModel.CacheDataXViewModel
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-abstract class FragmentX : PerceptionFragment(), ComponentX {
+abstract class FragmentX : MisoperationFragment(), ComponentX {
 
     val applicationX: ApplicationX? = null
         get() {

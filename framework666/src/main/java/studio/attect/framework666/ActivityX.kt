@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import pub.devrel.easypermissions.EasyPermissions
-import studio.attect.framework666.activity.PerceptionActivity
+import studio.attect.framework666.activity.MisoperationActivity
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.interfaces.DataX
 import studio.attect.framework666.viewModel.CacheDataXViewModel
@@ -34,7 +34,7 @@ import studio.attect.framework666.viewModel.WindowInsetsViewModel
  * 此类的父类会随着开发和变更而变更，不可通过反射获取准确类型
  * @author Attect
  */
-abstract class ActivityX : PerceptionActivity() {
+abstract class ActivityX : MisoperationActivity() {
 
     val applicationX by lazy {
         application as ApplicationX
