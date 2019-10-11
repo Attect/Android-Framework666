@@ -233,11 +233,7 @@ class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRe
 
         return if (removeData.isNotEmpty()) {
             if (!fake) {
-                val idList = arrayListOf<Int>()
-                for (i in 0 until removeData.size()) {
-                    idList.add(i)
-                }
-                idList.reversed().forEach {
+                intArray.reversed().forEach {
                     //颠倒过来，从后往前删，避免key(position)变动
                     dataList.removeAt(it)
                     notifyItemRemoved(it)
