@@ -7,7 +7,7 @@ import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
 import studio.attect.framework666.viewModel.SignalViewModel
-import studio.attect.staticviewmodelstore.StaticViewModelStore
+import studio.attect.framework666.viewModel.SignalViewModel.signal
 
 /**
  * 综合Application
@@ -64,7 +64,7 @@ open class ApplicationX : Application() {
                 } catch (e: Throwable) {
                     e.printStackTrace()
                     mainThreadUnCatchException(e)
-                    StaticViewModelStore.getViewModelProvider(SignalViewModel.STORE_KEY, this@ApplicationX).get(SignalViewModel::class.java).signal.value = SignalViewModel.CRASH
+                    signal.value = SignalViewModel.CRASH
                 }
             }
         }
@@ -81,7 +81,7 @@ open class ApplicationX : Application() {
             object : Thread() {
                 override fun run() {
                     Looper.prepare()
-                    StaticViewModelStore.getViewModelProvider(SignalViewModel.STORE_KEY, this@ApplicationX).get(SignalViewModel::class.java).signal.postValue(SignalViewModel.CRASH)
+                    signal.postValue(SignalViewModel.CRASH)
                     Looper.loop()
                 }
             }.start()

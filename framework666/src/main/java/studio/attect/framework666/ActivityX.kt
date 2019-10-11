@@ -25,6 +25,7 @@ import studio.attect.framework666.interfaces.DataX
 import studio.attect.framework666.viewModel.CacheDataXViewModel
 import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
+import studio.attect.framework666.viewModel.SignalViewModel.signal
 import studio.attect.framework666.viewModel.WindowInsetsViewModel
 
 /**
@@ -39,12 +40,6 @@ abstract class ActivityX : MisoperationActivity() {
     val applicationX by lazy {
         application as ApplicationX
     }
-
-    //region ViewModel
-    private lateinit var signalViewModel: SignalViewModel
-
-    val signal: MutableLiveData<Int>
-        get() = signalViewModel.signal
 
     private lateinit var commonEventViewModel: CommonEventViewModel
 
@@ -93,7 +88,6 @@ abstract class ActivityX : MisoperationActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SignalViewModel.newInstance(this)?.let { signalViewModel = it }
         commonEventViewModel = getViewModel(CommonEventViewModel::class.java)
         WindowInsetsViewModel.newInstance(this)?.let { windowInsetsViewModel = it }
         cacheDataXViewModel = ViewModelProviders.of(this).get(CacheDataXViewModel::class.java)

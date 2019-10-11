@@ -32,7 +32,8 @@ class MainActivity : ActivityX() {
 
         //清除崩溃自动重启遗留的Fragment
         supportFragmentManager.findFragmentById(R.id.fragmentContainer)?.let {
-            supportFragmentManager.beginTransaction().remove(it).commit()
+            it.tag?.let { currentComponentTag = it }
+//            supportFragmentManager.beginTransaction().remove(it).commit()
         }
 
         initBottomNavigation()

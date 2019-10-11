@@ -30,6 +30,7 @@ import studio.attect.framework666.extensions.dp2px
 import studio.attect.framework666.extensions.isAlive
 import studio.attect.framework666.extensions.transparentStatusBar
 import studio.attect.framework666.viewModel.SignalViewModel
+import studio.attect.framework666.viewModel.SignalViewModel.signal
 
 /**
  * 崩溃及异常Crash模拟ComponentX
@@ -45,7 +46,7 @@ class CrashAndANRComponentX : FragmentX() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityX?.signal?.observe(this, Observer {
+        signal.observe(this, Observer {
             when (it) {
                 SignalViewModel.CRASH -> {
                     Sneaker.with(requireActivity())
