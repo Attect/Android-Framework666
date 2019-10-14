@@ -317,6 +317,7 @@ abstract class ActivityX : MisoperationActivity() {
                     map[it.first] = it.second
                 }
             }
+            true
         }
     }
 }

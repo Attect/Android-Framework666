@@ -306,6 +306,7 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
                     map[it.first] = it.second
                 }
             }
+            true
         }
     }
 }
