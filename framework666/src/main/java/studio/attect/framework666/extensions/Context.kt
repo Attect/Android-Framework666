@@ -17,6 +17,7 @@ import studio.attect.framework666.simple.FileSafeWriteCallback
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.*
 
 /**
  * 获得进程名
@@ -377,4 +378,17 @@ fun Context.deleteCacheDataX(tag: String): Boolean {
         return file.delete()
     }
     return false
+}
+
+
+/**
+ * 获得用户系统设置的完整日期时间
+ * 24小时也跟随用户设置（系统日期和时间设置里）
+ * 如中文 2077年10月21日 下午5：52
+ * 如中文 2077年10月21日 17：52
+ * 如英文 October 21,2077 5:52PM
+ */
+fun Context.getLongDateWithTimeString(time: Long = System.currentTimeMillis()): String {
+    val date = Date(time)
+    return android.text.format.DateFormat.getLongDateFormat(this).format(date) + " " + android.text.format.DateFormat.getTimeFormat(this).format(date)
 }
