@@ -65,14 +65,14 @@ fun Context.internalStorageAllocatableSpace(): Long =
 fun Context.makeSureFileWriteEnvironment(file: File, expectedSize: Long, callback: FileSafeWriteCallback? = null, writeLogic: () -> Unit) {
     if (internalStorageAllocatableSpace() > expectedSize * 1.5) {
         try {
-            val parentFile = file.parentFile
-            if (parentFile == null || !parentFile.exists()) {
-                if (parentFile?.mkdirs() == false) {
+            val parentFile = file.parentFile ?: return
+            if (!parentFile.exists()) {
+                if (!parentFile.mkdirs()) {
                     callback?.pathDirCreateFailed(parentFile.absolutePath)
                     return
                 }
             }
-            if (parentFile?.isDirectory == false) {
+            if (!parentFile.isDirectory) {
                 callback?.pathIsNotDirectory(parentFile.absolutePath)
                 return
             }
