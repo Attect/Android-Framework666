@@ -66,13 +66,13 @@ fun Context.makeSureFileWriteEnvironment(file: File, expectedSize: Long, callbac
     if (internalStorageAllocatableSpace() > expectedSize * 1.5) {
         try {
             val parentFile = file.parentFile
-            if (!parentFile.exists()) {
-                if (!parentFile.mkdirs()) {
+            if (parentFile == null || !parentFile.exists()) {
+                if (parentFile?.mkdirs() == false) {
                     callback?.pathDirCreateFailed(parentFile.absolutePath)
                     return
                 }
             }
-            if (!parentFile.isDirectory) {
+            if (parentFile?.isDirectory == false) {
                 callback?.pathIsNotDirectory(parentFile.absolutePath)
                 return
             }
@@ -95,7 +95,7 @@ fun Context.makeSureFileWriteEnvironment(file: File, expectedSize: Long, callbac
             callback?.success()
             return@Callback true
         })
-        Thread() {
+        Thread {
             try {
                 writeLogic.invoke()
                 handler.sendEmptyMessage(0)
@@ -301,11 +301,11 @@ fun Context.readCacheDataX(tag: String, dataClass: Class<*>): Pair<String, Any>?
  * 与 Context#fastCheckCache规则一致
  */
 fun Context.autoCleanCacheDataX() {
-    val cacheDir = File(CacheManager.getCacheFileName(this, "")).parentFile
+    val cacheDir = File(CacheManager.getCacheFileName(this, "")).parentFile ?: return
     if (!cacheDir.canWrite() || !cacheDir.canWrite()) return  //文件系统损坏或权限错乱就不操作了
     if (!cacheDir.isDirectory) cacheDir.delete()
     val files = cacheDir.listFiles()
-    files.forEach { file ->
+    files?.forEach { file ->
         if (file.exists() && file.isFile && file.canRead() && file.length() > CacheDataX.FILE_HEAD_LENGTH_MIN_LENGTH) {
             file.inputStream().use { input ->
                 //先尝试读出文件头的长度数据
@@ -353,10 +353,7 @@ fun Context.autoCleanCacheDataX() {
             val dataXOffice = DataXOffice().apply { unpack(headByteArray) }
             val cacheDataX = CacheDataX(null)
             cacheDataX.applyFromOffice(dataXOffice)
-            if (cacheDataX.versionCode == RuntimeBuildConfig.VERSION_CODE && //检查版本
-                cacheDataX.time > 0 && (cacheDataX.effectiveDuration <= 0 || (System.currentTimeMillis() - cacheDataX.time) <= cacheDataX.effectiveDuration)
-            ) {
-            } else {
+            if (cacheDataX.versionCode != RuntimeBuildConfig.VERSION_CODE || cacheDataX.time <= 0 || !(cacheDataX.effectiveDuration <= 0 || (System.currentTimeMillis() - cacheDataX.time) <= cacheDataX.effectiveDuration)) {
                 //过期的就删了
                 file.delete()
             }
