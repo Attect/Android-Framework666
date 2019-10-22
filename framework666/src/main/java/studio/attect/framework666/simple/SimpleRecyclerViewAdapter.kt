@@ -25,7 +25,7 @@ import studio.attect.framework666.interfaces.UniqueData
  * @param owner 持有者引用，因ViewHolder可能为内部类而准备的
  * @author Attect
  */
-class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRecyclerViewAdapter.BasicViewHolder<out UniqueData>>() {
+open class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<SimpleRecyclerViewAdapter.BasicViewHolder<out UniqueData>>() {
 
     /**
      * 根据不同的类型持有不同ViewHolder的class
