@@ -48,7 +48,7 @@ open class ContainerXActivity : ActivityX(), ContainerX {
             return
         }
 
-        tag = intent.getStringExtra(DATA_KEY)
+        tag = intent.getStringExtra(DATA_KEY) ?: ""
 
         if (TextUtils.isEmpty(tag)) {
             finish()
