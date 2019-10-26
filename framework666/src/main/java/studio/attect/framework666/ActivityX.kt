@@ -22,6 +22,7 @@ import pub.devrel.easypermissions.EasyPermissions
 import studio.attect.framework666.activity.MisoperationActivity
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.interfaces.DataX
+import studio.attect.framework666.service.StartComponentXIntentService
 import studio.attect.framework666.viewModel.CacheDataXViewModel
 import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
@@ -114,6 +115,12 @@ abstract class ActivityX : MisoperationActivity() {
                 }
             }
         })
+
+        //观察Pending组件X任务
+        StartComponentXIntentService.task.observe(this, Observer {
+            StartComponentXIntentService.tryExecutePendingComponentXTask(this@ActivityX)
+        })
+
 
 
         transparentStatusBar(true) //如果想改变默认颜色，无需删掉这个，可以直接再调用一次传入不同的参数

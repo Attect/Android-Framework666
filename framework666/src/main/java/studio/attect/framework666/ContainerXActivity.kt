@@ -7,11 +7,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import studio.attect.framework666.compomentX.ArgumentX
 import studio.attect.framework666.compomentX.ComponentX
 import studio.attect.framework666.compomentX.ComponentXMap
 import studio.attect.framework666.compomentX.ContainerX
+import studio.attect.framework666.service.StartComponentXIntentService
 import studio.attect.framework666.simple.NotFoundComponentX
 
 /**
@@ -65,6 +67,10 @@ open class ContainerXActivity : ActivityX(), ContainerX {
             finish()
             return
         }
+
+        StartComponentXIntentService.task.observe(this, Observer {
+            StartComponentXIntentService.tryExecutePendingComponentXTask(this@ContainerXActivity)
+        })
 
         if (componentX is NotFoundComponentX) {
             val notFoundArgument = NotFoundComponentX.Arguments()

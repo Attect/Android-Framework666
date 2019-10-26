@@ -1,5 +1,6 @@
 package studio.attect.framework666
 
+import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
@@ -87,5 +88,16 @@ open class ApplicationX : Application() {
             }.start()
         }
 
+    }
+
+    companion object {
+        /**
+         * 应用最最初始的点击图标后首要启动的Activity的Class
+         * 用于一些在外部返回到App的情况
+         * 如 StartComponentXIntentService
+         *
+         * 请在自己的Application中设置这个的值
+         */
+        var mainLauncherActivityClass: Class<out Activity>? = null
     }
 }
