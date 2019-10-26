@@ -55,6 +55,8 @@ open class ContainerXActivity : ActivityX(), ContainerX {
             return
         }
 
+        if (RuntimeBuildConfig.DEBUG) info("ContainerX:start for tag:$tag")
+
         var fragmentArgument = intent.getBundleExtra(ARGUMENT_KEY)
 
         componentX = ComponentXMap.detail(tag).newInstance()
@@ -229,10 +231,11 @@ open class ContainerXActivity : ActivityX(), ContainerX {
          */
         @JvmOverloads
         @JvmStatic
-        fun getPendingIntent(context: Context, tag: String, argument: ArgumentX? = null, action: String? = null, requestCode: Int = System.currentTimeMillis().toInt()): PendingIntent {
+        fun getPendingIntent(context: Context, tag: String, argument: ArgumentX? = null, action: String? = null, requestCode: Int = System.currentTimeMillis().toInt(), flag: Int = 0): PendingIntent {
             val intent = Intent(context, runtimeContainerClass)
             intent.putExtra(DATA_KEY, tag)
             intent.action = action
+            intent.flags = flag
             argument?.let {
                 intent.putExtra(ARGUMENT_KEY, it.toBundle())
             }
