@@ -51,12 +51,13 @@ fun Fragment.isAlive(): Boolean {
  */
 fun Fragment.showBackArrow() {
     activity?.let { fragmentActivity ->
-        if (fragmentActivity is AppCompatActivity) {
-            fragmentActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        }
+
         val backUpArrow: View? = findViewById(R.id.backUpArrow)
         backUpArrow?.setOnClickListener {
             fragmentActivity.onBackPressed()
+        }
+        if (backUpArrow == null && fragmentActivity is AppCompatActivity) {
+            fragmentActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         }
     }
 }

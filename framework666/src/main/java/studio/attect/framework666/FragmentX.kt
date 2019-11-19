@@ -187,7 +187,7 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
                 }
             })
 
-            if (toolbar != null && toolbar.parent is AppBarLayout) { //只对appbar中的toolbar操作
+            if (toolbar != null && (toolbar.parent is AppBarLayout || toolbar.parent is CollapsingToolbarLayout) ) { //只对appbar中的toolbar操作
                 toolbar.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
 
                 toolbarTitle = toolbar.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
@@ -216,7 +216,7 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
                 })
             }
 
-            if (collapsingToolbarLayout != null && collapsingToolbarLayout?.parent is CoordinatorLayout) {
+            if (collapsingToolbarLayout != null && (collapsingToolbarLayout?.parent is CoordinatorLayout || collapsingToolbarLayout?.parent is AppBarLayout)) {
                 collapsingToolbarLayout?.apply {
                     setContentScrimColor(
                         ResourcesCompat.getColor(
@@ -234,13 +234,13 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
                     )
                     title = ""
                 }
-                windowInsets?.observe(this, Observer { windowInsetsCompat ->
-                    collapsingToolbarLayout?.layoutParams?.let { lp ->
-                        if (lp is ViewGroup.MarginLayoutParams) {
-                            lp.topMargin = windowInsetsCompat.currentSafeTop
-                        }
-                    }
-                })
+//                windowInsets?.observe(this, Observer { windowInsetsCompat ->
+//                    collapsingToolbarLayout?.layoutParams?.let { lp ->
+//                        if (lp is ViewGroup.MarginLayoutParams) {
+//                            lp.topMargin = windowInsetsCompat.currentSafeTop
+//                        }
+//                    }
+//                })
             }
 
         }
