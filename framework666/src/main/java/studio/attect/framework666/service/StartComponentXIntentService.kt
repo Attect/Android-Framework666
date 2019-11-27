@@ -57,7 +57,7 @@ class StartComponentXIntentService : IntentService("StartComponentXIntentService
             if (currentTask != null) {
                 task.value = null
                 ContainerXActivity.startActivity(context, currentTask.first, object : ArgumentX {
-                    lateinit var bundle: Bundle
+                    var bundle: Bundle = Bundle()
                     override fun fromBundle(bundle: Bundle?) {
                         bundle?.let { this.bundle = it }
                     }
