@@ -49,6 +49,6 @@ dependencies {
     implementation "com.google.code.gson:gson:${gson_version}"
 
 
-    implementation "org.msgpack:msgpack-core:0.8.18"
+    implementation "org.msgpack:msgpack-core:${msgpack_version}"
 
 }
