@@ -7,7 +7,7 @@ import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import studio.attect.framework666.ApplicationX
 import studio.attect.framework666.ContainerXActivity
-import studio.attect.framework666.compomentX.ArgumentX
+import studio.attect.framework666.componentX.ArgumentX
 
 /**
  * 一个延后委托处理的ComponentX启动任务

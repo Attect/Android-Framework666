@@ -1,4 +1,4 @@
-package studio.attect.framework666.compomentX
+package studio.attect.framework666.componentX
 
 import android.os.Bundle
 

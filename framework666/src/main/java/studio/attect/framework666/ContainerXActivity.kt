@@ -9,10 +9,10 @@ import android.text.TextUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
-import studio.attect.framework666.compomentX.ArgumentX
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXMap
-import studio.attect.framework666.compomentX.ContainerX
+import studio.attect.framework666.componentX.ArgumentX
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ComponentXMap
+import studio.attect.framework666.componentX.ContainerX
 import studio.attect.framework666.service.StartComponentXIntentService
 import studio.attect.framework666.simple.NotFoundComponentX
 

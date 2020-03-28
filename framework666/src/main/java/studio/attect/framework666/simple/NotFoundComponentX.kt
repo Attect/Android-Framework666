@@ -10,9 +10,9 @@ import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.componentx_not_found.*
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
-import studio.attect.framework666.compomentX.ArgumentX
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXProvider
+import studio.attect.framework666.componentX.ArgumentX
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ComponentXProvider
 
 /**
  * ComponentXMap不存在对应目标但又意外调用时返回一个错误提示的ComponentX

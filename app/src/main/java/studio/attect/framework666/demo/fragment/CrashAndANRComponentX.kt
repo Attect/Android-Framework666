@@ -21,8 +21,8 @@ import kotlinx.android.synthetic.main.componentx_crash_and_anr.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXProvider
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.extensions.currentSafeTop

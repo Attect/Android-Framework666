@@ -22,8 +22,8 @@ import studio.attect.framework666.FragmentX
 import studio.attect.framework666.Logcat
 import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXProvider
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.cache.TestLargeTestDataX
 import studio.attect.framework666.extensions.deleteCacheDataX

@@ -18,8 +18,8 @@ import kotlinx.android.synthetic.main.component_recycler_view.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXProvider
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.extensions.systemLongAnimTime
 import studio.attect.framework666.interfaces.UniqueData

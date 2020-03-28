@@ -17,8 +17,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ContainerX
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.MisoperationFragment
 import studio.attect.framework666.viewModel.CacheDataXViewModel

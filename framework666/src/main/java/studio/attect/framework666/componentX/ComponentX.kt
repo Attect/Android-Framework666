@@ -1,8 +1,6 @@
-package studio.attect.framework666.compomentX
+package studio.attect.framework666.componentX
 
-import android.content.Context
 import android.os.Bundle
-import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 
 /**

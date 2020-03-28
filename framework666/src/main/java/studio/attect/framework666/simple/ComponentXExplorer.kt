@@ -16,9 +16,9 @@ import kotlinx.android.synthetic.main.componentx_explorer.*
 import studio.attect.framework666.ContainerXActivity
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
-import studio.attect.framework666.compomentX.ComponentX
-import studio.attect.framework666.compomentX.ComponentXMap
-import studio.attect.framework666.compomentX.ComponentXProvider
+import studio.attect.framework666.componentX.ComponentX
+import studio.attect.framework666.componentX.ComponentXMap
+import studio.attect.framework666.componentX.ComponentXProvider
 import studio.attect.framework666.interfaces.UniqueData
 
 /**
@@ -45,7 +45,7 @@ class ComponentXExplorer : FragmentX() {
         val divider = DividerItemDecoration(requireContext(), layoutManager.orientation)
         recyclerView.addItemDecoration(divider)
 
-        recyclerViewAdapter.registerViewHolder(R.layout.list_item_compoment, MyViewHolder::class.java)
+        recyclerViewAdapter.registerViewHolder(R.layout.list_item_component, MyViewHolder::class.java)
         recyclerView.adapter = recyclerViewAdapter
 
         val componentXList = arrayListOf<ItemData>()
@@ -56,7 +56,7 @@ class ComponentXExplorer : FragmentX() {
                 componentXList.add(itemData)
             }
         }
-        recyclerViewAdapter.addMoreData(componentXList, R.layout.list_item_compoment)
+        recyclerViewAdapter.addMoreData(componentXList, R.layout.list_item_component)
     }
 
     class ItemData : UniqueData {

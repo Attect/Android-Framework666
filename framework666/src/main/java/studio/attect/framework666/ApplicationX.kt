@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import studio.attect.framework666.compomentX.ComponentXMap
+import studio.attect.framework666.componentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
 import studio.attect.framework666.viewModel.SignalViewModel

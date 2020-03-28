@@ -8,7 +8,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import studio.attect.framework666.ActivityX
-import studio.attect.framework666.compomentX.ComponentXMap
+import studio.attect.framework666.componentX.ComponentXMap
 import studio.attect.framework666.demo.fragment.NormalComponent
 import studio.attect.framework666.demo.fragment.RecyclerViewComponent
 import studio.attect.framework666.extensions.setStatusBarColor
