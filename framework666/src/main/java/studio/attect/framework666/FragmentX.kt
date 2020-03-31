@@ -173,8 +173,8 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
         appbarLayoutParent = findViewById(R.id.appbarLayoutParent)
         appbarLayout = appbarLayoutParent?.findViewById(R.id.appbarLayout)
         appbarLayoutParent?.let { parent ->
-            val toolbar:View? = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
-            if(toolbar is Toolbar) this.toolbar = toolbar
+            val toolbar: View? = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            if (toolbar is Toolbar) this.toolbar = toolbar
             collapsingToolbarLayout = appbarLayoutParent?.findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
             windowInsets?.observe(this, Observer { windowInsetsCompat ->
                 parent.layoutParams?.let { lp ->
@@ -187,7 +187,7 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
                 }
             })
 
-            if (toolbar != null && (toolbar.parent is AppBarLayout || toolbar.parent is CollapsingToolbarLayout) ) { //只对appbar中的toolbar操作
+            if (toolbar != null && (toolbar.parent is AppBarLayout || toolbar.parent is CollapsingToolbarLayout)) { //只对appbar中的toolbar操作
                 toolbar.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
 
                 toolbarTitle = toolbar.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作

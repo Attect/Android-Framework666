@@ -1,1 +1,3 @@
 include ':app', ':framework666', ':staticviewmodelstore', ':sneaker', ':materialiconlib'
+include ':annotationprocessor'
+include ':annotations'

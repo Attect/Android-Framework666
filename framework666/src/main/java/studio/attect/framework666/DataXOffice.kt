@@ -197,7 +197,6 @@ class DataXOffice(val packer: MessagePacker = MessagePack.newDefaultBufferPacker
     }
 
 
-
     fun putInt(int: Int?): DataXOffice {
         if (int == null) {
             packer.packNil()

@@ -2,14 +2,13 @@
 
 package studio.attect.framework666.helper;
 
+
 import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import studio.attect.framework666.waring
-
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * 振动API调用兼容

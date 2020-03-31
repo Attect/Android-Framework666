@@ -32,6 +32,6 @@ object SignalViewModel : ViewModel() {
         get() {
             if (field.value == null) field.postValue(NOTING)
             return field
-    }
+        }
 
 }

@@ -1,7 +1,5 @@
 package studio.attect.framework666.extensions
 
-import java.lang.StringBuilder
-
 @JvmOverloads
 fun ByteArray.toHexString(upper: Boolean = true, headSpace: Boolean = true): String {
     val builder = StringBuilder()

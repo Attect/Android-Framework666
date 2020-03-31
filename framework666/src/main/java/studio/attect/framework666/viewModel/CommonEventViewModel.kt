@@ -16,7 +16,7 @@ open class CommonEventViewModel : ViewModel() {
         get() {
             if (field.value == null) field.value = NONE
             return field
-    }
+        }
 
 
     companion object {

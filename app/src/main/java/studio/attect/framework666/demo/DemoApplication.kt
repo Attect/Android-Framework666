@@ -1,8 +1,10 @@
 package studio.attect.framework666.demo
 
 import studio.attect.framework666.ApplicationX
+import studio.attect.framework666.ComponentXManager
 import studio.attect.framework666.RuntimeBuildConfig
 import studio.attect.framework666.componentX.ComponentXMap
+import studio.attect.framework666.debug
 import studio.attect.framework666.demo.fragment.CacheComponent
 import studio.attect.framework666.demo.fragment.CrashAndANRComponentX
 import studio.attect.framework666.demo.fragment.NormalComponent
@@ -27,6 +29,10 @@ class DemoApplication : ApplicationX() {
         //endregion
 
         markComponents()
+        ComponentXManager.componentMap["cache"]?.let { component ->
+            debug("ComponentXManager:" + component.newInstance()::class.java.canonicalName)
+        }
+
     }
 
     private fun markComponents() {

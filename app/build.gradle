@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
@@ -38,8 +37,10 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
 
     implementation project(path: ':framework666')
+    kapt project(path: ':annotationprocessor')
     implementation project(path: ':materialiconlib')
     implementation "androidx.cardview:cardview:${material_version}"
+    implementation project(path: ':annotations')
 
 }
 

@@ -20,6 +20,7 @@ import org.msgpack.core.MessagePack
 import studio.attect.framework666.DataXOffice
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.Logcat
+import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
 import studio.attect.framework666.componentX.ComponentX
@@ -44,6 +45,7 @@ import java.io.FileOutputStream
  *
  * @author Attect
  */
+@Component("cache")
 class CacheComponent : FragmentX() {
 
     private var persistentCache = PersistentCache()
