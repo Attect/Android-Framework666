@@ -10,12 +10,12 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="/media/attect/Data/git-project/Framework666" />
-            <option value="/media/attect/Data/git-project/Framework666/app" />
-            <option value="/media/attect/Data/git-project/Framework666/framework666" />
-            <option value="/media/attect/Data/git-project/Framework666/materialiconlib" />
-            <option value="/media/attect/Data/git-project/Framework666/sneaker" />
-            <option value="/media/attect/Data/git-project/Framework666/staticviewmodelstore" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/framework666" />
+            <option value="$PROJECT_DIR$/materialiconlib" />
+            <option value="$PROJECT_DIR$/sneaker" />
+            <option value="$PROJECT_DIR$/staticviewmodelstore" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
