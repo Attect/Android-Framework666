@@ -29,10 +29,10 @@ class DemoApplication : ApplicationX() {
         //endregion
 
         markComponents()
-        ComponentXManager.componentMap["cache"]?.let { component ->
-            debug("ComponentXManager:" + component.newInstance()::class.java.canonicalName)
-        }
 
+        ComponentXManager.get("cache")?.let {
+            debug("Component Tag:${it::class.java.canonicalName}")
+        }
     }
 
     private fun markComponents() {

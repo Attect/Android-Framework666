@@ -20,17 +20,16 @@ import javax.lang.model.element.TypeElement
 @SupportedAnnotationTypes("studio.attect.framework666.annotations.Component")
 @SupportedOptions
 class ComponentXAnnotationProcessor : AnnotationProcessorX() {
+    /**
+     * ClassName:ComponentX
+     */
     private val componentXClassName = ClassName("studio.attect.framework666.componentX", "ComponentX")
+
+    /**
+     * ClassName:Class<out ComponentX>
+     */
     private val componentXOutClazzClassName = Class::class.asTypeName().parameterizedBy(
         WildcardTypeName.producerOf(componentXClassName)
-    )
-    private val componentXMapOutClassName = HashMap::class.asTypeName().parameterizedBy(
-        String::class.asClassName(),
-        WildcardTypeName.producerOf(componentXOutClazzClassName)
-    )
-    private val componentXMapClassName = HashMap::class.asTypeName().parameterizedBy(
-        String::class.asClassName(),
-        componentXOutClazzClassName
     )
 
     override fun process(generatePath: String, annotations: MutableSet<out TypeElement>?, roundEnvironment: RoundEnvironment?): Boolean {
@@ -47,28 +46,42 @@ class ComponentXAnnotationProcessor : AnnotationProcessorX() {
         val fileBuilder = FileSpec.builder("studio.attect.framework666", "ComponentXManager").apply {
             addType(
                 TypeSpec.objectBuilder("ComponentXManager").apply {
+                    this.superclass(ClassName("studio.attect.framework666.componentX", "ComponentXContainer"))
                     addKdoc(
                         CodeBlock.of("组件X维护\n代码由ComponentXAnnotationProcessor自动生成\n用于维护组件X的路由及管理\n\n@author Attect", "")
                     )
-                    addProperty(
-                        PropertySpec.builder(
-                            "componentMap", componentXMapOutClassName
-                        ).delegate(CodeBlock.builder().beginControlFlow("lazy").add("initMap()\n").endControlFlow().build()).addKdoc("所有组件X被放入此Map").build()
-                    )
+                    addInitializerBlock(CodeBlock.builder().apply {
+                        scanList.forEach {
+                            addStatement("register(%S,%T::class.java)", it.second.tag, it.first)
+                        }
+                    }.build())
                     addFunction(
-                        FunSpec
-                            .builder("initMap")
-                            .addKdoc("载入所有组件X的Class")
-                            .addStatement("val result = %T()", componentXMapClassName)
-                            .apply {
-                                scanList.forEach {
-                                    addStatement("result.put(%S,%T::class.java)", it.second.tag, it.first)
-                                }
-                            }
-                            .addStatement("return result")
-                            .returns(componentXMapOutClassName)
+                        FunSpec.builder("get")
+                            .addKdoc("获得指定tag的ComponentX")
+                            .addParameter("tag", String::class.asTypeName())
+                            .addStatement("return Companion.get(tag)")
+                            .returns(componentXClassName.copy(true))
                             .build()
                     )
+//                    addProperty(
+//                        PropertySpec.builder(
+//                            "componentMap", componentXMapOutClassName
+//                        ).delegate(CodeBlock.builder().beginControlFlow("lazy").add("initMap()\n").endControlFlow().build()).addKdoc("所有组件X被放入此Map").build()
+//                    )
+//                    addFunction(
+//                        FunSpec
+//                            .builder("initMap")
+//                            .addKdoc("载入所有组件X的Class")
+//                            .addStatement("val result = %T()", componentXMapClassName)
+//                            .apply {
+//                                scanList.forEach {
+//                                    addStatement("result.put(%S,%T::class.java)", it.second.tag, it.first)
+//                                }
+//                            }
+//                            .addStatement("return result")
+//                            .returns(componentXMapOutClassName)
+//                            .build()
+//                    )
                 }.build()
             )
 
