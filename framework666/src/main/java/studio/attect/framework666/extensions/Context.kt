@@ -2,6 +2,7 @@ package studio.attect.framework666.extensions
 
 import android.app.ActivityManager
 import android.content.Context
+import android.content.res.AssetManager
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
@@ -15,8 +16,10 @@ import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
 import studio.attect.framework666.simple.FileSafeWriteCallback
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.nio.charset.Charset
 import java.util.*
 
 /**
@@ -388,4 +391,18 @@ fun Context.deleteCacheDataX(tag: String): Boolean {
 fun Context.getLongDateWithTimeString(time: Long = System.currentTimeMillis()): String {
     val date = Date(time)
     return android.text.format.DateFormat.getLongDateFormat(this).format(date) + " " + android.text.format.DateFormat.getTimeFormat(this).format(date)
+}
+
+/**
+ * 从Asset中读取一个字符串文件
+ * 如果找不到对应文件则会返回null
+ */
+fun Context.readAssetString(filename: String, accessMode: Int = AssetManager.ACCESS_STREAMING, charset: Charset = Charsets.UTF_8): String? {
+    if (filename.isBlank()) return null
+    try {
+        return this.assets.open(filename, accessMode).bufferedReader(charset).use { it.readText() }
+    } catch (e: FileNotFoundException) {
+        e.printStackTrace()
+    }
+    return null
 }

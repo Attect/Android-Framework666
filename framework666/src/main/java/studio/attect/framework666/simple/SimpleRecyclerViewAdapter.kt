@@ -72,22 +72,23 @@ open class SimpleRecyclerViewAdapter<T>(val owner: T) : RecyclerView.Adapter<Sim
      * @param moreData 要添加的多条数据,如果需要特别定制，部分值可传入SimpleListData，就可以为同一系列数据类型中的其中一个或多个使用不同的layout
      * @layoutRes 数据集对应的布局资源，若数据自身为SimpleListData则采用数据指定的，fake为true时，可以给定任意值
      * @param fake 是否做假操作，可以获得最靠前的新数据的位置或判断是否有数据被添加
-     * @return 第一条的位置,null时表示没有任何数据被添加
+     * @return 最后一条的位置,null时表示没有任何数据被添加
      */
     @JvmOverloads
     fun addMoreData(moreData: List<UniqueData>, @LayoutRes layoutRes: Int, position: Int = dataList.size, fake: Boolean = false): Int? {
+        var currentPosition = position
         if (!moreData.isNullOrEmpty()) {
             if (!fake) {
                 moreData.forEach {
                     if (it is SimpleListData<*>) {
-                        dataList.add(it)
+                        dataList.add(currentPosition++, it)
                     } else {
-                        dataList.add(SimpleListData(it, layoutRes))
+                        dataList.add(currentPosition++, SimpleListData(it, layoutRes))
                     }
                 }
                 notifyItemRangeInserted(position, moreData.size)
             }
-            return position
+            return currentPosition
         }
         return null
     }
