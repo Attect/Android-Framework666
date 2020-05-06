@@ -10,8 +10,7 @@ import android.view.ViewGroup
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
-import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXProvider
+import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.demo.R
 
 /**
@@ -19,38 +18,31 @@ import studio.attect.framework666.demo.R
  *
  * @author Attect
  */
+@Component("normalComponent")
 class NormalComponent : FragmentX() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.component_normal, container, false)
     }
 
-    companion object : ComponentXProvider {
-        override fun getTag(): String = "normal_component"
-
-        override fun getIcon(context: Context?): Drawable? {
-            context?.let {
-                val builder = MaterialDrawableBuilder.with(it).apply {
-                    setIcon(IconValue.ANDROID)
-                    setColor(Color.WHITE)
-                    setSizeDp(24)
-                }
-
-                return builder.build()
-            }
-            return null
+    override fun getName(context: Context?): String? {
+        context?.let {
+            return context.getString(R.string.normal_component_title)
         }
-
-        override fun getName(context: Context?): String {
-            context?.let {
-                return context.getString(R.string.normal_component_title)
-            }
-            return "普通组件"
-        }
-
-        override fun getColor(context: Context?): Int? = null
-
-        override fun newInstance(): ComponentX = NormalComponent()
-
+        return "普通组件"
     }
+
+    override fun getIcon(context: Context?): Drawable? {
+        context?.let {
+            val builder = MaterialDrawableBuilder.with(it).apply {
+                setIcon(IconValue.ANDROID)
+                setColor(Color.WHITE)
+                setSizeDp(24)
+            }
+
+            return builder.build()
+        }
+        return null
+    }
+
 }

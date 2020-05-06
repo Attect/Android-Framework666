@@ -1,5 +1,8 @@
 package studio.attect.framework666
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.MenuItem
@@ -309,4 +312,10 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
             true
         }
     }
+
+    override fun getName(context: Context?): String? = this::class.java.simpleName
+
+    override fun getColor(context: Context?): Int = Color.BLACK
+
+    override fun getIcon(context: Context?): Drawable? = null
 }

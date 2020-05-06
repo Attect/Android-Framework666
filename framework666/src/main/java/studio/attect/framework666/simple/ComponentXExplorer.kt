@@ -1,7 +1,6 @@
 package studio.attect.framework666.simple
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +15,9 @@ import kotlinx.android.synthetic.main.componentx_explorer.*
 import studio.attect.framework666.ContainerXActivity
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
+import studio.attect.framework666.componentX.COC
 import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXMap
-import studio.attect.framework666.componentX.ComponentXProvider
+import studio.attect.framework666.componentX.tag
 import studio.attect.framework666.interfaces.UniqueData
 
 /**
@@ -49,20 +48,19 @@ class ComponentXExplorer : FragmentX() {
         recyclerView.adapter = recyclerViewAdapter
 
         val componentXList = arrayListOf<ItemData>()
-        ComponentXMap.keys.forEach { key ->
-            ComponentXMap[key]?.let {
-                val itemData = ItemData()
-                itemData.componentXProvider = it
-                componentXList.add(itemData)
-            }
+        COC.componentMap.forEach { (_, clazz) ->
+            val itemData = ItemData()
+            itemData.componentX = clazz.newInstance()
+            componentXList.add(itemData)
         }
+
         recyclerViewAdapter.addMoreData(componentXList, R.layout.list_item_component)
     }
 
     class ItemData : UniqueData {
-        lateinit var componentXProvider: ComponentXProvider
+        lateinit var componentX: ComponentX
 
-        override fun uniqueTag(): Any = componentXProvider.getTag()
+        override fun uniqueTag(): String = componentX::class.tag()
     }
 
 
@@ -74,35 +72,20 @@ class ComponentXExplorer : FragmentX() {
         private val tagView = itemView.findViewById<AppCompatTextView>(R.id.tag)
 
         override fun applyData(data: ItemData, position: Int) {
-            iconView.setImageDrawable(data.componentXProvider.getIcon(itemView.context))
-            titleView.text = data.componentXProvider.getName(itemView.context)
-            tagView.text = data.componentXProvider.getTag()
+            iconView.setImageDrawable(data.componentX.getIcon(itemView.context))
+            titleView.text = data.componentX.getName(itemView.context)
+            tagView.text = data.uniqueTag()
             itemView.setOnClickListener {
-                ContainerXActivity.startActivity(it.context, data.componentXProvider.getTag())
+                ContainerXActivity.startActivity(it.context, data.uniqueTag())
             }
         }
     }
 
-    companion object : ComponentXProvider {
-        override fun getTag(): String = "componentx_explorer"
-
-        override fun getIcon(context: Context?): Drawable? {
-            context?.let {
-                return ResourcesCompat.getDrawable(context.resources, android.R.drawable.btn_star, context.theme)
-            }
-            return null
+    override fun getName(context: Context?): String? {
+        context?.let {
+            return it.getString(R.string.componentx_explorer)
         }
-
-        override fun getName(context: Context?): String {
-            context?.let {
-                return it.getString(R.string.componentx_explorer)
-            }
-            return "组件浏览"
-        }
-
-        override fun getColor(context: Context?): Int? = null
-
-        override fun newInstance(): ComponentX = ComponentXExplorer()
-
+        return "组件浏览"
     }
+
 }

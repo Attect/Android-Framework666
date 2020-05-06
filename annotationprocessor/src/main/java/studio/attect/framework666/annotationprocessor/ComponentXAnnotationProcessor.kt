@@ -43,26 +43,30 @@ class ComponentXAnnotationProcessor : AnnotationProcessorX() {
             }
         }
         if (scanList.isEmpty()) return true
-        val fileBuilder = FileSpec.builder("studio.attect.framework666", "ComponentXManager").apply {
+        val fileBuilder = FileSpec.builder("studio.attect.framework666", "ComponentXAutoRegister").apply {
             addType(
-                TypeSpec.objectBuilder("ComponentXManager").apply {
-                    this.superclass(ClassName("studio.attect.framework666.componentX", "ComponentXContainer"))
+                TypeSpec.classBuilder("ComponentXAutoRegister").apply {
                     addKdoc(
                         CodeBlock.of("组件X维护\n代码由ComponentXAnnotationProcessor自动生成\n用于维护组件X的路由及管理\n\n@author Attect", "")
                     )
-                    addInitializerBlock(CodeBlock.builder().apply {
-                        scanList.forEach {
-                            addStatement("register(%S,%T::class.java)", it.second.tag, it.first)
-                        }
-                    }.build())
                     addFunction(
-                        FunSpec.builder("get")
-                            .addKdoc("获得指定tag的ComponentX")
-                            .addParameter("tag", String::class.asTypeName())
-                            .addStatement("return Companion.get(tag)")
-                            .returns(componentXClassName.copy(true))
+                        FunSpec.builder("autoRegister")
+                            .addKdoc("执行自动注册，此方法为自动反射调用")
+                            .apply {
+                                scanList.forEach {
+                                    addStatement("%T.register(%S,%T::class.java)", ClassName("studio.attect.framework666.componentX", "ComponentXContainer"), it.second.tag, it.first)
+                                }
+                            }
                             .build()
                     )
+//                    addFunction(
+//                        FunSpec.builder("get")
+//                            .addKdoc("获得指定tag的ComponentX")
+//                            .addParameter("tag", String::class.asTypeName())
+//                            .addStatement("return Companion.get(tag)")
+//                            .returns(componentXClassName.copy(true))
+//                            .build()
+//                    )
 //                    addProperty(
 //                        PropertySpec.builder(
 //                            "componentMap", componentXMapOutClassName

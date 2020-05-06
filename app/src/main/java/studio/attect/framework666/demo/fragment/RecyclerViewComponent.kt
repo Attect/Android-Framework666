@@ -18,8 +18,7 @@ import kotlinx.android.synthetic.main.component_recycler_view.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
-import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXProvider
+import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.extensions.systemLongAnimTime
 import studio.attect.framework666.interfaces.UniqueData
@@ -30,6 +29,7 @@ import studio.attect.framework666.simple.SimpleRecyclerViewAdapter
  *
  * @author Attect
  */
+@Component("simpleRecyclerView")
 class RecyclerViewComponent : FragmentX() {
     private val recyclerViewAdapter = SimpleRecyclerViewAdapter(this)
     private val layoutManager by lazy { LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false) }
@@ -251,33 +251,24 @@ class RecyclerViewComponent : FragmentX() {
         }
     }
 
-    companion object : ComponentXProvider {
-
-        override fun getTag(): String = "recycler_view_demo"
-
-        override fun getIcon(context: Context?): Drawable? {
-            context?.let {
-                val builder = MaterialDrawableBuilder.with(it).apply {
-                    setIcon(IconValue.FORMAT_LIST_BULLETED)
-                    setColor(Color.WHITE)
-                    setSizeDp(24)
-                }
-
-                return builder.build()
-            }
-            return null
+    override fun getName(context: Context?): String? {
+        context?.let {
+            return context.getString(R.string.recycler_view_demo_title)
         }
-
-        override fun getName(context: Context?): String {
-            context?.let {
-                return context.getString(R.string.recycler_view_demo_title)
-            }
-            return "回收视图"
-        }
-
-        override fun getColor(context: Context?): Int? = null
-
-        override fun newInstance(): ComponentX = RecyclerViewComponent()
-
+        return "回收视图"
     }
+
+    override fun getIcon(context: Context?): Drawable? {
+        context?.let {
+            val builder = MaterialDrawableBuilder.with(it).apply {
+                setIcon(IconValue.FORMAT_LIST_BULLETED)
+                setColor(Color.WHITE)
+                setSizeDp(24)
+            }
+
+            return builder.build()
+        }
+        return null
+    }
+
 }

@@ -1,7 +1,11 @@
 package studio.attect.framework666.componentX
 
+import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import androidx.annotation.ColorInt
 import androidx.fragment.app.Fragment
+import kotlin.reflect.KClass
 
 /**
  * 组件X
@@ -27,4 +31,38 @@ interface ComponentX {
      * 但也可能不在容器中
      */
     fun getContainerX(): ContainerX?
+
+    /**
+     * 返回一个组件名称
+     * 注意[context]可能不是当前fragment的上下文
+     */
+    fun getName(context: Context?): String?
+
+    /**
+     * 返回一个主要颜色
+     * 推荐可根据主题或夜间模式返回不同的值
+     * 注意[context]可能不是当前fragment的上下文
+     */
+    @ColorInt
+    fun getColor(context: Context?): Int
+
+    /**
+     * 返回一个图标
+     * 注意[context]可能不是当前fragment的上下文
+     */
+    fun getIcon(context: Context?): Drawable?
 }
+
+/**
+ * 组件X编程类型直接转化为Fragment
+ * 注意这其实是可能失败的，要严格注意你的类型
+ */
+fun ComponentX.toFragment(): Fragment = this as Fragment
+
+/**
+ * 根据组件X的Class获得其有效tag
+ * 注意“有效”指的是能正确被扫描并自动注册的组件X及其tag
+ */
+fun Class<out ComponentX>.tag(): String = ComponentXContainer.getTag(this)
+
+fun KClass<out ComponentX>.tag(): String = this.java.tag()

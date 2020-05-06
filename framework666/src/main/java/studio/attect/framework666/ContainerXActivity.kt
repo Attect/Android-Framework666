@@ -10,8 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import studio.attect.framework666.componentX.ArgumentX
+import studio.attect.framework666.componentX.COC
 import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXMap
 import studio.attect.framework666.componentX.ContainerX
 import studio.attect.framework666.service.StartComponentXIntentService
 import studio.attect.framework666.simple.NotFoundComponentX
@@ -61,7 +61,7 @@ open class ContainerXActivity : ActivityX(), ContainerX {
 
         var fragmentArgument = intent.getBundleExtra(ARGUMENT_KEY)
 
-        componentX = ComponentXMap.detail(tag).newInstance()
+        componentX = COC.create(tag)
 
         if (componentX == null) {
             finish()

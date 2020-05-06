@@ -4,11 +4,14 @@ import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import studio.attect.framework666.componentX.ComponentXMap
+import studio.attect.framework666.componentX.COC
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
+import studio.attect.framework666.simple.NotFoundComponentX
+import studio.attect.framework666.simple.NotFoundComponentX.Companion.NOT_FOUND_COMPONENT_X
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.framework666.viewModel.SignalViewModel.signal
+import kotlin.reflect.full.declaredFunctions
 
 /**
  * 综合Application
@@ -20,16 +23,27 @@ import studio.attect.framework666.viewModel.SignalViewModel.signal
  */
 
 open class ApplicationX : Application() {
+    var hasInitialized = false
 
     override fun onCreate() {
         super.onCreate()
-        //崩溃处理，如果你有别的崩溃处理逻辑注释掉此行即可
-        fuckCrash()
 
-        //振动
-        Rumble.init(applicationContext)
+        if (!hasInitialized) {
+            hasInitialized = true
+            //崩溃处理，如果你有别的崩溃处理逻辑注释掉此行即可
+            fuckCrash()
 
-        ComponentXMap.mark(ComponentXExplorer.Companion)
+            //振动
+            Rumble.init(applicationContext)
+
+
+        }
+
+        //自动注册可重复调用，应对部分热重启情况
+        COC.register(NOT_FOUND_COMPONENT_X, NotFoundComponentX::class.java)
+        COC.register("_explorer_", ComponentXExplorer::class.java)
+        autoRegister()
+
     }
 
     /**
@@ -67,6 +81,15 @@ open class ApplicationX : Application() {
                     mainThreadUnCatchException(e)
                     signal.value = SignalViewModel.CRASH
                 }
+            }
+        }
+    }
+
+    private fun autoRegister() {
+        val instance = Class.forName("studio.attect.framework666.ComponentXAutoRegister").newInstance()
+        instance::class.declaredFunctions.forEach { kFunction ->
+            if (kFunction.name == "autoRegister") {
+                kFunction.call(instance)
             }
         }
     }

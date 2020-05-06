@@ -21,8 +21,7 @@ import kotlinx.android.synthetic.main.componentx_crash_and_anr.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
-import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXProvider
+import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.extensions.currentSafeTop
@@ -39,6 +38,7 @@ import studio.attect.framework666.viewModel.SignalViewModel.signal
  *
  * @author Attect
  */
+@Component("crashAndAnr")
 class CrashAndANRComponentX : FragmentX() {
     private val spicyEyeColors = SparseIntArray()
     private val moreTextView = arrayListOf<AppCompatTextView>()
@@ -225,27 +225,18 @@ class CrashAndANRComponentX : FragmentX() {
         return coverColor
     }
 
-    companion object : ComponentXProvider {
-        override fun getTag(): String = "crash_and_anr"
-
-        override fun getIcon(context: Context?): Drawable? {
-            context?.let {
-                return MaterialDrawableBuilder.with(context).setIcon(IconValue.ANDROID_DEBUG_BRIDGE).setSizeDp(24).setColor(Color.WHITE).build()
-            }
-            return null
+    override fun getName(context: Context?): String? {
+        context?.let {
+            return context.getString(R.string.framework_hate_bug)
         }
+        return "讨厌BUG!"
+    }
 
-        override fun getName(context: Context?): String {
-            context?.let {
-                return context.getString(R.string.framework_hate_bug)
-            }
-            return "讨厌BUG!"
+    override fun getIcon(context: Context?): Drawable? {
+        context?.let {
+            return MaterialDrawableBuilder.with(context).setIcon(IconValue.ANDROID_DEBUG_BRIDGE).setSizeDp(24).setColor(Color.WHITE).build()
         }
-
-        override fun getColor(context: Context?): Int? = null
-
-        override fun newInstance(): ComponentX = CrashAndANRComponentX()
-
+        return null
     }
 
 }

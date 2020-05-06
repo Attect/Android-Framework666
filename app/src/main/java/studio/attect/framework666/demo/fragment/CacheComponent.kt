@@ -23,8 +23,6 @@ import studio.attect.framework666.Logcat
 import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
-import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXProvider
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.cache.TestLargeTestDataX
 import studio.attect.framework666.extensions.deleteCacheDataX
@@ -45,7 +43,7 @@ import java.io.FileOutputStream
  *
  * @author Attect
  */
-@Component("cache")
+@Component("cacheTest")
 class CacheComponent : FragmentX() {
 
     private var persistentCache = PersistentCache()
@@ -398,7 +396,21 @@ class CacheComponent : FragmentX() {
 
     }
 
-    companion object : ComponentXProvider {
+    override fun getName(context: Context?): String? {
+        context?.let {
+            return it.getString(R.string.cache_component_title)
+        }
+        return "缓存测试"
+    }
+
+    override fun getIcon(context: Context?): Drawable? {
+        context?.let {
+            return MaterialDrawableBuilder.with(context).setIcon(IconValue.FILE_UNDO).setSizeDp(24).setColor(Color.WHITE).build()
+        }
+        return null
+    }
+
+    companion object {
 
         const val TAG_PERSISTENT_CACHE = "cacheTest_persistentCache"
 
@@ -412,26 +424,6 @@ class CacheComponent : FragmentX() {
          * 大量缓存测试读写次数
          */
         const val MASS_CACHE_TIMES = 100
-
-        override fun getTag(): String = "cache_test"
-
-        override fun getIcon(context: Context?): Drawable? {
-            context?.let {
-                return MaterialDrawableBuilder.with(context).setIcon(IconValue.FILE_UNDO).setSizeDp(24).setColor(Color.WHITE).build()
-            }
-            return null
-        }
-
-        override fun getName(context: Context?): String {
-            context?.let {
-                return it.getString(R.string.cache_component_title)
-            }
-            return "缓存测试"
-        }
-
-        override fun getColor(context: Context?): Int? = null
-
-        override fun newInstance(): ComponentX = CacheComponent()
 
     }
 }

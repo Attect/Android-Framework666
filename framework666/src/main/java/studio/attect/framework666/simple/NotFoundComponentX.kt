@@ -1,18 +1,14 @@
 package studio.attect.framework666.simple
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import kotlinx.android.synthetic.main.componentx_not_found.*
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.R
 import studio.attect.framework666.componentX.ArgumentX
-import studio.attect.framework666.componentX.ComponentX
-import studio.attect.framework666.componentX.ComponentXProvider
 
 /**
  * ComponentXMap不存在对应目标但又意外调用时返回一个错误提示的ComponentX
@@ -53,27 +49,14 @@ class NotFoundComponentX : FragmentX() {
 
     }
 
-    companion object : ComponentXProvider {
-
-        override fun getTag(): String = "" //就是这么任性，空字符串就是此ComponentX
-
-        override fun getIcon(context: Context?): Drawable? {
-            context?.let {
-                return ResourcesCompat.getDrawable(context.resources, android.R.drawable.ic_menu_help, context.theme)
-            }
-            return null
+    override fun getName(context: Context?): String? {
+        context?.let {
+            return context.resources.getString(R.string.componentx_not_found)
         }
+        return "功能缺失"
+    }
 
-        override fun getName(context: Context?): String {
-            context?.let {
-                return context.resources.getString(R.string.componentx_not_found)
-            }
-            return "功能缺失"
-        }
-
-        override fun getColor(context: Context?): Int? = null
-
-        override fun newInstance(): ComponentX = NotFoundComponentX()
-
+    companion object {
+        const val NOT_FOUND_COMPONENT_X = "_not_found_"
     }
 }
