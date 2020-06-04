@@ -18,7 +18,6 @@ class DemoApplication : ApplicationX() {
         RuntimeBuildConfig.DEBUG = BuildConfig.DEBUG
         RuntimeBuildConfig.APPLICATION_ID = BuildConfig.APPLICATION_ID
         RuntimeBuildConfig.BUILD_TYPE = BuildConfig.BUILD_TYPE
-        RuntimeBuildConfig.FLAVOR = BuildConfig.FLAVOR
         RuntimeBuildConfig.VERSION_CODE = BuildConfig.VERSION_CODE
         RuntimeBuildConfig.VERSION_NAME = BuildConfig.VERSION_NAME
         //endregion
