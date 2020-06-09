@@ -32,11 +32,6 @@ object RuntimeBuildConfig {
             if (field == BuildConfig.BUILD_TYPE) field = value
         }
 
-    var FLAVOR = BuildConfig.FLAVOR
-        set(value) {
-            if (field == BuildConfig.FLAVOR) field = value
-        }
-
     var VERSION_CODE = BuildConfig.VERSION_CODE
         set(value) {
             if (field == BuildConfig.VERSION_CODE) field = value
