@@ -4,7 +4,11 @@ import java.security.MessageDigest
 import java.util.*
 
 @JvmOverloads
-fun ByteArray.toHexString(upper: Boolean = true, headSpace: Boolean = true): String {
+fun ByteArray.toHexString(
+    upper: Boolean = true,
+    headSpace: Boolean = true,
+    locale: Locale = Locale.getDefault()
+): String {
     val builder = StringBuilder()
     this.forEachIndexed { _, byte ->
         if (builder.isNotEmpty() && headSpace) {
@@ -13,9 +17,9 @@ fun ByteArray.toHexString(upper: Boolean = true, headSpace: Boolean = true): Str
         builder.append("%02X".format(byte))
     }
     return if (upper) {
-        builder.toString().toUpperCase(Locale.getDefault())
+        builder.toString().toUpperCase(locale)
     } else {
-        builder.toString().toLowerCase(Locale.getDefault())
+        builder.toString().toLowerCase(locale)
     }
 }
 
