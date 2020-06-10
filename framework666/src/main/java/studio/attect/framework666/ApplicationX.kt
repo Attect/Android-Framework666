@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
+import studio.attect.framework666.cache.CacheManager
 import studio.attect.framework666.componentX.ComponentXMap
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
@@ -25,6 +26,10 @@ open class ApplicationX : Application() {
         super.onCreate()
         //崩溃处理，如果你有别的崩溃处理逻辑注释掉此行即可
         fuckCrash()
+
+        Thread {
+            CacheManager.clearContentResolverCache(applicationContext)
+        }.start()
 
         //振动
         Rumble.init(applicationContext)
