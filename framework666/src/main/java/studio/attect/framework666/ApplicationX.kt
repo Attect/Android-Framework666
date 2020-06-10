@@ -4,8 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.os.Handler
 import android.os.Looper
-import studio.attect.framework666.componentX.COC
 import studio.attect.framework666.cache.CacheManager
+import studio.attect.framework666.componentX.COC
 import studio.attect.framework666.helper.Rumble
 import studio.attect.framework666.simple.ComponentXExplorer
 import studio.attect.framework666.simple.NotFoundComponentX
@@ -36,21 +36,18 @@ open class ApplicationX : Application() {
 
             //振动
             Rumble.init(applicationContext)
-        Thread {
-            CacheManager.clearContentResolverCache(applicationContext)
-        }.start()
+            Thread {
+                CacheManager.clearContentResolverCache(applicationContext)
+            }.start()
 
-        //振动
-        Rumble.init(applicationContext)
-
-
+            //振动
+            Rumble.init(applicationContext)
         }
 
         //自动注册可重复调用，应对部分热重启情况
         COC.register(NOT_FOUND_COMPONENT_X, NotFoundComponentX::class.java)
         COC.register("_explorer_", ComponentXExplorer::class.java)
         autoRegister()
-
     }
 
     /**
