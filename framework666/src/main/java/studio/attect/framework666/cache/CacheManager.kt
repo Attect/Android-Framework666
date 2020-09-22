@@ -89,7 +89,7 @@ object CacheManager {
      *
      */
     fun generateContentResolverFileTarget(context: Context): Pair<File, Int> {
-        val index = contentResolverCacheFileIndex
+        val index = contentResolverCacheFileIndex++
         val file = File(context.cacheDir.absolutePath + "/$contentResolverCacheDirName/File_${index}")
         return Pair(file, index)
     }
