@@ -93,7 +93,7 @@ object Logcat {
 
 }
 
-fun debug(message: String) = Logcat.d(message)
-fun info(message: String) = Logcat.i(message)
-fun waring(message: String) = Logcat.w(message)
-fun error(message: String) = Logcat.e(message)
+fun String?.debug() = Logcat.d(this ?: "[null]")
+fun String?.info() = Logcat.i(this ?: "[null]")
+fun String?.waring() = Logcat.w(this ?: "[null]")
+fun String?.error() = Logcat.e(this ?: "[null]")
