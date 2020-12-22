@@ -57,7 +57,7 @@ open class ContainerXActivity : ActivityX(), ContainerX {
             return
         }
 
-        if (RuntimeBuildConfig.DEBUG) info("ContainerX:start for tag:$tag")
+        if (RuntimeBuildConfig.DEBUG) "ContainerX:start for tag:$tag".info()
 
         var fragmentArgument = intent.getBundleExtra(ARGUMENT_KEY)
 

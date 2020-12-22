@@ -5,21 +5,19 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.component_recycler_view.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.demo.R
+import studio.attect.framework666.demo.databinding.ComponentRecyclerViewBinding
 import studio.attect.framework666.extensions.systemLongAnimTime
 import studio.attect.framework666.interfaces.UniqueData
 import studio.attect.framework666.simple.SimpleRecyclerViewAdapter
@@ -33,44 +31,43 @@ import studio.attect.framework666.simple.SimpleRecyclerViewAdapter
 class RecyclerViewComponent : FragmentX() {
     private val recyclerViewAdapter = SimpleRecyclerViewAdapter(this)
     private val layoutManager by lazy { LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false) }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.component_recycler_view, container, false)
+    private val binding by BindView { inflater, container, _ ->
+        ComponentRecyclerViewBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        swipeRefreshLayout.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.colorPrimary, requireActivity().theme))
-        swipeRefreshLayout.setOnRefreshListener {
-            swipeRefreshLayout.postDelayed({
-                swipeRefreshLayout.isRefreshing = false
+        binding.swipeRefreshLayout.setColorSchemeColors(ResourcesCompat.getColor(resources, R.color.colorPrimary, requireActivity().theme))
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.postDelayed({
+                binding.swipeRefreshLayout.isRefreshing = false
                 resetAllData()
             }, 2000) //模拟两秒后停止
         }
 
-        recyclerView.layoutManager = layoutManager
+        binding.recyclerView.layoutManager = layoutManager
 
         //设置分割线
         val divider = DividerItemDecoration(requireContext(), layoutManager.orientation)
-        recyclerView.addItemDecoration(divider)
+        binding.recyclerView.addItemDecoration(divider)
 
         recyclerViewAdapter.registerViewHolder(R.layout.list_item_text, TextViewHolder::class.java)
         recyclerViewAdapter.registerViewHolder(R.layout.list_item_text_with_color, TextColorViewHolder::class.java)
 
-        recyclerView.adapter = recyclerViewAdapter
+        binding.recyclerView.adapter = recyclerViewAdapter
 
-        reset.setOnClickListener {
+        binding.reset.setOnClickListener {
             resetAllData()
         }
-        addOne.setOnClickListener {
+        binding.addOne.setOnClickListener {
             addOneData()
         }
-        addMore.setOnClickListener { addMoreData() }
-        updateOne.setOnClickListener { updateOneData() }
-        updateMore.setOnClickListener { updateMoreData() }
-        removeOne.setOnClickListener { removeOneData() }
-        removeMore.setOnClickListener { removeMoreData() }
-        removeAll.setOnClickListener { recyclerViewAdapter.clearData() }
+        binding.addMore.setOnClickListener { addMoreData() }
+        binding.updateOne.setOnClickListener { updateOneData() }
+        binding.updateMore.setOnClickListener { updateMoreData() }
+        binding.removeOne.setOnClickListener { removeOneData() }
+        binding.removeMore.setOnClickListener { removeMoreData() }
+        binding.removeAll.setOnClickListener { recyclerViewAdapter.clearData() }
 
         resetAllData()
     }
@@ -93,8 +90,8 @@ class RecyclerViewComponent : FragmentX() {
     private fun addOneData() {
         val position = (0..recyclerViewAdapter.itemCount).shuffled().last()
         val layoutRes = randomLayoutRes()
-        recyclerView.smoothScrollToPosition(position)
-        recyclerView.postDelayed(
+        binding.recyclerView.smoothScrollToPosition(position)
+        binding.recyclerView.postDelayed(
             {
                 val data = ItemData()
                 recyclerViewAdapter.addData(data, layoutRes, position)
@@ -115,9 +112,9 @@ class RecyclerViewComponent : FragmentX() {
         for (i in 0 until number) {
             moreData.add(SimpleRecyclerViewAdapter.SimpleListData(ItemData(), randomLayoutRes()))
         }
-        recyclerView.smoothScrollToPosition(position)
+        binding.recyclerView.smoothScrollToPosition(position)
 
-        recyclerView.postDelayed(
+        binding.recyclerView.postDelayed(
             {
                 recyclerViewAdapter.addMoreData(moreData, position)
                 Toast.makeText(requireContext(), "添加${number}个列表项", Toast.LENGTH_LONG).show()
@@ -135,8 +132,8 @@ class RecyclerViewComponent : FragmentX() {
         val position = recyclerViewAdapter.updateData(data, 0, true)
         val layoutRes = randomLayoutRes()
         if (position != null) {
-            recyclerView.smoothScrollToPosition(position)
-            recyclerView.postDelayed(
+            binding.recyclerView.smoothScrollToPosition(position)
+            binding.recyclerView.postDelayed(
                 {
                     recyclerViewAdapter.updateData(data, layoutRes)
                     Toast.makeText(requireContext(), "更新一个列表项：位置[$position] 布局:$layoutRes 数据:${data.text}", Toast.LENGTH_LONG).show()
@@ -160,8 +157,8 @@ class RecyclerViewComponent : FragmentX() {
             moreData.add(SimpleRecyclerViewAdapter.SimpleListData(ItemData(), randomLayoutRes()))
         }
         if (position.isNotEmpty()) {
-            recyclerView.smoothScrollToPosition(position[0])
-            recyclerView.postDelayed(
+            binding.recyclerView.smoothScrollToPosition(position[0])
+            binding.recyclerView.postDelayed(
                 {
                     recyclerViewAdapter.updateMoreData(moreData, 0) //layoutRes已经由SimpleListData确定
                 },
@@ -180,8 +177,8 @@ class RecyclerViewComponent : FragmentX() {
         val data = ItemData()
         val position = recyclerViewAdapter.removeData(data, true)
         if (position != null) {
-            recyclerView.smoothScrollToPosition(position)
-            recyclerView.postDelayed(
+            binding.recyclerView.smoothScrollToPosition(position)
+            binding.recyclerView.postDelayed(
                 {
                     recyclerViewAdapter.removeData(data)
                     Toast.makeText(requireContext(), "删除一个列表项：位置[$position]", Toast.LENGTH_LONG).show()
@@ -205,8 +202,8 @@ class RecyclerViewComponent : FragmentX() {
         }
         val position = recyclerViewAdapter.removeMoreData(moreData, true)
         if (position.isNotEmpty()) {
-            recyclerView.smoothScrollToPosition(position[0])
-            recyclerView.postDelayed(
+            binding.recyclerView.smoothScrollToPosition(position[0])
+            binding.recyclerView.postDelayed(
                 {
                     recyclerViewAdapter.removeMoreData(moreData)
                 },

@@ -25,7 +25,7 @@ object Rumble {
         vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         rumbleDisabled = vibrator == null || !vibrator!!.hasVibrator()
         if (rumbleDisabled) {
-            waring("设备上没有安装振动电机，或者震动电机已被禁用（无权限使用），相关感知反馈调用将会无效")
+            "设备上没有安装振动电机，或者震动电机已被禁用（无权限使用），相关感知反馈调用将会无效".waring()
         }
     }
 

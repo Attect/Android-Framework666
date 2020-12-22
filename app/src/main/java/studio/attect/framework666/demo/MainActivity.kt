@@ -6,10 +6,10 @@ import android.os.Bundle
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
-import kotlinx.android.synthetic.main.activity_main.*
 import studio.attect.framework666.ActivityX
 import studio.attect.framework666.componentX.COC
 import studio.attect.framework666.componentX.tag
+import studio.attect.framework666.demo.databinding.ActivityMainBinding
 import studio.attect.framework666.demo.fragment.NormalComponent
 import studio.attect.framework666.demo.fragment.RecyclerViewComponent
 import studio.attect.framework666.extensions.setStatusBarColor
@@ -20,6 +20,7 @@ class MainActivity : ActivityX() {
     private val bottomNavigationViewHolders = arrayListOf<BottomNavigationViewHolder>()
 
     private var currentComponentTag = ""
+    private val binding by BindView { ActivityMainBinding.inflate(layoutInflater) }
 
     private val preference: SharedPreferences by lazy {
         getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
@@ -27,7 +28,6 @@ class MainActivity : ActivityX() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
         setStatusBarColor(ResourcesCompat.getColor(resources, R.color.colorPrimary, theme))
 
@@ -54,11 +54,11 @@ class MainActivity : ActivityX() {
     }
 
     private fun refreshBottomNavigation() {
-        bottomNavigation.removeAllViews()
+        binding.bottomNavigation.removeAllViews()
         bottomNavigationTags.forEach { tag ->
             val componentX = COC.create(tag)
             val viewHolder = BottomNavigationViewHolder()
-            val view = layoutInflater.inflate(R.layout.bottom_navigation_item, bottomNavigation, false)
+            val view = layoutInflater.inflate(R.layout.bottom_navigation_item, binding.bottomNavigation, false)
             viewHolder.imageView = view.findViewById(R.id.icon)
             viewHolder.label = view.findViewById(R.id.label)
 
@@ -75,7 +75,7 @@ class MainActivity : ActivityX() {
 
             bottomNavigationViewHolders.add(viewHolder)
 
-            bottomNavigation.addView(view)
+            binding.bottomNavigation.addView(view)
         }
 
         changePage(preference.getString(BOTTOM_TAG_PREFERENCE_NAME, null) ?: NormalComponent::class.tag()) //默认页

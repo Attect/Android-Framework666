@@ -52,7 +52,7 @@ abstract class PerceptionActivity : OnBackPressedQueueActivity(), PerceptionComp
             textToSpeech = TextToSpeech(this, TextToSpeech.OnInitListener {
                 if (it == TextToSpeech.SUCCESS) {
                     textToSpeech?.let {
-                        debug("textToSpeech init done")
+                        "textToSpeech init done".debug()
                         textToSpeechInitLock = false
                         textToSpeechDone = true
                         handleSpeakQueue()
@@ -67,7 +67,6 @@ abstract class PerceptionActivity : OnBackPressedQueueActivity(), PerceptionComp
 
     private fun handleSpeakQueue() {
         speakQueue.forEach {
-            debug("TTS:$it")
             callTextToSpeechToTalk(it)
         }
         speakQueue.clear()
@@ -89,7 +88,7 @@ abstract class PerceptionActivity : OnBackPressedQueueActivity(), PerceptionComp
                     speech.speak(text, TextToSpeech.QUEUE_ADD, params)
                 }
             } else {
-                waring("此设备不支持：中文语音输出")
+                "此设备不支持：中文语音输出".waring()
             }
         }
 

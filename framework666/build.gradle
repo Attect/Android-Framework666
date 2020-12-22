@@ -1,9 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
+
+    viewBinding {
+        enabled = true
+        //https://developer.android.com/topic/libraries/view-binding/migration
+        //https://developer.android.com/topic/libraries/view-binding#setup
+    }
 
     defaultConfig {
         minSdkVersion min_sdk_version

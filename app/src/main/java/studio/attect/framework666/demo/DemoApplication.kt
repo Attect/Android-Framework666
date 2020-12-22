@@ -22,7 +22,7 @@ class DemoApplication : ApplicationX() {
         RuntimeBuildConfig.VERSION_NAME = BuildConfig.VERSION_NAME
         //endregion
 
-        debug("Component Tag:${COC["cache"]::class.java.canonicalName}")
+        "Component Tag:${COC["cache"]::class.java.canonicalName}".debug()
     }
 
 }

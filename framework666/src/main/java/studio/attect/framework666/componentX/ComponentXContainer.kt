@@ -20,7 +20,7 @@ object ComponentXContainer {
      */
     fun register(tag: String, componentX: Class<out ComponentX>) {
         componentMap[tag] = componentX
-        debug("[COC] 注册 $tag 指向 ${componentX.simpleName}")
+        "[COC] 注册 $tag 指向 ${componentX.simpleName}".debug()
     }
 
     /**

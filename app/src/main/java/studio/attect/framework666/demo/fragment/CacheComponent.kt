@@ -9,11 +9,8 @@ import android.os.storage.StorageManager
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.component_cache.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import org.msgpack.core.MessagePack
@@ -25,6 +22,7 @@ import studio.attect.framework666.cache.CacheDataX
 import studio.attect.framework666.cache.CacheManager
 import studio.attect.framework666.demo.R
 import studio.attect.framework666.demo.cache.TestLargeTestDataX
+import studio.attect.framework666.demo.databinding.ComponentCacheBinding
 import studio.attect.framework666.extensions.deleteCacheDataX
 import studio.attect.framework666.extensions.runOnUiThread
 import studio.attect.framework666.extensions.toDataSizeString
@@ -60,6 +58,10 @@ class CacheComponent : FragmentX() {
     private var readMassCacheStartTime = 0L
     private var readMassCacheTimes = 0
 
+    private val binding by BindView { inflater, container, _ ->
+        ComponentCacheBinding.inflate(inflater, container, false)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cacheDataXViewModel.fastCacheDataXResultList.observe(this, Observer {
@@ -69,13 +71,13 @@ class CacheComponent : FragmentX() {
                     TAG_PERSISTENT_CACHE -> requestLoadCache.add(Pair(TAG_PERSISTENT_CACHE, PersistentCache::class.java))
                     TAG_EDIT_CACHE -> {
                         hasLastEditCache = true
-                        recoverEditCache?.visibility = View.VISIBLE
+                        binding.recoverEditCache.visibility = View.VISIBLE
                     }
                     TAG_LARGE_CACHE -> {
                         enableLargeCacheTestBtn(true)
-                        largeCacheProgressBar?.isIndeterminate = false
+                        binding.largeCacheProgressBar.isIndeterminate = false
                         val endTime = System.currentTimeMillis()
-                        largeCacheCheckInfo.text = "检查完成，耗时" + (endTime - checkLargeCacheStartTime) + "ms"
+                        binding.largeCacheCheckInfo.text = "检查完成，耗时" + (endTime - checkLargeCacheStartTime) + "ms"
                     }
 
                 }
@@ -84,9 +86,9 @@ class CacheComponent : FragmentX() {
                     if (checkMassCacheTimes == MASS_CACHE_TIMES) {
                         enableMassCacheTestBtn(true)
                         val endTime = System.currentTimeMillis()
-                        massCacheCheckInfo.text = "检查完成" + checkMassCacheTimes + "个文件，耗时" + (endTime - checkMassCacheStartTime) + "ms"
+                        binding.massCacheCheckInfo.text = "检查完成" + checkMassCacheTimes + "个文件，耗时" + (endTime - checkMassCacheStartTime) + "ms"
                     }
-                    massCacheProgressBar.progress = checkMassCacheTimes
+                    binding.massCacheProgressBar.progress = checkMassCacheTimes
                 }
             }
             readCacheX(requestLoadCache)
@@ -102,17 +104,17 @@ class CacheComponent : FragmentX() {
                         (it.second as EditCache).apply {
                             editCache.content = content
                             //注意此时View已经不存在了
-                            textInputEditText?.setText(content)
-                            recoverEditCache?.visibility = View.GONE
+                            binding.textInputEditText.setText(content)
+                            binding.recoverEditCache.visibility = View.GONE
                         }
                     }
                 }
                 TAG_LARGE_CACHE -> {
                     if (it.second is TestLargeTestDataX) {
                         enableLargeCacheTestBtn(true)
-                        largeCacheProgressBar?.isIndeterminate = false
+                        binding.largeCacheProgressBar.isIndeterminate = false
                         val endTime = System.currentTimeMillis()
-                        largeCacheReadInfo.text = "读取完成，耗时" + (endTime - readLargeCacheStartTime) + "ms"
+                        binding.largeCacheReadInfo.text = "读取完成，耗时" + (endTime - readLargeCacheStartTime) + "ms"
                     }
                 }
 
@@ -122,49 +124,46 @@ class CacheComponent : FragmentX() {
                 if (readMassCacheTimes == MASS_CACHE_TIMES) {
                     enableMassCacheTestBtn(true)
                     val endTime = System.currentTimeMillis()
-                    massCacheReadInfo.text = "读取完成" + MASS_CACHE_TIMES + "个文件，耗时" + (endTime - readMassCacheStartTime) + "ms"
+                    binding.massCacheReadInfo.text = "读取完成" + MASS_CACHE_TIMES + "个文件，耗时" + (endTime - readMassCacheStartTime) + "ms"
                 }
-                massCacheProgressBar.progress = readMassCacheTimes
+                binding.massCacheProgressBar.progress = readMassCacheTimes
             }
         })
 
         checkCacheX(TAG_PERSISTENT_CACHE, TAG_EDIT_CACHE)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.component_cache, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         refreshPersistentCache()
 
-        cacheA.setOnCheckedChangeListener { _, isChecked ->
+        binding.cacheA.setOnCheckedChangeListener { _, isChecked ->
             persistentCache.a = isChecked
             if (!persistentCacheViewEventLock) savePersistentCache()
         }
-        cacheB.setOnCheckedChangeListener { _, isChecked ->
+        binding.cacheB.setOnCheckedChangeListener { _, isChecked ->
             persistentCache.b = isChecked
             if (!persistentCacheViewEventLock) savePersistentCache()
         }
-        cacheC.setOnCheckedChangeListener { _, isChecked ->
+        binding.cacheC.setOnCheckedChangeListener { _, isChecked ->
             persistentCache.c = isChecked
             if (!persistentCacheViewEventLock) savePersistentCache()
         }
-        cacheD.setOnCheckedChangeListener { _, isChecked ->
+        binding.cacheD.setOnCheckedChangeListener { _, isChecked ->
             persistentCache.d = isChecked
             if (!persistentCacheViewEventLock) savePersistentCache()
         }
-        cacheE.setOnCheckedChangeListener { _, isChecked ->
+        binding.cacheE.setOnCheckedChangeListener { _, isChecked ->
             persistentCache.e = isChecked
             if (!persistentCacheViewEventLock) savePersistentCache()
         }
-        cacheF.setOnCheckedChangeListener { _, isChecked ->
+        binding.cacheF.setOnCheckedChangeListener { _, isChecked ->
             persistentCache.f = isChecked
             if (!persistentCacheViewEventLock) savePersistentCache()
         }
 
-        textInputEditText.addTextChangedListener(object : TextWatcher {
+        binding.textInputEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
                     editCache.content = it.toString()
@@ -181,58 +180,58 @@ class CacheComponent : FragmentX() {
 
         })
 
-        if (hasLastEditCache) recoverEditCache.visibility = View.VISIBLE
-        recoverEditCache.setOnClickListener {
-            recoverEditCache.setText(R.string.loading)
+        if (hasLastEditCache) binding.recoverEditCache.visibility = View.VISIBLE
+        binding.recoverEditCache.setOnClickListener {
+            binding.recoverEditCache.setText(R.string.loading)
             readCacheX(arrayListOf(Pair(TAG_EDIT_CACHE, EditCache::class.java)))
         }
 
-        writeLargeCacheButton.setOnClickListener {
+        binding.writeLargeCacheButton.setOnClickListener {
             createLargeCache()
         }
 
-        checkLargeCacheButton.setOnClickListener {
+        binding.checkLargeCacheButton.setOnClickListener {
             enableLargeCacheTestBtn(false)
-            largeCacheProgressBar?.isIndeterminate = true
+            binding.largeCacheProgressBar.isIndeterminate = true
             checkLargeCacheStartTime = System.currentTimeMillis()
             checkCacheX(TAG_LARGE_CACHE)
         }
 
-        readLargeCacheButton.setOnClickListener {
+        binding.readLargeCacheButton.setOnClickListener {
             enableLargeCacheTestBtn(false)
-            largeCacheProgressBar?.isIndeterminate = true
+            binding.largeCacheProgressBar.isIndeterminate = true
             readLargeCacheStartTime = System.currentTimeMillis()
             readCacheX(arrayListOf(Pair(TAG_LARGE_CACHE, TestLargeTestDataX::class.java)))
         }
 
-        deleteLargeCacheButton.setOnClickListener {
+        binding.deleteLargeCacheButton.setOnClickListener {
             requireContext().deleteCacheDataX(TAG_LARGE_CACHE)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            massCacheProgressBar.min = 0
+            binding.massCacheProgressBar.min = 0
         }
-        massCacheProgressBar.max = MASS_CACHE_TIMES
+        binding.massCacheProgressBar.max = MASS_CACHE_TIMES
 
-        writeMassCacheButton.setOnClickListener {
+        binding.writeMassCacheButton.setOnClickListener {
             createMassCache()
         }
 
-        checkMassCacheButton.setOnClickListener {
+        binding.checkMassCacheButton.setOnClickListener {
             enableMassCacheTestBtn(false)
-            largeCacheProgressBar.progress = 0
+            binding.largeCacheProgressBar.progress = 0
             checkMassCacheStartTime = System.currentTimeMillis()
             checkCacheX(List(MASS_CACHE_TIMES) { TAG_MASS_CACHE + it })
         }
 
-        readMassCacheButton.setOnClickListener {
+        binding.readMassCacheButton.setOnClickListener {
             enableMassCacheTestBtn(false)
-            largeCacheProgressBar.progress = 0
+            binding.largeCacheProgressBar.progress = 0
             readMassCacheStartTime = System.currentTimeMillis()
             readCacheX(List(MASS_CACHE_TIMES) { Pair(TAG_MASS_CACHE + it, PersistentCache::class.java) })
         }
 
-        deleteMassCacheButton.setOnClickListener {
+        binding.deleteMassCacheButton.setOnClickListener {
             enableMassCacheTestBtn(false)
             Thread() {
                 List(MASS_CACHE_TIMES) { TAG_MASS_CACHE + it }.forEach {
@@ -266,12 +265,12 @@ class CacheComponent : FragmentX() {
 
     private fun refreshPersistentCache() {
         persistentCacheViewEventLock = true
-        cacheA?.isChecked = persistentCache.a
-        cacheB?.isChecked = persistentCache.b
-        cacheC?.isChecked = persistentCache.c
-        cacheD?.isChecked = persistentCache.d
-        cacheE?.isChecked = persistentCache.e
-        cacheF?.isChecked = persistentCache.f
+        binding.cacheA.isChecked = persistentCache.a
+        binding.cacheB.isChecked = persistentCache.b
+        binding.cacheC.isChecked = persistentCache.c
+        binding.cacheD.isChecked = persistentCache.d
+        binding.cacheE.isChecked = persistentCache.e
+        binding.cacheF.isChecked = persistentCache.f
         persistentCacheViewEventLock = false
     }
 
@@ -280,22 +279,22 @@ class CacheComponent : FragmentX() {
     }
 
     private fun enableLargeCacheTestBtn(enable: Boolean) {
-        writeLargeCacheButton?.isEnabled = enable
-        checkLargeCacheButton?.isEnabled = enable
-        readLargeCacheButton?.isEnabled = enable
-        deleteLargeCacheButton?.isEnabled = enable
+        binding.writeLargeCacheButton.isEnabled = enable
+        binding.checkLargeCacheButton.isEnabled = enable
+        binding.readLargeCacheButton.isEnabled = enable
+        binding.deleteLargeCacheButton.isEnabled = enable
     }
 
     private fun enableMassCacheTestBtn(enable: Boolean) {
-        writeMassCacheButton?.isEnabled = enable
-        checkMassCacheButton?.isEnabled = enable
-        readMassCacheButton?.isEnabled = enable
-        deleteMassCacheButton?.isEnabled = enable
+        binding.writeMassCacheButton.isEnabled = enable
+        binding.checkMassCacheButton.isEnabled = enable
+        binding.readMassCacheButton.isEnabled = enable
+        binding.deleteMassCacheButton.isEnabled = enable
     }
 
     private fun createLargeCache() {
         enableMassCacheTestBtn(false)
-        largeCacheWriteInfo.setText(R.string.working)
+        binding.largeCacheWriteInfo.setText(R.string.working)
         val file = File(CacheManager.getCacheFileName(requireContext(), TAG_LARGE_CACHE))
         val outputStream = FileOutputStream(file)
         val office = DataXOffice(MessagePack.newDefaultPacker(outputStream))
@@ -304,22 +303,22 @@ class CacheComponent : FragmentX() {
             tag = TAG_LARGE_CACHE
             storeType = CacheDataX.STORE_TYPE_AUTO
         }
-        largeCacheProgressBar?.isIndeterminate = true
+        binding.largeCacheProgressBar.isIndeterminate = true
         Thread() {
             val startTime = System.currentTimeMillis()
             cacheDataX.putToOffice(office)
             val endTime = System.currentTimeMillis()
             runOnUiThread(Runnable {
-                largeCacheWriteInfo.text = "写入完成，耗时" + (endTime - startTime) + "ms 大小:" + file.length().toDataSizeString()
+                binding.largeCacheWriteInfo.text = "写入完成，耗时" + (endTime - startTime) + "ms 大小:" + file.length().toDataSizeString()
                 enableLargeCacheTestBtn(true)
-                largeCacheProgressBar?.isIndeterminate = false
+                binding.largeCacheProgressBar.isIndeterminate = false
             })
         }.start()
     }
 
     private fun createMassCache() {
         enableMassCacheTestBtn(false)
-        massCacheWriteInfo.setText(R.string.working)
+        binding.massCacheWriteInfo.setText(R.string.working)
         val data = PersistentCache()
         Thread() {
 
@@ -327,12 +326,12 @@ class CacheComponent : FragmentX() {
             for (i in 0 until MASS_CACHE_TIMES) {
                 requireContext().writeCacheDataX(TAG_MASS_CACHE + i, CacheDataX.STORE_TYPE_SKETCH, data)
                 runOnUiThread(Runnable {
-                    massCacheProgressBar.progress = i + 1
+                    binding.massCacheProgressBar.progress = i + 1
                 })
             }
             val endTime = System.currentTimeMillis()
             runOnUiThread(Runnable {
-                massCacheWriteInfo.text = "写入完成，耗时" + (endTime - startTime) + "ms 数量:" + MASS_CACHE_TIMES
+                binding.massCacheWriteInfo.text = "写入完成，耗时" + (endTime - startTime) + "ms 数量:" + MASS_CACHE_TIMES
                 enableMassCacheTestBtn(true)
             })
         }.start()

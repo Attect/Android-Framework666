@@ -7,9 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.SparseIntArray
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
@@ -17,12 +15,12 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.irozon.sneaker.Sneaker
-import kotlinx.android.synthetic.main.componentx_crash_and_anr.*
 import net.steamcrafted.materialiconlib.IconValue
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import studio.attect.framework666.FragmentX
 import studio.attect.framework666.annotations.Component
 import studio.attect.framework666.demo.R
+import studio.attect.framework666.demo.databinding.ComponentxCrashAndAnrBinding
 import studio.attect.framework666.demo.helper.BugFucker
 import studio.attect.framework666.extensions.currentSafeTop
 import studio.attect.framework666.extensions.dp2px
@@ -43,6 +41,10 @@ class CrashAndANRComponentX : FragmentX() {
     private val spicyEyeColors = SparseIntArray()
     private val moreTextView = arrayListOf<AppCompatTextView>()
     private var play = true
+
+    private val binding by BindView { inflater, container, _ ->
+        ComponentxCrashAndAnrBinding.inflate(inflater, container, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -118,9 +120,17 @@ class CrashAndANRComponentX : FragmentX() {
         //endregion
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.componentx_crash_and_anr, container, false)
-        val textContainer = view.findViewById<LinearLayout>(R.id.container)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        windowInsets?.observe(this, Observer {
+            if (binding.header.paddingTop == 0) {
+                binding.header.setPadding(binding.header.left, it.currentSafeTop, binding.header.right, binding.header.bottom)
+            }
+        })
+
+        val textContainer = binding.container
         for (i in 0 until 20) {
             val line = LinearLayout(context)
             line.orientation = LinearLayout.HORIZONTAL
@@ -153,22 +163,12 @@ class CrashAndANRComponentX : FragmentX() {
             textContainer.addView(line)
         }
 
-        return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        windowInsets?.observe(this, Observer {
-            if (header.paddingTop == 0) {
-                header.setPadding(header.left, it.currentSafeTop, header.right, header.bottom)
-            }
-        })
-        crash.setOnClickListener {
+        binding.crash.setOnClickListener {
             //Thread() {
             BugFucker.fuckCrash()
             //}.start()
         }
-        anr.setOnClickListener {
+        binding.anr.setOnClickListener {
             BugFucker.fuckANR()
         }
     }
@@ -193,16 +193,16 @@ class CrashAndANRComponentX : FragmentX() {
     private fun updateSpicyEyeHeaderUI() {
         view?.postDelayed({
             if (!isAlive()) return@postDelayed
-            val darkText = ResourcesCompat.getColor(resources, R.color.cover_black, requireContext().theme) == updateSpiceEyeColor(header)
+            val darkText = ResourcesCompat.getColor(resources, R.color.cover_black, requireContext().theme) == updateSpiceEyeColor(binding.header)
             activityX?.transparentStatusBar(!darkText)
-            updateSpiceEyeColor(crash)
-            updateSpiceEyeColor(anr)
+            updateSpiceEyeColor(binding.crash)
+            updateSpiceEyeColor(binding.anr)
             if (play) updateSpicyEyeHeaderUI()
         }, (400..800).shuffled().last().toLong())
     }
 
     private fun updateSpiceEyeMoreUI() {
-        container?.postDelayed({
+        binding.container.postDelayed({
             moreTextView.forEach {
                 it.setText(getRandomTextRes())
                 updateSpiceEyeColor(it)
