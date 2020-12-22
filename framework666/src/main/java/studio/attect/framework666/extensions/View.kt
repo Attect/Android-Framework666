@@ -19,8 +19,7 @@ import android.view.inputmethod.InputMethodManager
 fun View.showSoftKeyboard(flag: Int = 0, receiver: ResultReceiver? = null) {
     post {
         requestFocus()
-        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(this, flag, receiver)
+        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.showSoftInput(this, flag, receiver)
     }
 }
 

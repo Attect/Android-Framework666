@@ -10,7 +10,7 @@ package studio.attect.framework666.extensions
  * 使用一个逗号来强制TTS引擎在每个数字后停顿
  * 一使用yao发音防止部分TTS引擎一七难分
  */
-fun String.replaceArabicNumber2ChineseNumberForTTS():String{
+fun String.replaceArabicNumber2ChineseNumberForTTS(): String {
     var resultString = this
     resultString = resultString.replace("0", "零,")
     resultString = resultString.replace("1", "幺,")//避免与七接近

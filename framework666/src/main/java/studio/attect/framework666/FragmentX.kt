@@ -1,7 +1,11 @@
 package studio.attect.framework666
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import studio.attect.framework666.componentX.ComponentX
@@ -22,6 +27,7 @@ import studio.attect.framework666.componentX.ContainerX
 import studio.attect.framework666.extensions.*
 import studio.attect.framework666.fragment.MisoperationFragment
 import studio.attect.framework666.viewModel.CacheDataXViewModel
+import kotlin.reflect.KProperty
 
 /**
  * 使用本框架
@@ -99,6 +105,9 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
     var toolbar: Toolbar? = null
 
     var toolbarTitle: AppCompatTextView? = null
+
+    private var viewBinder: ((inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) -> ViewBinding)? = null
+    private var viewBinding: ViewBinding? = null
     //endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,6 +130,14 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
         })
     }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        viewBinder?.invoke(inflater, container, savedInstanceState)?.let {
+            viewBinding = it
+            return it.root
+        }
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAppbar()
@@ -136,6 +153,11 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
     override fun onStart() {
         super.onStart()
         toolbar?.setBackArrowColor()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewBinding = null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -173,8 +195,8 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
         appbarLayoutParent = findViewById(R.id.appbarLayoutParent)
         appbarLayout = appbarLayoutParent?.findViewById(R.id.appbarLayout)
         appbarLayoutParent?.let { parent ->
-            val toolbar:View? = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
-            if(toolbar is Toolbar) this.toolbar = toolbar
+            val toolbar: View? = appbarLayout?.findViewById(R.id.toolbar) //只对Appbar中的toolbar操作
+            if (toolbar is Toolbar) this.toolbar = toolbar
             collapsingToolbarLayout = appbarLayoutParent?.findViewById(R.id.collapsingToolbarLayout) //这个View父级一定是CoordinatorLayout（否则就不起作用了）
             windowInsets?.observe(this, Observer { windowInsetsCompat ->
                 parent.layoutParams?.let { lp ->
@@ -187,7 +209,7 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
                 }
             })
 
-            if (toolbar != null && (toolbar.parent is AppBarLayout || toolbar.parent is CollapsingToolbarLayout) ) { //只对appbar中的toolbar操作
+            if (toolbar != null && (toolbar.parent is AppBarLayout || toolbar.parent is CollapsingToolbarLayout)) { //只对appbar中的toolbar操作
                 toolbar.layoutParams?.height = resources.getDimensionPixelSize(R.dimen.toolbar_height)
 
                 toolbarTitle = toolbar.findViewById(R.id.toolbarTitle) //只对toolbar中的toolbarTitle操作
@@ -264,7 +286,6 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
         }
     }
 
-
     private fun readCacheOnBackgroundThread() {
         if (!isAlive()) return
         cacheDataXViewModel.cacheDataXLoadMap.value?.let { loadList ->
@@ -280,7 +301,6 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
             }.start()
         }
     }
-
 
     /**
      * 检查缓存情况
@@ -308,5 +328,27 @@ abstract class FragmentX : MisoperationFragment(), ComponentX {
             }
             true
         }
+    }
+
+    override fun getName(context: Context?): String? = this::class.java.simpleName
+
+    override fun getColor(context: Context?): Int = Color.BLACK
+
+    override fun getIcon(context: Context?): Drawable? = null
+
+    /**
+     * View绑定委托
+     */
+    inner class BindView<T : ViewBinding>(block: (inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) -> T) {
+        init {
+            viewBinder = block
+        }
+
+        operator fun getValue(thisRef: FragmentX, property: KProperty<*>): T {
+            (viewBinding as? T)?.let {
+                return it
+            } ?: throw IllegalStateException("视图绑定对象获取失败")
+        }
+
     }
 }

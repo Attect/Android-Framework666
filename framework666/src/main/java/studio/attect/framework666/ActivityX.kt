@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.viewbinding.ViewBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import pub.devrel.easypermissions.EasyPermissions
@@ -28,6 +29,7 @@ import studio.attect.framework666.viewModel.CommonEventViewModel
 import studio.attect.framework666.viewModel.SignalViewModel
 import studio.attect.framework666.viewModel.SignalViewModel.signal
 import studio.attect.framework666.viewModel.WindowInsetsViewModel
+import kotlin.reflect.KProperty
 
 /**
  * 使用本框架
@@ -55,6 +57,8 @@ abstract class ActivityX : MisoperationActivity() {
 
     lateinit var cacheDataXViewModel: CacheDataXViewModel
 
+    private var viewBinder: (() -> ViewBinding)? = null
+    var viewBinding: ViewBinding? = null
     //endregion
 
     //region 约定布局
@@ -121,9 +125,12 @@ abstract class ActivityX : MisoperationActivity() {
             StartComponentXIntentService.tryExecutePendingComponentXTask(this@ActivityX)
         })
 
-
-
         transparentStatusBar(true) //如果想改变默认颜色，无需删掉这个，可以直接再调用一次传入不同的参数
+
+        viewBinder?.invoke()?.let {
+            viewBinding = it
+            setContentView(it.root)
+        }
     }
 
 
@@ -326,5 +333,22 @@ abstract class ActivityX : MisoperationActivity() {
             }
             true
         }
+    }
+
+
+    /**
+     * View绑定委托
+     */
+    inner class BindView<T : ViewBinding>(block: () -> T) {
+        init {
+            viewBinder = block
+        }
+
+        operator fun getValue(thisRef: ActivityX, property: KProperty<*>): T {
+            (viewBinding as? T)?.let {
+                return it
+            } ?: throw IllegalStateException("视图绑定对象获取失败")
+        }
+
     }
 }

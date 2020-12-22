@@ -60,7 +60,7 @@ abstract class PerceptionFragment : OnBackPressedQueueFragment(), PerceptionComp
                                 speech.speak(text, TextToSpeech.QUEUE_ADD, params)
                             }
                         } else {
-                            waring("此设备不支持：中文语音输出")
+                            "此设备不支持：中文语音输出".waring()
                         }
                     }
                 }

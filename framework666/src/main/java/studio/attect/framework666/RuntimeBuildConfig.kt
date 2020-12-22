@@ -32,13 +32,13 @@ object RuntimeBuildConfig {
             if (field == BuildConfig.BUILD_TYPE) field = value
         }
 
-    var VERSION_CODE = BuildConfig.VERSION_CODE
+    var VERSION_CODE = 0
         set(value) {
-            if (field == BuildConfig.VERSION_CODE) field = value
+            if (field == 0) field = value
         }
 
-    var VERSION_NAME = BuildConfig.VERSION_NAME
+    var VERSION_NAME = ""
         set(value) {
-            if (field == BuildConfig.VERSION_NAME) field = value
+            if (field.isBlank()) field = value
         }
 }

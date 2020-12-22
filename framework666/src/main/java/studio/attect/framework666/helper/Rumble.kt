@@ -2,14 +2,13 @@
 
 package studio.attect.framework666.helper;
 
+
 import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import studio.attect.framework666.waring
-
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * 振动API调用兼容
@@ -26,7 +25,7 @@ object Rumble {
         vibrator = applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         rumbleDisabled = vibrator == null || !vibrator!!.hasVibrator()
         if (rumbleDisabled) {
-            waring("设备上没有安装振动电机，或者震动电机已被禁用（无权限使用），相关感知反馈调用将会无效")
+            "设备上没有安装振动电机，或者震动电机已被禁用（无权限使用），相关感知反馈调用将会无效".waring()
         }
     }
 

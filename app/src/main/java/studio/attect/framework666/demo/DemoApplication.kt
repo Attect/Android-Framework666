@@ -2,11 +2,8 @@ package studio.attect.framework666.demo
 
 import studio.attect.framework666.ApplicationX
 import studio.attect.framework666.RuntimeBuildConfig
-import studio.attect.framework666.componentX.ComponentXMap
-import studio.attect.framework666.demo.fragment.CacheComponent
-import studio.attect.framework666.demo.fragment.CrashAndANRComponentX
-import studio.attect.framework666.demo.fragment.NormalComponent
-import studio.attect.framework666.demo.fragment.RecyclerViewComponent
+import studio.attect.framework666.componentX.COC
+import studio.attect.framework666.debug
 
 /**
  * 此Demo App的Application
@@ -25,15 +22,7 @@ class DemoApplication : ApplicationX() {
         RuntimeBuildConfig.VERSION_NAME = BuildConfig.VERSION_NAME
         //endregion
 
-        markComponents()
+        "Component Tag:${COC["cache"]::class.java.canonicalName}".debug()
     }
-
-    private fun markComponents() {
-        ComponentXMap.mark(CrashAndANRComponentX.Companion)
-        ComponentXMap.mark(CacheComponent.Companion)
-        ComponentXMap.mark(NormalComponent.Companion)
-        ComponentXMap.mark(RecyclerViewComponent.Companion)
-    }
-
 
 }
