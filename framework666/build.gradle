@@ -13,8 +13,6 @@ android {
     defaultConfig {
         minSdkVersion min_sdk_version
         targetSdkVersion target_sdk_version
-        versionCode 1
-        versionName "1.0"
 
         buildConfigField 'int', 'VERSION_CODE', "1"
         buildConfigField 'String', 'VERSION_NAME', "\"1.0\""
@@ -32,7 +30,6 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    buildToolsVersion = '29.0.3'
 
 }
 
@@ -42,7 +39,6 @@ dependencies {
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation "androidx.test:runner:$runner_version"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_core_version"
-    implementation project(path: ':annotations')
 
 }
 

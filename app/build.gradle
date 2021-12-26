@@ -35,7 +35,6 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    buildToolsVersion = '29.0.3'
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -48,7 +47,6 @@ dependencies {
     kapt project(path: ':annotationprocessor')
     implementation project(path: ':materialiconlib')
     implementation "androidx.cardview:cardview:${material_version}"
-    implementation project(path: ':annotations')
 
 }
 
