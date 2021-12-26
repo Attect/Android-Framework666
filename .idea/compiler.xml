@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Android-Framework666.annotations" target="11" />
+      <module name="Android-Framework666.app" target="11" />
+      <module name="Android-Framework666.framework666" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
